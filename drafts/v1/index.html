@@ -8,7 +8,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Inter:wght@400;500;700;800&family=Playfair+Display:ital,wght@0,800;0,900;1,800&display=swap" rel="stylesheet" />
 
 <style>
@@ -46,6 +46,7 @@
 
   *, *::before, *::after { box-sizing: border-box; }
 
+  html { scroll-behavior: smooth; }
   html, body {
     margin: 0; padding: 0;
     background: var(--bg);
@@ -730,7 +731,54 @@
     border: 1px solid var(--border);
     background: #050505;
   }
-  .ncs-map canvas { outline: none; }
+  /* Leaflet dark theming */
+  .leaflet-container { background: #050505 !important; font-family: var(--font-ar-body); }
+  .leaflet-control-attribution {
+    background: rgba(0,0,0,0.7) !important;
+    color: var(--text-muted) !important;
+    font-size: 0.65rem !important;
+  }
+  .leaflet-control-attribution a { color: var(--text-muted) !important; }
+  .leaflet-control-zoom a {
+    background: rgba(0,0,0,0.85) !important;
+    color: var(--text) !important;
+    border-color: var(--border-strong) !important;
+  }
+  .leaflet-control-zoom a:hover {
+    background: var(--red) !important;
+    color: #fff !important;
+  }
+  .leaflet-popup-content-wrapper {
+    background: #0a0a0a !important;
+    color: var(--text) !important;
+    border: 1px solid var(--border-strong);
+    border-radius: 4px !important;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.7) !important;
+  }
+  .leaflet-popup-tip { background: #0a0a0a !important; border: 1px solid var(--border-strong); }
+  .leaflet-popup-content { margin: 0.85rem 1rem !important; min-width: 180px; direction: rtl; }
+  .leaflet-popup-close-button { color: var(--text-muted) !important; }
+  .ncs-tooltip {
+    background: rgba(0,0,0,0.92) !important;
+    color: var(--text) !important;
+    border: 1px solid var(--border-strong) !important;
+    font-size: 0.72rem; font-weight: 700;
+    padding: 0.25rem 0.55rem !important;
+    border-radius: 3px !important;
+    box-shadow: none !important;
+  }
+  .ncs-tooltip::before { display: none !important; }
+  /* Pulsing chokepoint rings */
+  @keyframes choke-pulse-anim {
+    0%   { stroke-opacity: 0.85; stroke-width: 1.5; }
+    50%  { stroke-opacity: 0.3;  stroke-width: 4; }
+    100% { stroke-opacity: 0.85; stroke-width: 1.5; }
+  }
+  .leaflet-overlay-pane path.choke-pulse,
+  .leaflet-interactive.choke-pulse {
+    animation: choke-pulse-anim 2.4s ease-in-out infinite;
+  }
+  .plane-icon, .ship-icon { background: transparent !important; border: 0 !important; }
   .map-source-pill {
     position: absolute; bottom: 1rem; inset-inline-end: 1rem;
     background: rgba(0,0,0,0.85); border: 1px solid var(--border-strong);
@@ -744,19 +792,6 @@
     width: 7px; height: 7px; border-radius: 50%;
     background: var(--red); box-shadow: 0 0 0 0 var(--red-glow);
     animation: pulse 1.6s infinite;
-  }
-  /* MapLibre popup theming */
-  .ncs-popup .maplibregl-popup-content {
-    background: #0a0a0a; color: var(--text);
-    border: 1px solid var(--border-strong);
-    border-radius: 4px;
-    padding: 0.85rem 1rem;
-    font-family: var(--font-ar-body);
-    box-shadow: 0 10px 40px rgba(0,0,0,0.7);
-  }
-  .ncs-popup .maplibregl-popup-tip { display: none; }
-  .ncs-popup .maplibregl-popup-close-button {
-    color: var(--text-muted); font-size: 1.2rem; padding: 0.25rem 0.5rem;
   }
   .popup-cs {
     font-family: var(--font-en-body); font-weight: 900;
@@ -772,21 +807,6 @@
   .popup-row b {
     color: var(--text); font-family: var(--font-en-body);
     font-weight: 700;
-  }
-  /* MapLibre attribution + controls dark theme */
-  .maplibregl-ctrl-attrib {
-    background: rgba(0,0,0,0.7) !important;
-    color: var(--text-muted) !important;
-    font-size: 0.65rem !important;
-  }
-  .maplibregl-ctrl-attrib a { color: var(--text-muted) !important; }
-  .maplibregl-ctrl-group {
-    background: rgba(0,0,0,0.85) !important;
-    border: 1px solid var(--border-strong) !important;
-  }
-  .maplibregl-ctrl-group button {
-    background: transparent !important;
-    filter: invert(1);
   }
   .globe-center #globe {
     width: 100%; height: 580px;
@@ -950,7 +970,7 @@
   }
 </style>
 </head>
-<body>
+<body id="top">
 
 <!-- ================= TOP BAR ================= -->
 <div class="topbar">
@@ -983,12 +1003,12 @@
     </a>
     <nav class="primary">
       <ul>
-        <li><a href="#" class="active">الرئيسية</a></li>
-        <li><a href="#">سياسة</a></li>
-        <li><a href="#">اقتصاد</a></li>
-        <li><a href="#">رياضة</a></li>
-        <li><a href="#">مباشر</a></li>
-        <li><a href="#">المركز</a></li>
+        <li><a href="#top" class="active">الرئيسية</a></li>
+        <li><a href="#politics">سياسة</a></li>
+        <li><a href="#economy">اقتصاد</a></li>
+        <li><a href="#sports">رياضة</a></li>
+        <li><a href="#live">مباشر</a></li>
+        <li><a href="#center">المركز</a></li>
       </ul>
     </nav>
     <div class="header-actions">
@@ -1182,7 +1202,7 @@
 
 <!-- ================= LIVE CHANNELS ================= -->
 <div class="container">
-  <div class="section-head">
+  <div class="section-head" id="live" style="scroll-margin-top:90px;">
     <h2>قنوات مباشرة</h2>
     <a href="#" class="more">كل القنوات ←</a>
   </div>
@@ -1228,8 +1248,8 @@
 
 <!-- ================= 3-COLUMN GRID: SPORTS + ECONOMY + EXTRA ================= -->
 <div class="container">
-  <div class="section-head">
-    <h2>متابعة لحظية</h2>
+  <div class="section-head" id="sports" style="scroll-margin-top:90px;">
+    <h2>متابعة لحظية — رياضة واقتصاد</h2>
     <a href="#" class="more">المزيد ←</a>
   </div>
 
@@ -1243,8 +1263,8 @@
       </div>
       <div class="match">
         <div class="match-meta">
-          <span>الجولة ٢٢ · الدوري الممتاز</span>
-          <span class="match-status"><span class="live-dot"></span> الشوط الثاني · ٧٢'</span>
+          <span>قمة الدوري المصري · الجولة ٢٢</span>
+          <span class="match-status" style="color:#10b981;"><span class="live-dot" style="background:#10b981;"></span> انتهت المباراة</span>
         </div>
         <div class="teams">
           <div class="team">
@@ -1252,7 +1272,7 @@
             <div class="team-name">الأهلي</div>
           </div>
           <div class="score">
-            <span id="score-home">2</span><span class="score-divider">−</span><span id="score-away">1</span>
+            <span id="score-home">3</span><span class="score-divider">−</span><span id="score-away">0</span>
           </div>
           <div class="team">
             <div class="team-logo">ZAM</div>
@@ -1260,7 +1280,7 @@
           </div>
         </div>
         <div class="goal-alert" id="goal-alert">
-          <strong>هدف!</strong> الأهلي يضيف الثاني — تسديدة صاروخية من إمام عاشور (الدقيقة ٧١')
+          <strong>هدف ثالث!</strong> الأهلي يحسم القمة بثلاثية — أحمد عبد القادر (٨٧') · إمام عاشور (٦٢') · محمد شريف (١٨')
         </div>
       </div>
       <div style="padding:1rem 1.25rem; border-top:1px solid var(--border);">
@@ -1277,7 +1297,7 @@
       </div>
     </div>
 
-    <!-- ECONOMY: GOLD -->
+    <!-- ECONOMY: GOLD --><div id="economy" style="position:absolute;margin-top:-90px;"></div>
     <div class="panel">
       <div class="panel-head">
         <h3>أسعار الذهب — الصاغة</h3>
@@ -1350,7 +1370,7 @@
   </div>
 
   <!-- ================= POLITICS — USA / IRAN / ISRAEL ================= -->
-  <div class="section-head">
+  <div class="section-head" id="politics" style="scroll-margin-top:90px;">
     <h2>أخبار العالم — ساحة الصراع</h2>
     <a href="#" class="more">كل الأخبار الدولية ←</a>
   </div>
@@ -1422,7 +1442,7 @@
 <!-- ================= NCS FACEBOOK STRIP ================= -->
 <section class="ncs-section">
   <div class="container">
-    <div class="section-head" style="margin-top:0;">
+    <div class="section-head" id="center" style="margin-top:0; scroll-margin-top:90px;">
       <h2>من المركز · فيسبوك NCS</h2>
       <a href="#" class="more">صفحة المركز ←</a>
     </div>
@@ -1506,7 +1526,7 @@
 </div>
 
 <!-- ================= GLOBE.GL ================= -->
-<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
   // ============================================================
   // Helpers
@@ -1617,8 +1637,8 @@
     document.getElementById('gold-updated').textContent = 'الآن';
   }
 
-  setInterval(jitterFx, 12_000);
-  setInterval(jitterGold, 9_000);
+  setInterval(jitterFx, 7_000);
+  setInterval(jitterGold, 5_000);
 
   // ============================================================
   // "Just now" timestamps — rolling
@@ -1647,7 +1667,7 @@
     articleCount += Math.floor(Math.random() * 3) + 1;
     document.getElementById('article-count').textContent = `${ar(articleCount)} خبر اليوم`;
   }
-  setInterval(bumpArticleCount, 14_000);
+  setInterval(bumpArticleCount, 6_000);
 
   const breakingHeadlines = [
     { tag: 'سياسة', title: 'البيت الأبيض: لا مفاوضات قبل تعليق التخصيب', sources: 3 },
@@ -1674,8 +1694,8 @@
   }
   setTimeout(() => {
     insertFreshArticle();
-    setInterval(insertFreshArticle, 35_000);
-  }, 8_000);
+    setInterval(insertFreshArticle, 18_000);
+  }, 4_000);
 
   // ============================================================
   // Ticker — occasionally swap a headline
@@ -1686,269 +1706,185 @@
     span.textContent = breakingHeadlines[Math.floor(Math.random() * breakingHeadlines.length)].title;
     tickerContent.insertBefore(span, tickerContent.firstChild);
     if (tickerContent.children.length > 16) tickerContent.removeChild(tickerContent.lastChild);
-  }, 25_000);
+  }, 12_000);
 
   // ============================================================
-  // 2D MAP (MapLibre GL) + OpenSky Network real-time aircraft
-  // Free APIs: Carto dark-matter style + OpenSky anonymous endpoint
+  // 2D MAP (Leaflet) + OpenSky Network real-time aircraft
+  // Free + reliable: Carto dark raster tiles + OpenSky anonymous endpoint
   // ============================================================
-  const map = new maplibregl.Map({
-    container: 'map',
-    style: 'https://basemaps.cartocdn.com/gl/dark-matter-no-labels-gl-style/style.json',
-    center: [25, 25],
-    zoom: 1.6,
-    minZoom: 1,
-    maxZoom: 12,
-    attributionControl: { compact: true, customAttribution: 'NCS · OpenSky · Carto' },
-    renderWorldCopies: true,
-  });
-  map.addControl(new maplibregl.NavigationControl({ showCompass: false, visualizePitch: false }), 'top-right');
+  const map = L.map('map', {
+    worldCopyJump: true,
+    zoomControl: false,
+    attributionControl: true,
+    preferCanvas: true,
+    minZoom: 2,
+    maxZoom: 8,
+    maxBounds: [[-85, -540], [85, 540]],
+  }).setView([25, 25], 2);
 
-  // ----- SVG icons (data URLs) -----
-  const planeSvg = (color) => `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"><path fill="${color}" stroke="#000" stroke-width="0.6" stroke-linejoin="round" d="M12 2 L13.6 9.5 L22 11.5 L22 13.5 L13.6 13.5 L13 22 L11 22 L10.4 13.5 L2 13.5 L2 11.5 L10.4 9.5 Z"/></svg>`;
-  const shipSvg = (color) => `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="14" viewBox="0 0 24 16"><path fill="${color}" stroke="#000" stroke-width="0.6" d="M2 10 L22 10 L20 14 L4 14 Z M11 4 L13 4 L13 10 L11 10 Z"/></svg>`;
+  L.control.zoom({ position: 'topright' }).addTo(map);
 
-  function addSvgImage(name, svg) {
-    return new Promise(resolve => {
-      const img = new Image(24, 24);
-      img.crossOrigin = 'anonymous';
-      img.onload = () => { if (!map.hasImage(name)) map.addImage(name, img, { pixelRatio: 2 }); resolve(); };
-      img.onerror = () => resolve();
-      img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
-    });
+  // Carto Dark Matter raster tiles (no key, free, very reliable)
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; OpenStreetMap &copy; CARTO',
+    subdomains: 'abcd',
+    maxZoom: 19,
+    crossOrigin: true,
+  }).addTo(map);
+
+  // ----- Icon helpers (SVG inline via divIcon, supports rotation) -----
+  function planeIcon(color, heading) {
+    const html = `<div style="transform:rotate(${heading}deg);width:18px;height:18px;display:flex;align-items:center;justify-content:center;">
+      <svg width="18" height="18" viewBox="0 0 24 24"><path fill="${color}" stroke="#000" stroke-width="0.6" stroke-linejoin="round" d="M12 2 L13.6 9.5 L22 11.5 L22 13.5 L13.6 13.5 L13 22 L11 22 L10.4 13.5 L2 13.5 L2 11.5 L10.4 9.5 Z"/></svg>
+    </div>`;
+    return L.divIcon({ html, className: 'plane-icon', iconSize: [18, 18], iconAnchor: [9, 9] });
+  }
+  function shipIcon(color) {
+    const html = `<svg width="20" height="14" viewBox="0 0 24 16"><path fill="${color}" stroke="#000" stroke-width="0.6" d="M2 10 L22 10 L20 14 L4 14 Z M11 4 L13 4 L13 10 L11 10 Z"/></svg>`;
+    return L.divIcon({ html, className: 'ship-icon', iconSize: [20, 14], iconAnchor: [10, 7] });
   }
 
-  const emptyFC = () => ({ type: 'FeatureCollection', features: [] });
+  // ----- Naval chokepoints with pulsing red rings + labels -----
+  const chokepoints = [
+    [26.5,  56.5,  'مضيق هرمز'],
+    [30.0,  32.5,  'قناة السويس'],
+    [12.5,  43.5,  'باب المندب'],
+    [ 2.5, 101.5,  'مضيق ملقا'],
+    [24.5, 119.5,  'مضيق تايوان'],
+    [ 9.0, -79.5,  'قناة بنما'],
+    [41.0,  28.0,  'البوسفور'],
+    [35.9,  -5.5,  'جبل طارق'],
+  ];
+  for (const [lat, lng, name] of chokepoints) {
+    L.circleMarker([lat, lng], {
+      radius: 14, color: '#e11d2b', weight: 1.5,
+      fillColor: '#e11d2b', fillOpacity: 0.12,
+      className: 'choke-pulse',
+    }).bindTooltip(name, { permanent: false, direction: 'top', className: 'ncs-tooltip' }).addTo(map);
+    L.circleMarker([lat, lng], {
+      radius: 4, color: '#fff', weight: 1.5,
+      fillColor: '#e11d2b', fillOpacity: 1,
+    }).addTo(map);
+  }
 
-  // ----- Naval chokepoints (stable markers + labels) -----
-  const chokepointsFC = {
-    type: 'FeatureCollection',
-    features: [
-      { type: 'Feature', geometry: { type: 'Point', coordinates: [56.5, 26.5] }, properties: { label: 'مضيق هرمز' } },
-      { type: 'Feature', geometry: { type: 'Point', coordinates: [32.5, 30.0] }, properties: { label: 'قناة السويس' } },
-      { type: 'Feature', geometry: { type: 'Point', coordinates: [43.5, 12.5] }, properties: { label: 'باب المندب' } },
-      { type: 'Feature', geometry: { type: 'Point', coordinates: [101.5, 2.5] }, properties: { label: 'مضيق ملقا' } },
-      { type: 'Feature', geometry: { type: 'Point', coordinates: [119.5, 24.5] }, properties: { label: 'مضيق تايوان' } },
-      { type: 'Feature', geometry: { type: 'Point', coordinates: [-79.5, 9.0] }, properties: { label: 'قناة بنما' } },
-      { type: 'Feature', geometry: { type: 'Point', coordinates: [28.0, 41.0] }, properties: { label: 'البوسفور' } },
-      { type: 'Feature', geometry: { type: 'Point', coordinates: [-5.5, 35.9] }, properties: { label: 'جبل طارق' } },
-    ]
-  };
-
-  // ----- Mock ships at known maritime hotspots (no free real-time AIS) -----
-  function genShips() {
+  // ----- Ships at hotspots (mock — free real-time AIS isn't browser-friendly) -----
+  const shipLayer = L.layerGroup().addTo(map);
+  function refreshShips() {
+    shipLayer.clearLayers();
     const ports = [
-      // [lng, lat, kind]
-      [56.2, 26.5, 'tanker'], [51.0, 27.0, 'tanker'], [38.0, 25.0, 'tanker'],
-      [39.0, 21.5, 'tanker'], [43.5, 12.5, 'tanker'], [103.8, 1.3, 'tanker'],
-      [32.5, 30.0, 'tanker'], [-90.0, 25.5, 'tanker'], [-5.5, 35.0, 'tanker'],
-      [28.0, 41.0, 'tanker'], [48.0, 29.5, 'tanker'], [53.5, 24.5, 'tanker'],
-
-      [32.0, 31.0, 'cargo'], [14.0, 36.0, 'cargo'], [0.0, 50.0, 'cargo'],
-      [70.0, 22.0, 'cargo'], [130.0, 35.0, 'cargo'], [100.0, 6.0, 'cargo'],
-      [-118.0, 33.0, 'cargo'], [18.0, -34.0, 'cargo'], [-73.0, 40.0, 'cargo'],
-      [113.5, 22.0, 'cargo'], [-46.5, -23.5, 'cargo'], [2.0, 49.0, 'cargo'],
-
-      [32.5, 34.5, 'naval'], [34.0, 33.5, 'naval'], [56.2, 26.5, 'naval'],
-      [43.5, 12.5, 'naval'], [35.0, 25.0, 'naval'], [33.0, 44.5, 'naval'],
-      [19.0, 35.5, 'naval'], [117.0, 22.0, 'naval'], [122.0, 25.0, 'naval'],
-      [124.5, 37.5, 'naval'], [52.0, -5.0, 'naval'], [13.0, 55.0, 'naval'],
+      [56.2, 26.5, '#f97316'], [51.0, 27.0, '#f97316'], [38.0, 25.0, '#f97316'],
+      [39.0, 21.5, '#f97316'], [43.5, 12.5, '#f97316'], [103.8, 1.3, '#f97316'],
+      [32.5, 30.0, '#f97316'], [-90.0, 25.5, '#f97316'], [-5.5, 35.0, '#f97316'],
+      [28.0, 41.0, '#f97316'], [48.0, 29.5, '#f97316'], [53.5, 24.5, '#f97316'],
+      [32.0, 31.0, '#10b981'], [14.0, 36.0, '#10b981'], [0.0, 50.0, '#10b981'],
+      [70.0, 22.0, '#10b981'], [130.0, 35.0, '#10b981'], [100.0, 6.0, '#10b981'],
+      [-118.0, 33.0, '#10b981'], [18.0, -34.0, '#10b981'], [-73.0, 40.0, '#10b981'],
+      [113.5, 22.0, '#10b981'], [-46.5, -23.5, '#10b981'], [2.0, 49.0, '#10b981'],
+      [32.5, 34.5, '#06b6d4'], [34.0, 33.5, '#06b6d4'], [56.2, 26.5, '#06b6d4'],
+      [43.5, 12.5, '#06b6d4'], [35.0, 25.0, '#06b6d4'], [33.0, 44.5, '#06b6d4'],
+      [19.0, 35.5, '#06b6d4'], [117.0, 22.0, '#06b6d4'], [122.0, 25.0, '#06b6d4'],
+      [124.5, 37.5, '#06b6d4'], [52.0, -5.0, '#06b6d4'], [13.0, 55.0, '#06b6d4'],
     ];
-    const features = [];
-    const colorMap = { tanker: 'ship-tanker', cargo: 'ship-cargo', naval: 'ship-naval' };
-    for (const [lng, lat, kind] of ports) {
+    for (const [lng, lat, color] of ports) {
       const jl = (Math.random() - 0.5) * 4;
       const jL = (Math.random() - 0.5) * 4;
-      features.push({
-        type: 'Feature',
-        geometry: { type: 'Point', coordinates: [lng + jl, lat + jL] },
-        properties: { kind, icon: colorMap[kind] }
-      });
+      L.marker([lat + jL, lng + jl], { icon: shipIcon(color) }).addTo(shipLayer);
     }
-    return { type: 'FeatureCollection', features };
   }
+  refreshShips();
 
-  // ----- Military callsign detection (subset of worldmonitor patterns) -----
+  // ----- Military callsign filter (subset of worldmonitor patterns) -----
   function isMilitaryCallsign(cs) {
     if (!cs) return false;
     const c = cs.trim().toUpperCase();
     return /^(RCH|REACH|BOLT|VIPER|RAPTOR|DOOM|BONE|DEATH|KING|SHELL|TEAL|TOPCT|SAM|AF[12]|EXEC|GOLD|SNTRY|COBRA|RIVET|OLIVE|JAKE|DRAGN|NCHO|SHADOW|KNIFE|CSAR|NITE|PACK|DAGGER|DEMON|MOOSE|HERKY|HERC|ATLAS|EVAC|SPAR|IRON|HOMER|SCORE|TITAN|COMET|CASA|STEEL|DUKE|IAF|RAF|FAF|GAF|PLAAF|PLAN|VKS|NATO)/i.test(c);
   }
 
-  let lastFlightCount = 0;
+  // ----- Live aircraft layer + OpenSky fetch -----
+  const flightLayer = L.layerGroup().addTo(map);
 
   async function fetchFlights() {
     const indicator = document.getElementById('data-source');
+    if (indicator) indicator.innerHTML = '<span class="live-dot"></span> جاري التحديث…';
     try {
       const res = await fetch('https://opensky-network.org/api/states/all', { cache: 'no-store' });
       if (!res.ok) throw new Error('OpenSky HTTP ' + res.status);
       const data = await res.json();
       if (!data || !Array.isArray(data.states)) throw new Error('OpenSky empty');
 
-      const features = [];
-      let civCount = 0, milCount = 0;
+      flightLayer.clearLayers();
+      let civCount = 0, milCount = 0, drawn = 0;
       for (const s of data.states) {
-        if (s[5] === null || s[6] === null) continue; // no position
-        if (s[8] === true) continue;                  // on ground
+        if (s[5] === null || s[6] === null) continue;
+        if (s[8] === true) continue;
         const cs = (s[1] || '').trim();
         const isMil = isMilitaryCallsign(cs);
         if (isMil) milCount++; else civCount++;
-        if (features.length >= 1500) continue;        // perf cap
-        features.push({
-          type: 'Feature',
-          geometry: { type: 'Point', coordinates: [s[5], s[6]] },
-          properties: {
-            icao24: s[0],
-            callsign: cs || '—',
-            country: s[2] || '—',
-            altitude: s[7] ? Math.round(s[7]) : null,
-            velocity_kmh: s[9] ? Math.round(s[9] * 3.6) : null,
-            heading: s[10] || 0,
-            icon: isMil ? 'plane-mil' : 'plane-civ'
-          }
+        if (drawn >= 1200) continue;
+        drawn++;
+        const altFt = s[7] ? Math.round(s[7] * 3.281).toLocaleString('en-US') : '—';
+        const vKmh  = s[9] ? Math.round(s[9] * 3.6) : null;
+        const heading = s[10] || 0;
+        const m = L.marker([s[6], s[5]], {
+          icon: planeIcon(isMil ? '#ef4444' : '#fbbf24', heading),
+          riseOnHover: true,
         });
+        m.bindPopup(
+          `<div class="popup-cs">${cs || '—'}</div>` +
+          `<div class="popup-row"><span>الدولة</span><b>${s[2] || '—'}</b></div>` +
+          `<div class="popup-row"><span>الارتفاع</span><b>${altFt} قدم</b></div>` +
+          `<div class="popup-row"><span>السرعة</span><b>${vKmh ? vKmh + ' كم/س' : '—'}</b></div>` +
+          `<div class="popup-row"><span>الاتجاه</span><b>${Math.round(heading)}°</b></div>` +
+          (isMil ? `<div style="margin-top:0.4rem;color:#ef4444;font-weight:800;font-size:0.75rem;">⚠ طائرة عسكرية مرصودة</div>` : '')
+        );
+        m.addTo(flightLayer);
       }
-      if (map.getSource('flights')) {
-        map.getSource('flights').setData({ type: 'FeatureCollection', features });
-      }
-      lastFlightCount = features.length;
 
       const civEl = document.getElementById('stat-civ-flights');
       const milEl = document.getElementById('stat-mil-flights');
       if (civEl) civEl.textContent = civCount.toLocaleString('ar-EG');
       if (milEl) milEl.textContent = milCount.toLocaleString('ar-EG');
 
-      if (indicator) indicator.innerHTML = `<span class="live-dot" style="background:#10b981;box-shadow:0 0 0 0 rgba(16,185,129,0.5);"></span> OpenSky · ${features.length.toLocaleString('ar-EG')} طائرة`;
+      if (indicator) {
+        indicator.innerHTML = `<span class="live-dot" style="background:#10b981;"></span> OpenSky · ${drawn.toLocaleString('ar-EG')} طائرة الآن`;
+      }
     } catch (e) {
       console.warn('[NCS] OpenSky fetch failed:', e);
-      // Mock fallback so UI still shows something
-      if (lastFlightCount === 0 && map.getSource('flights')) {
-        const fakes = [];
-        for (let i = 0; i < 600; i++) {
-          const isMil = Math.random() < 0.04;
-          fakes.push({
-            type: 'Feature',
-            geometry: { type: 'Point', coordinates: [(Math.random()*360 - 180), (Math.random()*140 - 70)] },
-            properties: {
-              callsign: isMil ? ['BOLT41','RCH3142','SNTRY01','DOOM77','RAPTOR8'][i%5] : 'AAL' + (1000+i),
-              country: '—',
-              altitude: 9000 + Math.floor(Math.random()*4000),
-              velocity_kmh: 750 + Math.floor(Math.random()*200),
-              heading: Math.random()*360,
-              icon: isMil ? 'plane-mil' : 'plane-civ'
-            }
-          });
-        }
-        map.getSource('flights').setData({ type: 'FeatureCollection', features: fakes });
+      // Fallback: simulated planes
+      flightLayer.clearLayers();
+      for (let i = 0; i < 600; i++) {
+        const isMil = Math.random() < 0.04;
+        const lat = (Math.random() * 140) - 70;
+        const lng = (Math.random() * 360) - 180;
+        const heading = Math.random() * 360;
+        const cs = isMil
+          ? ['BOLT41','RCH3142','SNTRY01','DOOM77','RAPTOR8','VIPER33','IAF101','PLAAF77','VKS505'][i % 9]
+          : 'AAL' + (1000 + i);
+        const m = L.marker([lat, lng], {
+          icon: planeIcon(isMil ? '#ef4444' : '#fbbf24', heading),
+          riseOnHover: true,
+        });
+        m.bindPopup(`<div class="popup-cs">${cs}</div><div class="popup-row"><span>وضع</span><b>محاكاة</b></div>`);
+        m.addTo(flightLayer);
       }
       if (indicator) indicator.innerHTML = '<span class="live-dot"></span> محاكاة (OpenSky غير متاح)';
     }
   }
 
-  map.on('load', async () => {
-    await Promise.all([
-      addSvgImage('plane-civ',  planeSvg('#fbbf24')),
-      addSvgImage('plane-mil',  planeSvg('#ef4444')),
-      addSvgImage('ship-cargo', shipSvg('#10b981')),
-      addSvgImage('ship-tanker',shipSvg('#f97316')),
-      addSvgImage('ship-naval', shipSvg('#06b6d4')),
-    ]);
+  fetchFlights();
+  setInterval(fetchFlights, 60_000);
+  setInterval(refreshShips, 15_000);
 
-    // Chokepoint pulse layer (red glow rings)
-    map.addSource('chokepoints', { type: 'geojson', data: chokepointsFC });
-    map.addLayer({
-      id: 'chokepoints-glow',
-      type: 'circle',
-      source: 'chokepoints',
-      paint: {
-        'circle-radius': ['interpolate', ['linear'], ['zoom'], 1, 12, 6, 36],
-        'circle-color': '#e11d2b',
-        'circle-opacity': 0.10,
-        'circle-stroke-color': '#e11d2b',
-        'circle-stroke-width': 1.2,
-        'circle-stroke-opacity': 0.85,
-      }
-    });
+  // Manual refresh — clicking the data pill triggers a new OpenSky fetch
+  const dsPill = document.getElementById('data-source');
+  if (dsPill) {
+    dsPill.style.cursor = 'pointer';
+    dsPill.style.pointerEvents = 'auto';
+    dsPill.title = 'اضغط للتحديث الفوري';
+    dsPill.addEventListener('click', fetchFlights);
+  }
 
-    // Ships
-    map.addSource('ships', { type: 'geojson', data: genShips() });
-    map.addLayer({
-      id: 'ships',
-      type: 'symbol',
-      source: 'ships',
-      layout: {
-        'icon-image': ['get', 'icon'],
-        'icon-allow-overlap': true,
-        'icon-ignore-placement': true,
-        'icon-size': ['interpolate', ['linear'], ['zoom'], 1, 0.45, 6, 0.85],
-      }
-    });
-
-    // Flights
-    map.addSource('flights', { type: 'geojson', data: emptyFC() });
-    map.addLayer({
-      id: 'flights-civ',
-      type: 'symbol',
-      source: 'flights',
-      filter: ['==', ['get', 'icon'], 'plane-civ'],
-      layout: {
-        'icon-image': 'plane-civ',
-        'icon-rotate': ['get', 'heading'],
-        'icon-allow-overlap': true,
-        'icon-ignore-placement': true,
-        'icon-rotation-alignment': 'map',
-        'icon-size': ['interpolate', ['linear'], ['zoom'], 1, 0.4, 6, 0.85],
-      }
-    });
-    map.addLayer({
-      id: 'flights-mil',
-      type: 'symbol',
-      source: 'flights',
-      filter: ['==', ['get', 'icon'], 'plane-mil'],
-      layout: {
-        'icon-image': 'plane-mil',
-        'icon-rotate': ['get', 'heading'],
-        'icon-allow-overlap': true,
-        'icon-ignore-placement': true,
-        'icon-rotation-alignment': 'map',
-        'icon-size': ['interpolate', ['linear'], ['zoom'], 1, 0.55, 6, 1.1],
-      }
-    });
-
-    // Click popup for aircraft
-    const popup = new maplibregl.Popup({ closeButton: true, closeOnClick: true, className: 'ncs-popup', maxWidth: '280px' });
-    function onFeatureClick(e) {
-      const f = e.features && e.features[0];
-      if (!f) return;
-      const p = f.properties;
-      const altFt = p.altitude ? Math.round(p.altitude * 3.281).toLocaleString('en-US') : '—';
-      popup.setLngLat(f.geometry.coordinates).setHTML(`
-        <div class="popup-cs">${p.callsign || '—'}</div>
-        <div class="popup-row"><span>الدولة</span><b>${p.country || '—'}</b></div>
-        <div class="popup-row"><span>الارتفاع</span><b>${altFt} قدم</b></div>
-        <div class="popup-row"><span>السرعة</span><b>${p.velocity_kmh ? p.velocity_kmh + ' كم/س' : '—'}</b></div>
-        <div class="popup-row"><span>الاتجاه</span><b>${Math.round(p.heading)}°</b></div>
-      `).addTo(map);
-    }
-    map.on('click', 'flights-civ', onFeatureClick);
-    map.on('click', 'flights-mil', onFeatureClick);
-    ['flights-civ', 'flights-mil'].forEach(id => {
-      map.on('mouseenter', id, () => map.getCanvas().style.cursor = 'pointer');
-      map.on('mouseleave', id, () => map.getCanvas().style.cursor = '');
-    });
-
-    // Initial fetch + interval (60s = OpenSky-friendly)
-    fetchFlights();
-    setInterval(fetchFlights, 60_000);
-
-    // Slow ship drift
-    setInterval(() => {
-      const fc = genShips();
-      if (map.getSource('ships')) map.getSource('ships').setData(fc);
-    }, 15_000);
-  });
-
-  // ============================================================
+// ============================================================
   // Live tracked assets feed (realistic military callsigns)
   // ============================================================
   const callsignPool = [
