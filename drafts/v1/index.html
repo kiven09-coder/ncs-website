@@ -1031,6 +1031,38 @@
   /* === Animation === */
   @keyframes spin { to { transform: rotate(360deg); } }
   
+
+  /* === v3: Hover/focus on linked cards === */
+  .hero-link, .country-card, .channel, .news-card, .fb-post {
+    text-decoration: none; color: inherit; cursor: pointer;
+  }
+  .hero-link, .channel, .news-card, .fb-post { transition: transform 220ms var(--ease-out); }
+  .news-card:hover, .channel:hover, .hero-link:hover, .fb-post:hover { transform: translateY(-3px); }
+
+  /* === Sports match buttons === */
+  .match-link-btn {
+    flex: 1; text-align: center;
+    padding: 0.55rem 0.85rem;
+    font-size: 0.78rem; font-weight: 800;
+    background: transparent; border: 1px solid var(--border-strong);
+    color: var(--text-muted); border-radius: 4px;
+    transition: all 200ms;
+    text-decoration: none;
+  }
+  .match-link-btn:hover { color: var(--text); border-color: var(--red); background: rgba(225,29,43,0.1); }
+  .match-link-btn.primary {
+    background: var(--red); color: #fff; border-color: var(--red);
+  }
+  .match-link-btn.primary:hover { background: #b91c1c; border-color: #b91c1c; }
+
+  /* === Panel flash on data update === */
+  @keyframes panel-update-flash {
+    0%   { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
+    50%  { box-shadow: 0 0 0 4px rgba(16, 185, 129, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+  }
+  .panel.flash { animation: panel-update-flash 1100ms ease-out; }
+
   /* ============================================================
      RESPONSIVE
      ============================================================ */
@@ -1070,11 +1102,11 @@
     <div style="display:flex; gap:0.85rem; align-items:center;">
       <button class="refresh-btn" id="refresh-btn" title="تحديث الآن">
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
-        تحديث
+        <span data-i18n="ui.refresh">تحديث</span>
       </button>
       <div class="lang-toggle">
-        <button class="active">عربي</button>
-        <button>EN</button>
+        <button class="active" data-lang="ar">عربي</button>
+        <button data-lang="en">EN</button>
       </div>
     </div>
   </div>
@@ -1089,12 +1121,12 @@
     </a>
     <nav class="primary">
       <ul>
-        <li><a href="#top" class="active">الرئيسية</a></li>
-        <li><a href="#politics">سياسة</a></li>
-        <li><a href="#economy">اقتصاد</a></li>
-        <li><a href="#sports">رياضة</a></li>
-        <li><a href="#live">مباشر</a></li>
-        <li><a href="#center">المركز</a></li>
+        <li><a href="#top" class="active" data-i18n="nav.home">الرئيسية</a></li>
+        <li><a href="#politics" data-i18n="nav.politics">سياسة</a></li>
+        <li><a href="#economy" data-i18n="nav.economy">اقتصاد</a></li>
+        <li><a href="#sports" data-i18n="nav.sports">رياضة</a></li>
+        <li><a href="#live" data-i18n="nav.live">مباشر</a></li>
+        <li><a href="#center" data-i18n="nav.center">المركز</a></li>
       </ul>
     </nav>
     <div class="header-actions">
@@ -1261,7 +1293,7 @@
 <!-- ================= HERO ================= -->
 <div class="container">
   <section class="hero">
-    <article class="hero-main">
+    <a href="https://www.reuters.com/world/middle-east/" target="_blank" rel="noopener" class="hero-main hero-link">
       <div class="hero-content">
         <span class="tag">عاجل · سياسة دولية</span>
         <h1>تصاعد غير مسبوق في التوتر بين واشنطن وطهران بعد إعلان عقوبات نووية جديدة</h1>
@@ -1272,25 +1304,25 @@
           <span>رويترز · BBC · الجزيرة · فرانس ٢٤</span>
         </div>
       </div>
-    </article>
+    </a>
 
     <aside class="hero-side">
-      <div class="card" style="background-image:url('https://picsum.photos/seed/ncs-side1/600/360'); background-size:cover; background-position:center; position:relative;">
+      <a href="https://www.cbe.org.eg/ar/Pages/default.aspx" target="_blank" rel="noopener" class="card hero-link" style="background-image:url('https://picsum.photos/seed/ncs-side1/600/360'); background-size:cover; background-position:center; position:relative; display:block;">
         <div style="position:absolute; inset:0; background:linear-gradient(0deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 60%, rgba(0,0,0,0.2) 100%);"></div>
         <div style="position:relative; z-index:2; display:flex; flex-direction:column; justify-content:flex-end; height:100%; min-height:170px;">
           <span class="tag">اقتصاد</span>
           <h3>المركزي يثبّت الفائدة... وقفزة تاريخية للذهب فى الصاغة</h3>
           <span class="meta">منذ ساعة · مؤكّد من ٣ مصادر</span>
         </div>
-      </div>
-      <div class="card" style="background-image:url('https://picsum.photos/seed/ncs-side2/600/360'); background-size:cover; background-position:center; position:relative;">
+      </a>
+      <a href="https://www.filgoal.com/" target="_blank" rel="noopener" class="card hero-link" style="background-image:url('https://picsum.photos/seed/ncs-side2/600/360'); background-size:cover; background-position:center; position:relative;">
         <div style="position:absolute; inset:0; background:linear-gradient(0deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 60%, rgba(0,0,0,0.2) 100%);"></div>
         <div style="position:relative; z-index:2; display:flex; flex-direction:column; justify-content:flex-end; height:100%; min-height:170px;">
           <span class="tag">رياضة</span>
           <h3>محمد صلاح يقود ليفربول لتأهل دراماتيكي في دوري الأبطال</h3>
           <span class="meta">منذ ٣٥ دقيقة · مؤكّد من مصدرين</span>
         </div>
-      </div>
+      </a>
     </aside>
   </section>
 </div>
@@ -1302,42 +1334,30 @@
     <a href="#" class="more">كل القنوات ←</a>
   </div>
   <div class="channels">
-    <div class="channel">
-      <div class="channel-thumb" style="background-image:linear-gradient(135deg,#1a3a52,#0a1f30);"></div>
+    <a href="https://www.aljazeera.net/live" target="_blank" rel="noopener" class="channel" style="display:block;color:inherit;text-decoration:none;"><div class="channel-thumb" style="background-image:linear-gradient(135deg,#1a3a52,#0a1f30);"></div>
       <div class="live-badge"><span class="live-dot"></span> مباشر</div>
       <div class="viewers">12.4K</div>
-      <div class="channel-name">الجزيرة مباشر</div>
-    </div>
-    <div class="channel">
-      <div class="channel-thumb" style="background-image:linear-gradient(135deg,#7c1d1d,#3f0a0a);"></div>
+      <div class="channel-name">الجزيرة مباشر</div></a>
+    <a href="https://www.bbc.com/arabic/live/c41dz3vym2nt" target="_blank" rel="noopener" class="channel" style="display:block;color:inherit;text-decoration:none;"><div class="channel-thumb" style="background-image:linear-gradient(135deg,#7c1d1d,#3f0a0a);"></div>
       <div class="live-badge"><span class="live-dot"></span> مباشر</div>
       <div class="viewers">8.7K</div>
-      <div class="channel-name">BBC Arabic</div>
-    </div>
-    <div class="channel">
-      <div class="channel-thumb" style="background-image:linear-gradient(135deg,#0c4a6e,#082f49);"></div>
+      <div class="channel-name">BBC Arabic</div></a>
+    <a href="https://www.alarabiya.net/live" target="_blank" rel="noopener" class="channel" style="display:block;color:inherit;text-decoration:none;"><div class="channel-thumb" style="background-image:linear-gradient(135deg,#0c4a6e,#082f49);"></div>
       <div class="live-badge"><span class="live-dot"></span> مباشر</div>
       <div class="viewers">5.3K</div>
-      <div class="channel-name">العربية الحدث</div>
-    </div>
-    <div class="channel">
-      <div class="channel-thumb" style="background-image:linear-gradient(135deg,#1f2937,#0f172a);"></div>
+      <div class="channel-name">العربية الحدث</div></a>
+    <a href="https://www.skynewsarabia.com/live/" target="_blank" rel="noopener" class="channel" style="display:block;color:inherit;text-decoration:none;"><div class="channel-thumb" style="background-image:linear-gradient(135deg,#1f2937,#0f172a);"></div>
       <div class="live-badge"><span class="live-dot"></span> مباشر</div>
       <div class="viewers">3.9K</div>
-      <div class="channel-name">Sky News عربية</div>
-    </div>
-    <div class="channel">
-      <div class="channel-thumb" style="background-image:linear-gradient(135deg,#581c87,#2e1065);"></div>
+      <div class="channel-name">Sky News عربية</div></a>
+    <a href="https://www.france24.com/ar/البث-المباشر/" target="_blank" rel="noopener" class="channel" style="display:block;color:inherit;text-decoration:none;"><div class="channel-thumb" style="background-image:linear-gradient(135deg,#581c87,#2e1065);"></div>
       <div class="live-badge"><span class="live-dot"></span> مباشر</div>
       <div class="viewers">2.1K</div>
-      <div class="channel-name">France 24 عربية</div>
-    </div>
-    <div class="channel">
-      <div class="channel-thumb" style="background-image:linear-gradient(135deg,#78350f,#451a03);"></div>
+      <div class="channel-name">France 24 عربية</div></a>
+    <a href="https://www.dw.com/ar/live" target="_blank" rel="noopener" class="channel" style="display:block;color:inherit;text-decoration:none;"><div class="channel-thumb" style="background-image:linear-gradient(135deg,#78350f,#451a03);"></div>
       <div class="live-badge"><span class="live-dot"></span> مباشر</div>
       <div class="viewers">1.8K</div>
-      <div class="channel-name">DW عربية</div>
-    </div>
+      <div class="channel-name">DW عربية</div></a>
   </div>
 </div>
 
@@ -1358,7 +1378,7 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
         </button>
       </div>
-      <div class="match">
+      <div class="match" id="match-widget">
         <div class="match-meta">
           <span>قمة الدوري المصري · الجولة ٢٢</span>
           <span class="match-status" style="color:#10b981;"><span class="live-dot" style="background:#10b981;"></span> انتهت المباراة</span>
@@ -1378,6 +1398,10 @@
         </div>
         <div class="goal-alert" id="goal-alert">
           <strong>هدف ثالث!</strong> الأهلي يحسم القمة بثلاثية — أحمد عبد القادر (٨٧') · إمام عاشور (٦٢') · محمد شريف (١٨')
+        </div>
+        <div style="display:flex; gap:0.5rem; padding: 0 1.25rem 1rem;">
+          <a href="https://www.yallakora.com/match-center/" target="_blank" rel="noopener" class="match-link-btn primary">📋 تفاصيل المباراة</a>
+          <a href="https://www.youtube.com/results?search_query=ahly+zamalek+highlights" target="_blank" rel="noopener" class="match-link-btn">🎬 شاهد الأهداف</a>
         </div>
       </div>
       <div style="padding:1rem 1.25rem; border-top:1px solid var(--border);">
@@ -1483,7 +1507,7 @@
   </div>
 
   <div class="politics-grid">
-    <div class="country-card" style="--country-color:#3b82f6;">
+    <a href="https://www.aljazeera.net/news/category/usa" target="_blank" rel="noopener" class="country-card" style="--country-color:#3b82f6; display:block;">
       <div class="country-flag">USA · الولايات المتحدة</div>
       <h4>الكونغرس يقرّ ميزانية دفاعية بقيمة ٨٨٠ مليار دولار</h4>
       <p>التصويت تم بأغلبية ٣١٢ صوتاً مقابل ١٢٠، مع زيادة ٣٪ في الإنفاق العسكري وحزمة دعم جديدة لإسرائيل وأوكرانيا.</p>
@@ -1491,8 +1515,8 @@
         <span>منذ ٤٥ دقيقة</span>
         <span class="verified">٣ مصادر</span>
       </div>
-    </div>
-    <div class="country-card" style="--country-color:#10b981;">
+    </a>
+    <a href="https://www.aljazeera.net/news/category/iran" target="_blank" rel="noopener" class="country-card" style="--country-color:#10b981; display:block;">
       <div class="country-flag">IRAN · إيران</div>
       <h4>طهران: لن نتراجع عن التخصيب وسنردّ على أي عقوبات جديدة</h4>
       <p>المرشد الأعلى وصف العقوبات الأمريكية بـ"العدائية" وأكّد أن البرنامج النووي السلمي سيستمر، مع تلويح بتعليق التعاون مع الوكالة.</p>
@@ -1500,8 +1524,8 @@
         <span>منذ ساعة</span>
         <span class="verified">٤ مصادر</span>
       </div>
-    </div>
-    <div class="country-card" style="--country-color:#e11d2b;">
+    </a>
+    <a href="https://www.aljazeera.net/news/category/israel" target="_blank" rel="noopener" class="country-card" style="--country-color:#e11d2b; display:block;">
       <div class="country-flag">ISRAEL · إسرائيل</div>
       <h4>غارات على جنوب لبنان رداً على ٢٠ صاروخاً سقطت في الجليل</h4>
       <p>الجيش الإسرائيلي أعلن استهداف ٤٠ موقعاً لحزب الله، فيما أكّد الأخير ردّاً وشيكاً على ما وصفه بـ"الاعتداء الجبان".</p>
@@ -1509,7 +1533,7 @@
         <span>منذ ٢٠ دقيقة</span>
         <span class="verified">٥ مصادر</span>
       </div>
-    </div>
+    </a>
   </div>
 
   <!-- ================= NEWS GRID ================= -->
@@ -1519,30 +1543,30 @@
   </div>
 
   <div class="news-grid">
-    <article class="news-card">
+    <a href="https://www.almasryalyoum.com/" target="_blank" rel="noopener" class="news-card" style="display:block;color:inherit;text-decoration:none;">
       <div class="news-thumb" style="background-image:url('https://picsum.photos/seed/news1/400/300');"></div>
       <span class="tag">اقتصاد</span>
       <h4>قمة استثمارية مرتقبة بين القاهرة والرياض الأسبوع المقبل</h4>
       <div class="meta"><span>منذ ساعتين</span><span>٣ مصادر</span></div>
-    </article>
-    <article class="news-card">
+    </a>
+    <a href="https://blog.google/technology/ai/" target="_blank" rel="noopener" class="news-card" style="display:block;color:inherit;text-decoration:none;">
       <div class="news-thumb" style="background-image:url('https://picsum.photos/seed/news2/400/300');"></div>
       <span class="tag">تكنولوجيا</span>
       <h4>إطلاق Gemini 3.0 من جوجل بقدرات تفوق GPT-5 في الاختبارات</h4>
       <div class="meta"><span>منذ ٣ ساعات</span><span>٢ مصادر</span></div>
-    </article>
-    <article class="news-card">
+    </a>
+    <a href="https://www.aljazeera.net/" target="_blank" rel="noopener" class="news-card" style="display:block;color:inherit;text-decoration:none;">
       <div class="news-thumb" style="background-image:url('https://picsum.photos/seed/news3/400/300');"></div>
       <span class="tag">صحة</span>
       <h4>دواء جديد للسكري يتجاوز نتائج Ozempic بـ ٣٠٪ في تجربة سريرية</h4>
       <div class="meta"><span>منذ ٤ ساعات</span><span>٤ مصادر</span></div>
-    </article>
-    <article class="news-card">
+    </a>
+    <a href="https://www.cairofilmfestival.org/" target="_blank" rel="noopener" class="news-card" style="display:block;color:inherit;text-decoration:none;">
       <div class="news-thumb" style="background-image:url('https://picsum.photos/seed/news4/400/300');"></div>
       <span class="tag">ثقافة</span>
       <h4>مهرجان القاهرة السينمائي يفتح باب التسجيل لـ ٢٠٢٦</h4>
       <div class="meta"><span>منذ ٥ ساعات</span><span>٢ مصادر</span></div>
-    </article>
+    </a>
   </div>
 </div>
 
@@ -1554,24 +1578,21 @@
       <a href="#" class="more">صفحة المركز ←</a>
     </div>
     <div class="ncs-grid">
-      <div class="fb-post">
-        <span class="fb-icon">f</span>
+      <a href="https://www.facebook.com/" target="_blank" rel="noopener" class="fb-post" style="display:block;color:inherit;text-decoration:none;"><span class="fb-icon">f</span>
         <span class="tag outline" style="margin-top:0.5rem;">دراسة</span>
         <p>أصدر المركز اليوم تقريراً بعنوان "آفاق العلاقات المصرية-الخليجية ٢٠٢٦" ويتناول التحولات الاقتصادية والسياسية في ضوء أزمة البحر الأحمر.</p>
         <div class="meta">منذ ساعتين · ١٢٤ تفاعل</div>
-      </div>
-      <div class="fb-post">
-        <span class="fb-icon">f</span>
+      </a>
+      <a href="https://www.facebook.com/" target="_blank" rel="noopener" class="fb-post" style="display:block;color:inherit;text-decoration:none;"><span class="fb-icon">f</span>
         <span class="tag outline" style="margin-top:0.5rem;">ندوة</span>
         <p>غداً ندوة على الزووم بعنوان "حرب أوكرانيا في عامها الرابع" بحضور الدكتور أحمد فؤاد والباحث Mark Andrews. التسجيل عبر الموقع.</p>
         <div class="meta">منذ ٤ ساعات · ٨٧ تفاعل</div>
-      </div>
-      <div class="fb-post">
-        <span class="fb-icon">f</span>
+      </a>
+      <a href="https://www.facebook.com/" target="_blank" rel="noopener" class="fb-post" style="display:block;color:inherit;text-decoration:none;"><span class="fb-icon">f</span>
         <span class="tag outline" style="margin-top:0.5rem;">إعلان</span>
         <p>المركز يعلن عن منحة دراسية للباحثين الشباب في تخصصات العلوم السياسية والاقتصاد. التقديم متاح حتى ١٥ مايو.</p>
         <div class="meta">منذ يوم · ٥٤٢ تفاعل</div>
-      </div>
+      </a>
     </div>
   </div>
 </section>
@@ -1816,30 +1837,33 @@
   }, 12_000);
 
   // ============================================================
-  // 2D MAP (Leaflet) + OpenSky Network real-time aircraft
-  // Free + reliable: Carto dark raster tiles + OpenSky anonymous endpoint
+  // 2D MAP (Leaflet) — empty by default; user toggles layers via chips
+  // Real-time aircraft: OpenSky Network (free, anonymous)
   // ============================================================
   const map = L.map('map', {
-    worldCopyJump: true,
+    worldCopyJump: false,
     zoomControl: false,
     attributionControl: true,
     preferCanvas: true,
     minZoom: 2,
     maxZoom: 8,
-    maxBounds: [[-85, -540], [85, 540]],
-  }).setView([25, 25], 2);
+    maxBounds: [[-85, -180], [85, 180]],
+    maxBoundsViscosity: 1.0,
+  }).setView([20, 25], 2);
 
   L.control.zoom({ position: 'topright' }).addTo(map);
 
-  // Carto Dark Matter raster tiles (no key, free, very reliable)
   L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; OpenStreetMap &copy; CARTO',
     subdomains: 'abcd',
     maxZoom: 19,
+    minZoom: 2,
+    noWrap: true,
+    bounds: [[-85, -180], [85, 180]],
     crossOrigin: true,
   }).addTo(map);
 
-  // ----- Icon helpers (SVG inline via divIcon, supports rotation) -----
+  // ----- Icon helpers -----
   function planeIcon(color, heading) {
     const html = `<div style="transform:rotate(${heading}deg);width:18px;height:18px;display:flex;align-items:center;justify-content:center;">
       <svg width="18" height="18" viewBox="0 0 24 24"><path fill="${color}" stroke="#000" stroke-width="0.6" stroke-linejoin="round" d="M12 2 L13.6 9.5 L22 11.5 L22 13.5 L13.6 13.5 L13 22 L11 22 L10.4 13.5 L2 13.5 L2 11.5 L10.4 9.5 Z"/></svg>
@@ -1851,8 +1875,29 @@
     return L.divIcon({ html, className: 'ship-icon', iconSize: [20, 14], iconAnchor: [10, 7] });
   }
 
-  // ----- Naval chokepoints with pulsing red rings + labels -----
-  const chokepoints = [
+  // ----- Layer groups (none added to map yet — empty by default) -----
+  const mapLayers = {
+    civ:    L.layerGroup(),
+    mil:    L.layerGroup(),
+    cargo:  L.layerGroup(),
+    tanker: L.layerGroup(),
+    naval:  L.layerGroup(),
+    choke:  L.layerGroup(),
+  };
+  const activeLayers = new Set();
+
+  // ----- Chokepoints (with rich popups) -----
+  const chokepointInfo = {
+    'مضيق هرمز':   { desc: 'بين الخليج العربي وخليج عمان. ٣٠٪ من تجارة النفط البحرية العالمية.', width: '٣٩ كم', daily: '٢١ مليون برميل/يوم', risk: 'مرتفع' },
+    'قناة السويس': { desc: 'تربط البحر الأبيض المتوسط بالبحر الأحمر — أهم ممر بين أوروبا وآسيا.', width: '٢٠٥م × ٢٤م', daily: '~٥٠ سفينة/يوم · ١٢٪ من التجارة', risk: 'مستقر' },
+    'باب المندب': { desc: 'بين البحر الأحمر وخليج عدن. مدخل قناة السويس الجنوبي.', width: '٢٩ كم', daily: '٦.٢ مليون برميل/يوم', risk: 'مرتفع' },
+    'مضيق ملقا':   { desc: 'بين الملايو وسومطرة — أهم ممر شحن في آسيا.', width: '٢.٧ كم', daily: '٨٤ ألف سفينة/سنة', risk: 'مستقر' },
+    'مضيق تايوان': { desc: 'بين تايوان والصين — أكثر نقاط التوتر العسكري في الباسيفيك.', width: '١٣٠–٢٢٠ كم', daily: '٤٠٪ من تجارة الحاويات', risk: 'مرتفع' },
+    'قناة بنما':   { desc: 'تربط الأطلسي بالباسيفيك — ممر التجارة الأمريكية.', width: '٨٢ كم', daily: '١٣ ألف سفينة/سنة', risk: 'متوسط' },
+    'البوسفور':   { desc: 'بين البحر الأسود ومرمرة — ممر تركيا الاستراتيجي.', width: '٧٠٠م', daily: '٤٨ ألف سفينة/سنة', risk: 'متوسط' },
+    'جبل طارق':   { desc: 'بين إسبانيا والمغرب — مدخل المتوسط من الأطلسي.', width: '١٤ كم', daily: '١٠٠ ألف سفينة/سنة', risk: 'مستقر' },
+  };
+  const chokeCoords = [
     [26.5,  56.5,  'مضيق هرمز'],
     [30.0,  32.5,  'قناة السويس'],
     [12.5,  43.5,  'باب المندب'],
@@ -1862,76 +1907,92 @@
     [41.0,  28.0,  'البوسفور'],
     [35.9,  -5.5,  'جبل طارق'],
   ];
-  for (const [lat, lng, name] of chokepoints) {
-    L.circleMarker([lat, lng], {
+  for (const [lat, lng, name] of chokeCoords) {
+    const info = chokepointInfo[name] || {};
+    const ring = L.circleMarker([lat, lng], {
       radius: 14, color: '#e11d2b', weight: 1.5,
       fillColor: '#e11d2b', fillOpacity: 0.12,
-      className: 'choke-pulse',
-    }).bindTooltip(name, { permanent: false, direction: 'top', className: 'ncs-tooltip' }).addTo(map);
-    L.circleMarker([lat, lng], {
+    });
+    const dot = L.circleMarker([lat, lng], {
       radius: 4, color: '#fff', weight: 1.5,
       fillColor: '#e11d2b', fillOpacity: 1,
-    }).addTo(map);
+    });
+    const popupHtml =
+      `<div class="popup-cs">${name}</div>` +
+      `<div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:0.5rem;line-height:1.6;">${info.desc || ''}</div>` +
+      `<div class="popup-row"><span>العرض</span><b>${info.width || '—'}</b></div>` +
+      `<div class="popup-row"><span>الحركة</span><b>${info.daily || '—'}</b></div>` +
+      `<div class="popup-row"><span>المخاطر</span><b style="color:${info.risk==='مرتفع'?'#ef4444':info.risk==='متوسط'?'#f59e0b':'#10b981'};">${info.risk || '—'}</b></div>`;
+    ring.bindPopup(popupHtml, { className: 'ncs-popup', maxWidth: 280 });
+    dot.bindPopup(popupHtml, { className: 'ncs-popup', maxWidth: 280 });
+    mapLayers.choke.addLayer(ring);
+    mapLayers.choke.addLayer(dot);
   }
 
-  // ----- Ships at hotspots (mock — free real-time AIS isn't browser-friendly) -----
-  const shipLayer = L.layerGroup().addTo(map);
-  function refreshShips() {
-    shipLayer.clearLayers();
-    const ports = [
-      [56.2, 26.5, '#f97316'], [51.0, 27.0, '#f97316'], [38.0, 25.0, '#f97316'],
-      [39.0, 21.5, '#f97316'], [43.5, 12.5, '#f97316'], [103.8, 1.3, '#f97316'],
-      [32.5, 30.0, '#f97316'], [-90.0, 25.5, '#f97316'], [-5.5, 35.0, '#f97316'],
-      [28.0, 41.0, '#f97316'], [48.0, 29.5, '#f97316'], [53.5, 24.5, '#f97316'],
-      [32.0, 31.0, '#10b981'], [14.0, 36.0, '#10b981'], [0.0, 50.0, '#10b981'],
-      [70.0, 22.0, '#10b981'], [130.0, 35.0, '#10b981'], [100.0, 6.0, '#10b981'],
-      [-118.0, 33.0, '#10b981'], [18.0, -34.0, '#10b981'], [-73.0, 40.0, '#10b981'],
-      [113.5, 22.0, '#10b981'], [-46.5, -23.5, '#10b981'], [2.0, 49.0, '#10b981'],
-      [32.5, 34.5, '#06b6d4'], [34.0, 33.5, '#06b6d4'], [56.2, 26.5, '#06b6d4'],
-      [43.5, 12.5, '#06b6d4'], [35.0, 25.0, '#06b6d4'], [33.0, 44.5, '#06b6d4'],
-      [19.0, 35.5, '#06b6d4'], [117.0, 22.0, '#06b6d4'], [122.0, 25.0, '#06b6d4'],
-      [124.5, 37.5, '#06b6d4'], [52.0, -5.0, '#06b6d4'], [13.0, 55.0, '#06b6d4'],
-    ];
-    for (const [lng, lat, color] of ports) {
-      const jl = (Math.random() - 0.5) * 4;
-      const jL = (Math.random() - 0.5) * 4;
-      const kindMap = { '#f97316': 'ناقلة بترول', '#10b981': 'سفينة شحن حاويات', '#06b6d4': 'قطعة بحرية حربية' };
-      const namesMap = {
-        '#f97316': ['M/T Crimson Star','M/T Sea Voyager','M/T Atlantic Pride','M/T Gulf Falcon','M/T Persian Pearl'],
-        '#10b981': ['M/V Pacific Voyager','M/V Cosco Asia','M/V Hapag Express','M/V Ever Forward','M/V MSC Aurora'],
-        '#06b6d4': ['USS Eisenhower','HMS Queen Elizabeth','FS Charles De Gaulle','Liaoning','Admiral Kuznetsov']
-      };
-      const routesMap = {
-        '#f97316': ['الخليج → روتردام','رأس تنورة → سنغافورة','جدة → السويس','عُمان → الصين','الكويت → كوريا'],
-        '#10b981': ['شنغهاي → دبي','هامبورغ → نيويورك','سنغافورة → جنوة','بوسان → لوس أنجلوس','هونج كونج → السويس'],
-        '#06b6d4': ['الأسطول الخامس · البحرين','المتوسط الشرقي · باتروس','المحيط الهندي','الباسيفيك الغربي','البحر الأسود']
-      };
-      const kind = kindMap[color] || 'سفينة';
-      const name = (namesMap[color] || ['—'])[Math.floor(Math.random() * 5)];
-      const route = (routesMap[color] || ['—'])[Math.floor(Math.random() * 5)];
-      const speed = (8 + Math.random() * 14).toFixed(1);
-      L.marker([lat + jL, lng + jl], { icon: shipIcon(color) })
-        .bindPopup(
-          `<div class="popup-cs">${name}</div>` +
-          `<div class="popup-row"><span>النوع</span><b>${kind}</b></div>` +
-          `<div class="popup-row"><span>المسار</span><b>${route}</b></div>` +
-          `<div class="popup-row"><span>السرعة</span><b>${speed} عقدة</b></div>`,
-          { className: 'ncs-popup', maxWidth: 260 }
-        )
-        .addTo(shipLayer);
+  // ----- Mock ships (cargo / tanker / naval) -----
+  function populateShips() {
+    const shipNames = {
+      tanker: ['M/T Crimson Star','M/T Sea Voyager','M/T Atlantic Pride','M/T Gulf Falcon','M/T Persian Pearl','M/T Aramco Spirit','M/T Front Empire','M/T Olympic Future'],
+      cargo:  ['M/V Pacific Voyager','M/V Cosco Asia','M/V Hapag Express','M/V Ever Forward','M/V MSC Aurora','M/V CMA CGM Marco Polo','M/V Maersk Edgar','M/V ONE Innovation'],
+      naval:  ['USS Eisenhower','HMS Queen Elizabeth','FS Charles De Gaulle','PLAN Liaoning','RFS Admiral Kuznetsov','USS Gerald R. Ford','JS Izumo','INS Vikrant'],
+    };
+    const shipRoutes = {
+      tanker: ['الخليج → روتردام','رأس تنورة → سنغافورة','جدة → السويس','عُمان → الصين','الكويت → كوريا','مرسى البحرين → اليابان'],
+      cargo:  ['شنغهاي → دبي','هامبورغ → نيويورك','سنغافورة → جنوة','بوسان → لوس أنجلوس','هونج كونج → السويس','أنتويرب → ساوثهامبتون'],
+      naval:  ['الأسطول الخامس · البحرين','المتوسط الشرقي','المحيط الهندي','الباسيفيك الغربي','البحر الأسود','المتوسط المركزي'],
+    };
+    const ports = {
+      tanker: [[56.2,26.5],[51.0,27.0],[38.0,25.0],[39.0,21.5],[43.5,12.5],[103.8,1.3],[32.5,30.0],[-90.0,25.5],[-5.5,35.0],[28.0,41.0],[48.0,29.5],[53.5,24.5]],
+      cargo:  [[32.0,31.0],[14.0,36.0],[0.0,50.0],[70.0,22.0],[130.0,35.0],[100.0,6.0],[-118.0,33.0],[18.0,-34.0],[-73.0,40.0],[113.5,22.0],[-46.5,-23.5],[2.0,49.0]],
+      naval:  [[32.5,34.5],[34.0,33.5],[56.2,26.5],[43.5,12.5],[35.0,25.0],[33.0,44.5],[19.0,35.5],[117.0,22.0],[122.0,25.0],[124.5,37.5],[52.0,-5.0],[13.0,55.0]],
+    };
+    const colors = { tanker: '#f97316', cargo: '#10b981', naval: '#06b6d4' };
+    const arabicKind = { tanker: 'ناقلة بترول', cargo: 'سفينة شحن حاويات', naval: 'قطعة بحرية حربية' };
+
+    for (const kind of ['tanker','cargo','naval']) {
+      mapLayers[kind].clearLayers();
+      for (const [lng, lat] of ports[kind]) {
+        const jl = (Math.random() - 0.5) * 4;
+        const jL = (Math.random() - 0.5) * 4;
+        const name = shipNames[kind][Math.floor(Math.random() * shipNames[kind].length)];
+        const route = shipRoutes[kind][Math.floor(Math.random() * shipRoutes[kind].length)];
+        const speed = (8 + Math.random() * 14).toFixed(1);
+        const m = L.marker([lat + jL, lng + jl], { icon: shipIcon(colors[kind]) })
+          .bindPopup(
+            `<div class="popup-cs">${name}</div>` +
+            `<div class="popup-row"><span>النوع</span><b>${arabicKind[kind]}</b></div>` +
+            `<div class="popup-row"><span>المسار</span><b>${route}</b></div>` +
+            `<div class="popup-row"><span>السرعة</span><b>${speed} عقدة</b></div>`,
+            { className: 'ncs-popup', maxWidth: 260 }
+          );
+        mapLayers[kind].addLayer(m);
+      }
     }
   }
-  refreshShips();
+  populateShips();
+  setInterval(populateShips, 30_000);
 
-  // ----- Military callsign filter (subset of worldmonitor patterns) -----
+  // ----- Military callsign filter -----
   function isMilitaryCallsign(cs) {
     if (!cs) return false;
     const c = cs.trim().toUpperCase();
     return /^(RCH|REACH|BOLT|VIPER|RAPTOR|DOOM|BONE|DEATH|KING|SHELL|TEAL|TOPCT|SAM|AF[12]|EXEC|GOLD|SNTRY|COBRA|RIVET|OLIVE|JAKE|DRAGN|NCHO|SHADOW|KNIFE|CSAR|NITE|PACK|DAGGER|DEMON|MOOSE|HERKY|HERC|ATLAS|EVAC|SPAR|IRON|HOMER|SCORE|TITAN|COMET|CASA|STEEL|DUKE|IAF|RAF|FAF|GAF|PLAAF|PLAN|VKS|NATO)/i.test(c);
   }
 
-  // ----- Live aircraft layer + OpenSky fetch -----
-  const flightLayer = L.layerGroup().addTo(map);
+  // ----- Airline lookup -----
+  window.__airlineLookup = {
+    'AAL':'American Airlines','DAL':'Delta','UAL':'United','BAW':'British Airways',
+    'AFR':'Air France','DLH':'Lufthansa','KLM':'KLM','MSR':'EgyptAir','SVA':'Saudi Arabian',
+    'UAE':'Emirates','ETD':'Etihad','QTR':'Qatar Airways','THY':'Turkish Airlines',
+    'CCA':'Air China','CES':'China Eastern','CSN':'China Southern','JAL':'Japan Airlines',
+    'KAL':'Korean Air','AIC':'Air India','SIA':'Singapore Airlines','RAM':'Royal Air Maroc',
+    'ELY':'El Al','IRA':'Iran Air','EZY':'easyJet','RYR':'Ryanair','WZZ':'Wizz Air',
+    'AEE':'Aegean','SWR':'Swiss','AUA':'Austrian','IBE':'Iberia','AZA':'ITA Airways','NAX':'Norwegian',
+  };
+
+  // ----- OpenSky fetch — populates civ + mil layers (without auto-adding to map) -----
+  let flightsLoaded = false;
+  let flightsPollerStarted = false;
 
   async function fetchFlights() {
     const indicator = document.getElementById('data-source');
@@ -1942,39 +2003,37 @@
       const data = await res.json();
       if (!data || !Array.isArray(data.states)) throw new Error('OpenSky empty');
 
-      flightLayer.clearLayers();
+      mapLayers.civ.clearLayers();
+      mapLayers.mil.clearLayers();
       let civCount = 0, milCount = 0, drawn = 0;
-      for (const s of data.states) {
-        if (s[5] === null || s[6] === null) continue;
-        if (s[8] === true) continue;
-        const cs = (s[1] || '').trim();
+      for (const st of data.states) {
+        if (st[5] === null || st[6] === null) continue;
+        if (st[8] === true) continue;
+        const cs = (st[1] || '').trim();
         const isMil = isMilitaryCallsign(cs);
         if (isMil) milCount++; else civCount++;
-        const layerFilter = window.__layerFilter || 'all';
-        if (layerFilter === 'civ' && isMil) continue;
-        if (layerFilter === 'mil' && !isMil) continue;
-        if (layerFilter === 'cargo' || layerFilter === 'tanker' || layerFilter === 'naval' || layerFilter === 'choke') continue;
-        if (drawn >= 1200) continue;
+        if (drawn >= 1500) continue;
         drawn++;
-        const altFt = s[7] ? Math.round(s[7] * 3.281).toLocaleString('en-US') : '—';
-        const vKmh  = s[9] ? Math.round(s[9] * 3.6) : null;
-        const heading = s[10] || 0;
-        const m = L.marker([s[6], s[5]], {
+        const altFt = st[7] ? Math.round(st[7] * 3.281).toLocaleString('en-US') : '—';
+        const vKmh  = st[9] ? Math.round(st[9] * 3.6) : null;
+        const heading = st[10] || 0;
+        const prefix = (cs || '').slice(0, 3).toUpperCase();
+        const airline = (window.__airlineLookup && window.__airlineLookup[prefix]) || (isMil ? 'تشغيل عسكري' : '—');
+        const m = L.marker([st[6], st[5]], {
           icon: planeIcon(isMil ? '#ef4444' : '#fbbf24', heading),
           riseOnHover: true,
         });
-        const prefix = (cs || '').slice(0, 3).toUpperCase();
-        const airline = (window.__airlineLookup && window.__airlineLookup[prefix]) || (isMil ? 'تشغيل عسكري' : 'غير معروف');
         m.bindPopup(
           `<div class="popup-cs">${cs || '—'}</div>` +
           `<div class="popup-row"><span>الشركة/التشغيل</span><b>${airline}</b></div>` +
-          `<div class="popup-row"><span>الدولة</span><b>${s[2] || '—'}</b></div>` +
+          `<div class="popup-row"><span>الدولة</span><b>${st[2] || '—'}</b></div>` +
           `<div class="popup-row"><span>الارتفاع</span><b>${altFt} قدم</b></div>` +
           `<div class="popup-row"><span>السرعة</span><b>${vKmh ? vKmh + ' كم/س' : '—'}</b></div>` +
           `<div class="popup-row"><span>الاتجاه</span><b>${Math.round(heading)}°</b></div>` +
-          (isMil ? `<div style="margin-top:0.4rem;color:#ef4444;font-weight:800;font-size:0.75rem;">⚠ طائرة عسكرية مرصودة</div>` : '')
+          (isMil ? `<div style="margin-top:0.4rem;color:#ef4444;font-weight:800;font-size:0.75rem;">⚠ طائرة عسكرية مرصودة</div>` : ''),
+          { className: 'ncs-popup', maxWidth: 280 }
         );
-        m.addTo(flightLayer);
+        if (isMil) mapLayers.mil.addLayer(m); else mapLayers.civ.addLayer(m);
       }
 
       const civEl = document.getElementById('stat-civ-flights');
@@ -1982,13 +2041,13 @@
       if (civEl) civEl.textContent = civCount.toLocaleString('ar-EG');
       if (milEl) milEl.textContent = milCount.toLocaleString('ar-EG');
 
-      if (indicator) {
-        indicator.innerHTML = `<span class="live-dot" style="background:#10b981;"></span> OpenSky · ${drawn.toLocaleString('ar-EG')} طائرة الآن`;
-      }
+      if (indicator) indicator.innerHTML = `<span class="live-dot" style="background:#10b981;"></span> OpenSky · ${drawn.toLocaleString('ar-EG')} طائرة`;
+      flightsLoaded = true;
     } catch (e) {
       console.warn('[NCS] OpenSky fetch failed:', e);
-      // Fallback: simulated planes
-      flightLayer.clearLayers();
+      // Mock fallback
+      mapLayers.civ.clearLayers();
+      mapLayers.mil.clearLayers();
       for (let i = 0; i < 600; i++) {
         const isMil = Math.random() < 0.04;
         const lat = (Math.random() * 140) - 70;
@@ -2000,26 +2059,67 @@
         const m = L.marker([lat, lng], {
           icon: planeIcon(isMil ? '#ef4444' : '#fbbf24', heading),
           riseOnHover: true,
-        });
-        m.bindPopup(`<div class="popup-cs">${cs}</div><div class="popup-row"><span>وضع</span><b>محاكاة</b></div>`);
-        m.addTo(flightLayer);
+        }).bindPopup(`<div class="popup-cs">${cs}</div><div class="popup-row"><span>الوضع</span><b>محاكاة</b></div>`,
+          { className: 'ncs-popup', maxWidth: 240 });
+        if (isMil) mapLayers.mil.addLayer(m); else mapLayers.civ.addLayer(m);
       }
       if (indicator) indicator.innerHTML = '<span class="live-dot"></span> محاكاة (OpenSky غير متاح)';
+      flightsLoaded = true;
     }
   }
 
-  fetchFlights();
-  setInterval(fetchFlights, 60_000);
-  setInterval(refreshShips, 15_000);
-
-  // Manual refresh — clicking the data pill triggers a new OpenSky fetch
-  const dsPill = document.getElementById('data-source');
-  if (dsPill) {
-    dsPill.style.cursor = 'pointer';
-    dsPill.style.pointerEvents = 'auto';
-    dsPill.title = 'اضغط للتحديث الفوري';
-    dsPill.addEventListener('click', fetchFlights);
+  async function ensureFlightsLoaded() {
+    if (!flightsLoaded) await fetchFlights();
+    if (!flightsPollerStarted) {
+      flightsPollerStarted = true;
+      setInterval(fetchFlights, 60_000);
+    }
   }
+
+  // ----- Filter chip handlers (multi-select toggle) -----
+  const filterButtons = document.querySelectorAll('.map-chip');
+  const allBtn = document.querySelector('.map-chip[data-layer="all"]');
+
+  function toggleLayer(key, btn) {
+    if (activeLayers.has(key)) {
+      activeLayers.delete(key);
+      btn.classList.remove('active');
+      map.removeLayer(mapLayers[key]);
+    } else {
+      activeLayers.add(key);
+      btn.classList.add('active');
+      if ((key === 'civ' || key === 'mil') && !flightsLoaded) ensureFlightsLoaded();
+      map.addLayer(mapLayers[key]);
+    }
+  }
+
+  filterButtons.forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const key = btn.dataset.layer;
+      if (key === 'all') {
+        const allOn = activeLayers.size === Object.keys(mapLayers).length;
+        if (allOn) {
+          for (const k of Object.keys(mapLayers)) {
+            map.removeLayer(mapLayers[k]);
+          }
+          activeLayers.clear();
+          filterButtons.forEach(b => b.classList.remove('active'));
+        } else {
+          if (!flightsLoaded) await ensureFlightsLoaded();
+          for (const k of Object.keys(mapLayers)) {
+            map.addLayer(mapLayers[k]);
+            activeLayers.add(k);
+          }
+          filterButtons.forEach(b => b.classList.add('active'));
+        }
+        return;
+      }
+      toggleLayer(key, btn);
+    });
+  });
+
+  // Default state: NO layers active. Clear active classes.
+  filterButtons.forEach(b => b.classList.remove('active'));
 
 // ============================================================
   // Live tracked assets feed (realistic military callsigns)
@@ -2326,6 +2426,92 @@
   };
 
   // (Plane popups already wire via fetchFlights binding; airline string is appended there)
+
+
+  // ============================================================
+  // v3: Language toggle (AR / EN) with data-i18n
+  // ============================================================
+  const i18nDict = {
+    ar: {
+      'nav.home': 'الرئيسية', 'nav.politics': 'سياسة', 'nav.economy': 'اقتصاد',
+      'nav.sports': 'رياضة', 'nav.live': 'مباشر', 'nav.center': 'المركز',
+      'ui.refresh': 'تحديث',
+    },
+    en: {
+      'nav.home': 'Home', 'nav.politics': 'Politics', 'nav.economy': 'Economy',
+      'nav.sports': 'Sports', 'nav.live': 'Live', 'nav.center': 'NCS',
+      'ui.refresh': 'Refresh',
+    },
+  };
+
+  function applyLang(lang) {
+    document.documentElement.lang = lang;
+    document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.dataset.i18n;
+      if (i18nDict[lang] && i18nDict[lang][key]) el.textContent = i18nDict[lang][key];
+    });
+    document.querySelectorAll('.lang-toggle button').forEach(b => {
+      b.classList.toggle('active', b.dataset.lang === lang);
+    });
+    try { localStorage.setItem('ncs.lang', lang); } catch (e) {}
+  }
+  document.querySelectorAll('.lang-toggle button[data-lang]').forEach(btn => {
+    btn.addEventListener('click', () => applyLang(btn.dataset.lang));
+  });
+  // Initial: read from storage or default ar
+  try {
+    const saved = localStorage.getItem('ncs.lang');
+    if (saved) applyLang(saved);
+  } catch (e) {}
+
+  // ============================================================
+  // v3: Panel flash + clearer refresh feedback for gold/FX
+  // ============================================================
+  function flashPanel(panelEl) {
+    if (!panelEl) return;
+    panelEl.classList.remove('flash');
+    void panelEl.offsetHeight;
+    panelEl.classList.add('flash');
+    setTimeout(() => panelEl.classList.remove('flash'), 1200);
+  }
+  // Hook into existing refreshGold + fetchRealFX
+  const _origGold = (typeof refreshGold === 'function') ? refreshGold : null;
+  if (_origGold) {
+    window.refreshGold = function() {
+      _origGold();
+      const goldPanel = document.querySelector('#refresh-gold')?.closest('.panel');
+      flashPanel(goldPanel);
+    };
+  }
+  const _origFx = (typeof fetchRealFX === 'function') ? fetchRealFX : null;
+  if (_origFx) {
+    window.fetchRealFX = async function() {
+      await _origFx();
+      const fxPanel = document.querySelector('#refresh-fx')?.closest('.panel');
+      flashPanel(fxPanel);
+    };
+  }
+
+  // ============================================================
+  // v3: Topbar refresh button — refresh ALL live data at once
+  // ============================================================
+  const topRefresh = document.getElementById('refresh-btn');
+  if (topRefresh) {
+    topRefresh.addEventListener('click', () => {
+      if (typeof refreshGold === 'function') refreshGold();
+      if (typeof fetchRealFX === 'function') fetchRealFX();
+      if (typeof fetchFlights === 'function' && flightsLoaded) fetchFlights();
+      // visual feedback already in earlier handler
+    });
+  }
+
+  // ============================================================
+  // v3: Speed up gold visible refresh (3s instead of 10s)
+  // ============================================================
+  if (typeof refreshGold === 'function') {
+    setInterval(() => { if (typeof window.refreshGold === 'function') window.refreshGold(); }, 6_000);
+  }
 
 </script>
 </body>
