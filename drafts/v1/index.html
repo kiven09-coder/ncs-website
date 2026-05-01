@@ -780,13 +780,12 @@
   }
   .plane-icon, .ship-icon { background: transparent !important; border: 0 !important; }
   .map-source-pill {
-    position: absolute; bottom: 1rem; inset-inline-end: 1rem;
-    background: rgba(0,0,0,0.85); border: 1px solid var(--border-strong);
-    backdrop-filter: blur(8px);
+    margin-top: 0.5rem;
+    background: rgba(0,0,0,0.7); border: 1px solid var(--border-strong);
     padding: 0.4rem 0.85rem; border-radius: 999px;
     font-size: 0.72rem; font-weight: 700;
-    display: flex; gap: 0.45rem; align-items: center;
-    z-index: 6; pointer-events: none;
+    display: inline-flex; gap: 0.45rem; align-items: center;
+    cursor: pointer;
   }
   .map-source-pill .live-dot {
     width: 7px; height: 7px; border-radius: 50%;
@@ -812,15 +811,18 @@
     width: 100%; height: 580px;
     background: radial-gradient(ellipse at center, rgba(225,29,43,0.04) 0%, transparent 60%);
   }
-  .globe-overlay-top {
-    position: absolute; top: 1rem; inset-inline-start: 1rem;
-    display: flex; gap: 0.5rem; z-index: 5; pointer-events: none;
+  .globe-stats-bar {
+    display: flex; gap: 0.5rem; flex-wrap: wrap;
+    margin-top: 0.7rem;
+    padding: 0.5rem;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid var(--border);
   }
   .ovl-stat {
-    background: rgba(0,0,0,0.85); border: 1px solid var(--border-strong);
-    backdrop-filter: blur(10px);
+    flex: 1; min-width: 90px;
+    background: rgba(255,255,255,0.03); border: 1px solid var(--border-strong);
     padding: 0.5rem 0.75rem;
-    text-align: center; min-width: 70px;
+    text-align: center;
   }
   .ovl-stat.danger { border-color: var(--red); }
   .ovl-num { font-family: var(--font-en-body); font-weight: 900; font-size: 1.05rem; color: var(--text); letter-spacing: -0.02em; }
@@ -1241,8 +1243,7 @@
         <button class="map-chip" data-layer="choke" style="--chip-color:#fbbf24;">المضائق</button>
       </div>
       <div id="map" class="ncs-map"></div>
-      <div class="map-source-pill" id="data-source"><span class="live-dot"></span> جاري الاتصال…</div>
-      <div class="globe-overlay-top">
+      <div class="globe-stats-bar">
         <div class="ovl-stat">
           <div class="ovl-num" id="stat-civ-flights">١٢,٨٤٧</div>
           <div class="ovl-lbl">مدني</div>
@@ -1260,6 +1261,8 @@
           <div class="ovl-lbl">بحرية حربية</div>
         </div>
       </div>
+      <div class="map-source-pill" id="data-source"><span class="live-dot"></span> جاري الاتصال…</div>
+      
       <div class="globe-legend">
         <div><span class="swatch" style="background:#fbbf24"></span> طيران مدني</div>
         <div><span class="swatch" style="background:#ef4444"></span> طيران حربي</div>
@@ -1575,20 +1578,20 @@
   <div class="container">
     <div class="section-head" id="center" style="margin-top:0; scroll-margin-top:90px;">
       <h2>من المركز · فيسبوك NCS</h2>
-      <a href="#" class="more">صفحة المركز ←</a>
+      <a href="https://www.facebook.com/search/top?q=%D8%A7%D9%84%D9%85%D8%B1%D9%83%D8%B2%20%D8%A7%D9%84%D9%88%D8%B7%D9%86%D9%8A%20%D9%84%D9%84%D8%AF%D8%B1%D8%A7%D8%B3%D8%A7%D8%AA%20-%20national%20center%20for%20studies" target="_blank" rel="noopener" class="more">صفحة المركز ←</a>
     </div>
     <div class="ncs-grid">
-      <a href="https://www.facebook.com/" target="_blank" rel="noopener" class="fb-post" style="display:block;color:inherit;text-decoration:none;"><span class="fb-icon">f</span>
+      <a href="https://www.facebook.com/search/top?q=%D8%A7%D9%84%D9%85%D8%B1%D9%83%D8%B2%20%D8%A7%D9%84%D9%88%D8%B7%D9%86%D9%8A%20%D9%84%D9%84%D8%AF%D8%B1%D8%A7%D8%B3%D8%A7%D8%AA%20-%20national%20center%20for%20studies" target="_blank" rel="noopener" class="fb-post" style="display:block;color:inherit;text-decoration:none;"><span class="fb-icon">f</span>
         <span class="tag outline" style="margin-top:0.5rem;">دراسة</span>
         <p>أصدر المركز اليوم تقريراً بعنوان "آفاق العلاقات المصرية-الخليجية ٢٠٢٦" ويتناول التحولات الاقتصادية والسياسية في ضوء أزمة البحر الأحمر.</p>
         <div class="meta">منذ ساعتين · ١٢٤ تفاعل</div>
       </a>
-      <a href="https://www.facebook.com/" target="_blank" rel="noopener" class="fb-post" style="display:block;color:inherit;text-decoration:none;"><span class="fb-icon">f</span>
+      <a href="https://www.facebook.com/search/top?q=%D8%A7%D9%84%D9%85%D8%B1%D9%83%D8%B2%20%D8%A7%D9%84%D9%88%D8%B7%D9%86%D9%8A%20%D9%84%D9%84%D8%AF%D8%B1%D8%A7%D8%B3%D8%A7%D8%AA%20-%20national%20center%20for%20studies" target="_blank" rel="noopener" class="fb-post" style="display:block;color:inherit;text-decoration:none;"><span class="fb-icon">f</span>
         <span class="tag outline" style="margin-top:0.5rem;">ندوة</span>
         <p>غداً ندوة على الزووم بعنوان "حرب أوكرانيا في عامها الرابع" بحضور الدكتور أحمد فؤاد والباحث Mark Andrews. التسجيل عبر الموقع.</p>
         <div class="meta">منذ ٤ ساعات · ٨٧ تفاعل</div>
       </a>
-      <a href="https://www.facebook.com/" target="_blank" rel="noopener" class="fb-post" style="display:block;color:inherit;text-decoration:none;"><span class="fb-icon">f</span>
+      <a href="https://www.facebook.com/search/top?q=%D8%A7%D9%84%D9%85%D8%B1%D9%83%D8%B2%20%D8%A7%D9%84%D9%88%D8%B7%D9%86%D9%8A%20%D9%84%D9%84%D8%AF%D8%B1%D8%A7%D8%B3%D8%A7%D8%AA%20-%20national%20center%20for%20studies" target="_blank" rel="noopener" class="fb-post" style="display:block;color:inherit;text-decoration:none;"><span class="fb-icon">f</span>
         <span class="tag outline" style="margin-top:0.5rem;">إعلان</span>
         <p>المركز يعلن عن منحة دراسية للباحثين الشباب في تخصصات العلوم السياسية والاقتصاد. التقديم متاح حتى ١٥ مايو.</p>
         <div class="meta">منذ يوم · ٥٤٢ تفاعل</div>
@@ -1632,7 +1635,7 @@
       <div>
         <h5>تابعنا</h5>
         <ul>
-          <li><a href="#">Facebook</a></li>
+          <li><a href="https://www.facebook.com/search/top?q=%D8%A7%D9%84%D9%85%D8%B1%D9%83%D8%B2%20%D8%A7%D9%84%D9%88%D8%B7%D9%86%D9%8A%20%D9%84%D9%84%D8%AF%D8%B1%D8%A7%D8%B3%D8%A7%D8%AA%20-%20national%20center%20for%20studies" target="_blank" rel="noopener">Facebook</a></li>
           <li><a href="#">X / Twitter</a></li>
           <li><a href="#">YouTube</a></li>
           <li><a href="#">RSS</a></li>
@@ -1853,15 +1856,26 @@
 
   L.control.zoom({ position: 'topright' }).addTo(map);
 
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  const cartoLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap &copy; CARTO',
     subdomains: 'abcd',
     maxZoom: 19,
-    minZoom: 2,
     noWrap: true,
-    bounds: [[-85, -180], [85, 180]],
-    crossOrigin: true,
-  }).addTo(map);
+  });
+  let _tileFallbackTriggered = false;
+  cartoLayer.on('tileerror', () => {
+    if (_tileFallbackTriggered) return;
+    _tileFallbackTriggered = true;
+    console.warn('[NCS] Carto tiles failed; falling back to OpenStreetMap');
+    map.removeLayer(cartoLayer);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors',
+      subdomains: 'abc',
+      maxZoom: 19,
+      noWrap: true,
+    }).addTo(map);
+  });
+  cartoLayer.addTo(map);
 
   // ----- Icon helpers -----
   function planeIcon(color, heading) {
