@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>NCS — جاري التحويل…</title>
+<meta http-equiv="refresh" content="0; url=./drafts/v1/" />
+<link rel="canonical" href="./drafts/v1/" />
+<meta name="description" content="NCS — National Center for Studies. Redirecting to current draft." />
+<style>
+  html, body {
+    margin: 0; padding: 0;
+    background: #0a0a0a; color: #fafafa;
+    font-family: "Cairo", system-ui, sans-serif;
+    height: 100%;
+    display: grid; place-items: center;
+  }
+  .wrap { text-align: center; padding: 2rem; }
+  .mark {
+    width: 96px; height: 96px;
+    border-radius: 18px;
+    margin: 0 auto 1.5rem;
+    display: block;
+    box-shadow: 0 12px 40px rgba(225,29,43,0.25);
+  }
+  h1 { font-size: 1.4rem; font-weight: 800; margin: 0 0 0.5rem; letter-spacing: -0.01em; }
+  p  { color: #a3a3a3; margin: 0 0 1rem; }
+  a  { color: #e11d2b; text-decoration: none; font-weight: 700; }
+  .dot {
+    display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+    background: #e11d2b; margin: 0 2px;
+    animation: blink 1.4s infinite both;
+  }
+  .dot:nth-child(2) { animation-delay: 0.2s; }
+  .dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes blink {
+    0%, 80%, 100% { opacity: 0.2; }
+    40% { opacity: 1; }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <img src="./drafts/v1/logo.jpg" alt="NCS" class="mark" />
+    <h1>NCS — جاري التحويل<span class="dot"></span><span class="dot"></span><span class="dot"></span></h1>
+    <p>لو ما اتحوّلتش تلقائياً، اضغط <a href="./drafts/v1/">هنا</a></p>
+  </div>
+  <script>
+    window.location.replace('./drafts/v1/');
+  </script>
+</body>
+</html>
