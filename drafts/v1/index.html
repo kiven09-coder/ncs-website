@@ -8,6 +8,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" />
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Inter:wght@400;500;700;800&family=Playfair+Display:ital,wght@0,800;0,900;1,800&display=swap" rel="stylesheet" />
 
 <style>
@@ -724,6 +725,69 @@
   .bd-num { font-family: var(--font-en-body); font-weight: 900; font-size: 1rem; color: var(--text); }
 
   .globe-center { position: relative; min-height: 580px; }
+  .ncs-map {
+    width: 100%; height: 580px;
+    border: 1px solid var(--border);
+    background: #050505;
+  }
+  .ncs-map canvas { outline: none; }
+  .map-source-pill {
+    position: absolute; bottom: 1rem; inset-inline-end: 1rem;
+    background: rgba(0,0,0,0.85); border: 1px solid var(--border-strong);
+    backdrop-filter: blur(8px);
+    padding: 0.4rem 0.85rem; border-radius: 999px;
+    font-size: 0.72rem; font-weight: 700;
+    display: flex; gap: 0.45rem; align-items: center;
+    z-index: 6; pointer-events: none;
+  }
+  .map-source-pill .live-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--red); box-shadow: 0 0 0 0 var(--red-glow);
+    animation: pulse 1.6s infinite;
+  }
+  /* MapLibre popup theming */
+  .ncs-popup .maplibregl-popup-content {
+    background: #0a0a0a; color: var(--text);
+    border: 1px solid var(--border-strong);
+    border-radius: 4px;
+    padding: 0.85rem 1rem;
+    font-family: var(--font-ar-body);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.7);
+  }
+  .ncs-popup .maplibregl-popup-tip { display: none; }
+  .ncs-popup .maplibregl-popup-close-button {
+    color: var(--text-muted); font-size: 1.2rem; padding: 0.25rem 0.5rem;
+  }
+  .popup-cs {
+    font-family: var(--font-en-body); font-weight: 900;
+    font-size: 1rem; letter-spacing: 0.02em;
+    color: var(--text); margin-bottom: 0.5rem;
+    padding-bottom: 0.4rem; border-bottom: 1px solid var(--border);
+  }
+  .popup-row {
+    display: flex; justify-content: space-between;
+    font-size: 0.78rem; padding: 0.25rem 0;
+    color: var(--text-muted);
+  }
+  .popup-row b {
+    color: var(--text); font-family: var(--font-en-body);
+    font-weight: 700;
+  }
+  /* MapLibre attribution + controls dark theme */
+  .maplibregl-ctrl-attrib {
+    background: rgba(0,0,0,0.7) !important;
+    color: var(--text-muted) !important;
+    font-size: 0.65rem !important;
+  }
+  .maplibregl-ctrl-attrib a { color: var(--text-muted) !important; }
+  .maplibregl-ctrl-group {
+    background: rgba(0,0,0,0.85) !important;
+    border: 1px solid var(--border-strong) !important;
+  }
+  .maplibregl-ctrl-group button {
+    background: transparent !important;
+    filter: invert(1);
+  }
   .globe-center #globe {
     width: 100%; height: 580px;
     background: radial-gradient(ellipse at center, rgba(225,29,43,0.04) 0%, transparent 60%);
@@ -1029,7 +1093,8 @@
     </aside>
 
     <div class="globe-center">
-      <div id="globe"></div>
+      <div id="map" class="ncs-map"></div>
+      <div class="map-source-pill" id="data-source"><span class="live-dot"></span> جاري الاتصال…</div>
       <div class="globe-overlay-top">
         <div class="ovl-stat">
           <div class="ovl-num" id="stat-civ-flights">١٢,٨٤٧</div>
@@ -1441,8 +1506,7 @@
 </div>
 
 <!-- ================= GLOBE.GL ================= -->
-<script src="https://unpkg.com/three@0.155/build/three.min.js"></script>
-<script src="https://unpkg.com/globe.gl"></script>
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <script>
   // ============================================================
   // Helpers
@@ -1625,128 +1689,264 @@
   }, 25_000);
 
   // ============================================================
-  // 3D Globe — civilian + military air + cargo + tankers + warships
-  // + naval chokepoint labels (worldmonitor-style)
+  // 2D MAP (MapLibre GL) + OpenSky Network real-time aircraft
+  // Free APIs: Carto dark-matter style + OpenSky anonymous endpoint
   // ============================================================
-  const N_CIV_FLIGHTS = 70;
-
-  const randArc = () => ({
-    startLat: (Math.random() - 0.5) * 140,
-    startLng: (Math.random() - 0.5) * 360,
-    endLat:   (Math.random() - 0.5) * 140,
-    endLng:   (Math.random() - 0.5) * 360,
+  const map = new maplibregl.Map({
+    container: 'map',
+    style: 'https://basemaps.cartocdn.com/gl/dark-matter-no-labels-gl-style/style.json',
+    center: [25, 25],
+    zoom: 1.6,
+    minZoom: 1,
+    maxZoom: 12,
+    attributionControl: { compact: true, customAttribution: 'NCS · OpenSky · Carto' },
+    renderWorldCopies: true,
   });
+  map.addControl(new maplibregl.NavigationControl({ showCompass: false, visualizePitch: false }), 'top-right');
 
-  const civFlights = Array.from({ length: N_CIV_FLIGHTS }, () => ({
-    ...randArc(),
-    color: ['rgba(251, 191, 36, 0.85)', 'rgba(251, 191, 36, 0.25)']
-  }));
+  // ----- SVG icons (data URLs) -----
+  const planeSvg = (color) => `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"><path fill="${color}" stroke="#000" stroke-width="0.6" stroke-linejoin="round" d="M12 2 L13.6 9.5 L22 11.5 L22 13.5 L13.6 13.5 L13 22 L11 22 L10.4 13.5 L2 13.5 L2 11.5 L10.4 9.5 Z"/></svg>`;
+  const shipSvg = (color) => `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="14" viewBox="0 0 24 16"><path fill="${color}" stroke="#000" stroke-width="0.6" d="M2 10 L22 10 L20 14 L4 14 Z M11 4 L13 4 L13 10 L11 10 Z"/></svg>`;
 
-  const milRoutes = [
-    [49.4, 7.6, 36.0, 51.0], [40.9, 14.5, 32.0, 35.5], [37.0, 35.4, 33.5, 44.4],
-    [25.0, 56.0, 30.0, 50.0], [12.0, 44.0, 15.5, 42.5], [33.0, 35.0, 33.9, 35.5],
-    [44.5, 33.0, 47.0, 37.0], [55.7, 37.6, 48.0, 38.0],
-    [22.3, 114.0, 12.0, 110.0], [25.0, 121.5, 9.0, 117.0], [37.5, 127.0, 38.5, 128.0],
-    [49.4, 7.6, 31.0, 35.0], [38.0, 23.7, 32.0, 35.5], [40.0, 32.8, 34.0, 36.3],
-    [25.4, 51.5, 27.5, 57.0], [24.4, 54.4, 27.0, 56.5], [12.5, 45.0, 14.0, 48.0],
-    [33.0, 44.4, 35.6, 45.5],
-  ];
-  const milFlights = milRoutes.map(([a,b,c,d]) => ({
-    startLat: a + (Math.random()-0.5)*1.5,
-    startLng: b + (Math.random()-0.5)*1.5,
-    endLat:   c + (Math.random()-0.5)*1.5,
-    endLng:   d + (Math.random()-0.5)*1.5,
-    color: ['rgba(239, 68, 68, 0.95)', 'rgba(239, 68, 68, 0.35)']
-  }));
-
-  const allArcs = [...civFlights, ...milFlights];
-
-  const tankerHotspots = [
-    [26.5, 56.2], [27.0, 51.0], [25.0, 38.0], [21.5, 39.0],
-    [12.5, 43.5], [1.3, 103.8], [30.0, 32.5], [25.5, -90.0],
-    [35.0, -5.5], [41.0, 28.0], [29.5, 48.0], [24.5, 53.5],
-  ];
-  const tankers = [];
-  for (const [lat, lng] of tankerHotspots) {
-    for (let i = 0; i < 3; i++) tankers.push({
-      lat: lat + (Math.random() - 0.5) * 4,
-      lng: lng + (Math.random() - 0.5) * 4,
-      color: '#f97316', size: 0.4
+  function addSvgImage(name, svg) {
+    return new Promise(resolve => {
+      const img = new Image(24, 24);
+      img.crossOrigin = 'anonymous';
+      img.onload = () => { if (!map.hasImage(name)) map.addImage(name, img, { pixelRatio: 2 }); resolve(); };
+      img.onerror = () => resolve();
+      img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
     });
   }
 
-  const cargoLanes = [
-    [31.0, 32.0], [36.0, 14.0], [50.0, 0.0], [22.0, 70.0],
-    [35.0, 130.0], [6.0, 100.0], [33.0, -118.0], [-34.0, 18.0],
-    [40.0, -73.0], [22.0, 113.5], [-23.5, -46.5], [49.0, 2.0],
-  ];
-  const cargo = [];
-  for (const [lat, lng] of cargoLanes) {
-    for (let i = 0; i < 4; i++) cargo.push({
-      lat: lat + (Math.random() - 0.5) * 6,
-      lng: lng + (Math.random() - 0.5) * 6,
-      color: '#10b981', size: 0.3
+  const emptyFC = () => ({ type: 'FeatureCollection', features: [] });
+
+  // ----- Naval chokepoints (stable markers + labels) -----
+  const chokepointsFC = {
+    type: 'FeatureCollection',
+    features: [
+      { type: 'Feature', geometry: { type: 'Point', coordinates: [56.5, 26.5] }, properties: { label: 'مضيق هرمز' } },
+      { type: 'Feature', geometry: { type: 'Point', coordinates: [32.5, 30.0] }, properties: { label: 'قناة السويس' } },
+      { type: 'Feature', geometry: { type: 'Point', coordinates: [43.5, 12.5] }, properties: { label: 'باب المندب' } },
+      { type: 'Feature', geometry: { type: 'Point', coordinates: [101.5, 2.5] }, properties: { label: 'مضيق ملقا' } },
+      { type: 'Feature', geometry: { type: 'Point', coordinates: [119.5, 24.5] }, properties: { label: 'مضيق تايوان' } },
+      { type: 'Feature', geometry: { type: 'Point', coordinates: [-79.5, 9.0] }, properties: { label: 'قناة بنما' } },
+      { type: 'Feature', geometry: { type: 'Point', coordinates: [28.0, 41.0] }, properties: { label: 'البوسفور' } },
+      { type: 'Feature', geometry: { type: 'Point', coordinates: [-5.5, 35.9] }, properties: { label: 'جبل طارق' } },
+    ]
+  };
+
+  // ----- Mock ships at known maritime hotspots (no free real-time AIS) -----
+  function genShips() {
+    const ports = [
+      // [lng, lat, kind]
+      [56.2, 26.5, 'tanker'], [51.0, 27.0, 'tanker'], [38.0, 25.0, 'tanker'],
+      [39.0, 21.5, 'tanker'], [43.5, 12.5, 'tanker'], [103.8, 1.3, 'tanker'],
+      [32.5, 30.0, 'tanker'], [-90.0, 25.5, 'tanker'], [-5.5, 35.0, 'tanker'],
+      [28.0, 41.0, 'tanker'], [48.0, 29.5, 'tanker'], [53.5, 24.5, 'tanker'],
+
+      [32.0, 31.0, 'cargo'], [14.0, 36.0, 'cargo'], [0.0, 50.0, 'cargo'],
+      [70.0, 22.0, 'cargo'], [130.0, 35.0, 'cargo'], [100.0, 6.0, 'cargo'],
+      [-118.0, 33.0, 'cargo'], [18.0, -34.0, 'cargo'], [-73.0, 40.0, 'cargo'],
+      [113.5, 22.0, 'cargo'], [-46.5, -23.5, 'cargo'], [2.0, 49.0, 'cargo'],
+
+      [32.5, 34.5, 'naval'], [34.0, 33.5, 'naval'], [56.2, 26.5, 'naval'],
+      [43.5, 12.5, 'naval'], [35.0, 25.0, 'naval'], [33.0, 44.5, 'naval'],
+      [19.0, 35.5, 'naval'], [117.0, 22.0, 'naval'], [122.0, 25.0, 'naval'],
+      [124.5, 37.5, 'naval'], [52.0, -5.0, 'naval'], [13.0, 55.0, 'naval'],
+    ];
+    const features = [];
+    const colorMap = { tanker: 'ship-tanker', cargo: 'ship-cargo', naval: 'ship-naval' };
+    for (const [lng, lat, kind] of ports) {
+      const jl = (Math.random() - 0.5) * 4;
+      const jL = (Math.random() - 0.5) * 4;
+      features.push({
+        type: 'Feature',
+        geometry: { type: 'Point', coordinates: [lng + jl, lat + jL] },
+        properties: { kind, icon: colorMap[kind] }
+      });
+    }
+    return { type: 'FeatureCollection', features };
+  }
+
+  // ----- Military callsign detection (subset of worldmonitor patterns) -----
+  function isMilitaryCallsign(cs) {
+    if (!cs) return false;
+    const c = cs.trim().toUpperCase();
+    return /^(RCH|REACH|BOLT|VIPER|RAPTOR|DOOM|BONE|DEATH|KING|SHELL|TEAL|TOPCT|SAM|AF[12]|EXEC|GOLD|SNTRY|COBRA|RIVET|OLIVE|JAKE|DRAGN|NCHO|SHADOW|KNIFE|CSAR|NITE|PACK|DAGGER|DEMON|MOOSE|HERKY|HERC|ATLAS|EVAC|SPAR|IRON|HOMER|SCORE|TITAN|COMET|CASA|STEEL|DUKE|IAF|RAF|FAF|GAF|PLAAF|PLAN|VKS|NATO)/i.test(c);
+  }
+
+  let lastFlightCount = 0;
+
+  async function fetchFlights() {
+    const indicator = document.getElementById('data-source');
+    try {
+      const res = await fetch('https://opensky-network.org/api/states/all', { cache: 'no-store' });
+      if (!res.ok) throw new Error('OpenSky HTTP ' + res.status);
+      const data = await res.json();
+      if (!data || !Array.isArray(data.states)) throw new Error('OpenSky empty');
+
+      const features = [];
+      let civCount = 0, milCount = 0;
+      for (const s of data.states) {
+        if (s[5] === null || s[6] === null) continue; // no position
+        if (s[8] === true) continue;                  // on ground
+        const cs = (s[1] || '').trim();
+        const isMil = isMilitaryCallsign(cs);
+        if (isMil) milCount++; else civCount++;
+        if (features.length >= 1500) continue;        // perf cap
+        features.push({
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [s[5], s[6]] },
+          properties: {
+            icao24: s[0],
+            callsign: cs || '—',
+            country: s[2] || '—',
+            altitude: s[7] ? Math.round(s[7]) : null,
+            velocity_kmh: s[9] ? Math.round(s[9] * 3.6) : null,
+            heading: s[10] || 0,
+            icon: isMil ? 'plane-mil' : 'plane-civ'
+          }
+        });
+      }
+      if (map.getSource('flights')) {
+        map.getSource('flights').setData({ type: 'FeatureCollection', features });
+      }
+      lastFlightCount = features.length;
+
+      const civEl = document.getElementById('stat-civ-flights');
+      const milEl = document.getElementById('stat-mil-flights');
+      if (civEl) civEl.textContent = civCount.toLocaleString('ar-EG');
+      if (milEl) milEl.textContent = milCount.toLocaleString('ar-EG');
+
+      if (indicator) indicator.innerHTML = `<span class="live-dot" style="background:#10b981;box-shadow:0 0 0 0 rgba(16,185,129,0.5);"></span> OpenSky · ${features.length.toLocaleString('ar-EG')} طائرة`;
+    } catch (e) {
+      console.warn('[NCS] OpenSky fetch failed:', e);
+      // Mock fallback so UI still shows something
+      if (lastFlightCount === 0 && map.getSource('flights')) {
+        const fakes = [];
+        for (let i = 0; i < 600; i++) {
+          const isMil = Math.random() < 0.04;
+          fakes.push({
+            type: 'Feature',
+            geometry: { type: 'Point', coordinates: [(Math.random()*360 - 180), (Math.random()*140 - 70)] },
+            properties: {
+              callsign: isMil ? ['BOLT41','RCH3142','SNTRY01','DOOM77','RAPTOR8'][i%5] : 'AAL' + (1000+i),
+              country: '—',
+              altitude: 9000 + Math.floor(Math.random()*4000),
+              velocity_kmh: 750 + Math.floor(Math.random()*200),
+              heading: Math.random()*360,
+              icon: isMil ? 'plane-mil' : 'plane-civ'
+            }
+          });
+        }
+        map.getSource('flights').setData({ type: 'FeatureCollection', features: fakes });
+      }
+      if (indicator) indicator.innerHTML = '<span class="live-dot"></span> محاكاة (OpenSky غير متاح)';
+    }
+  }
+
+  map.on('load', async () => {
+    await Promise.all([
+      addSvgImage('plane-civ',  planeSvg('#fbbf24')),
+      addSvgImage('plane-mil',  planeSvg('#ef4444')),
+      addSvgImage('ship-cargo', shipSvg('#10b981')),
+      addSvgImage('ship-tanker',shipSvg('#f97316')),
+      addSvgImage('ship-naval', shipSvg('#06b6d4')),
+    ]);
+
+    // Chokepoint pulse layer (red glow rings)
+    map.addSource('chokepoints', { type: 'geojson', data: chokepointsFC });
+    map.addLayer({
+      id: 'chokepoints-glow',
+      type: 'circle',
+      source: 'chokepoints',
+      paint: {
+        'circle-radius': ['interpolate', ['linear'], ['zoom'], 1, 12, 6, 36],
+        'circle-color': '#e11d2b',
+        'circle-opacity': 0.10,
+        'circle-stroke-color': '#e11d2b',
+        'circle-stroke-width': 1.2,
+        'circle-stroke-opacity': 0.85,
+      }
     });
-  }
 
-  const navalZones = [
-    [34.5, 32.5], [33.5, 34.0], [26.5, 56.2], [12.5, 43.5],
-    [25.0, 35.0], [44.5, 33.0], [35.5, 19.0], [22.0, 117.0],
-    [25.0, 122.0], [37.5, 124.5], [-5.0, 52.0], [55.0, 13.0],
-  ];
-  const warships = [];
-  for (const [lat, lng] of navalZones) {
-    for (let i = 0; i < 3; i++) warships.push({
-      lat: lat + (Math.random() - 0.5) * 3,
-      lng: lng + (Math.random() - 0.5) * 3,
-      color: '#06b6d4', size: 0.55
+    // Ships
+    map.addSource('ships', { type: 'geojson', data: genShips() });
+    map.addLayer({
+      id: 'ships',
+      type: 'symbol',
+      source: 'ships',
+      layout: {
+        'icon-image': ['get', 'icon'],
+        'icon-allow-overlap': true,
+        'icon-ignore-placement': true,
+        'icon-size': ['interpolate', ['linear'], ['zoom'], 1, 0.45, 6, 0.85],
+      }
     });
-  }
 
-  const allPoints = [...tankers, ...cargo, ...warships];
+    // Flights
+    map.addSource('flights', { type: 'geojson', data: emptyFC() });
+    map.addLayer({
+      id: 'flights-civ',
+      type: 'symbol',
+      source: 'flights',
+      filter: ['==', ['get', 'icon'], 'plane-civ'],
+      layout: {
+        'icon-image': 'plane-civ',
+        'icon-rotate': ['get', 'heading'],
+        'icon-allow-overlap': true,
+        'icon-ignore-placement': true,
+        'icon-rotation-alignment': 'map',
+        'icon-size': ['interpolate', ['linear'], ['zoom'], 1, 0.4, 6, 0.85],
+      }
+    });
+    map.addLayer({
+      id: 'flights-mil',
+      type: 'symbol',
+      source: 'flights',
+      filter: ['==', ['get', 'icon'], 'plane-mil'],
+      layout: {
+        'icon-image': 'plane-mil',
+        'icon-rotate': ['get', 'heading'],
+        'icon-allow-overlap': true,
+        'icon-ignore-placement': true,
+        'icon-rotation-alignment': 'map',
+        'icon-size': ['interpolate', ['linear'], ['zoom'], 1, 0.55, 6, 1.1],
+      }
+    });
 
-  // Naval chokepoints — labeled on the globe
-  const chokepoints = [
-    { lat: 26.5, lng: 56.5, label: 'Hormuz' },
-    { lat: 30.0, lng: 32.5, label: 'Suez' },
-    { lat: 12.5, lng: 43.5, label: 'Bab el-Mandeb' },
-    { lat:  2.5, lng: 101.5, label: 'Malacca' },
-    { lat: 24.5, lng: 119.5, label: 'Taiwan' },
-    { lat:  9.0, lng: -79.5, label: 'Panama' },
-    { lat: 41.0, lng: 28.0, label: 'Bosphorus' },
-    { lat: 35.9, lng: -5.5, label: 'Gibraltar' },
-  ];
+    // Click popup for aircraft
+    const popup = new maplibregl.Popup({ closeButton: true, closeOnClick: true, className: 'ncs-popup', maxWidth: '280px' });
+    function onFeatureClick(e) {
+      const f = e.features && e.features[0];
+      if (!f) return;
+      const p = f.properties;
+      const altFt = p.altitude ? Math.round(p.altitude * 3.281).toLocaleString('en-US') : '—';
+      popup.setLngLat(f.geometry.coordinates).setHTML(`
+        <div class="popup-cs">${p.callsign || '—'}</div>
+        <div class="popup-row"><span>الدولة</span><b>${p.country || '—'}</b></div>
+        <div class="popup-row"><span>الارتفاع</span><b>${altFt} قدم</b></div>
+        <div class="popup-row"><span>السرعة</span><b>${p.velocity_kmh ? p.velocity_kmh + ' كم/س' : '—'}</b></div>
+        <div class="popup-row"><span>الاتجاه</span><b>${Math.round(p.heading)}°</b></div>
+      `).addTo(map);
+    }
+    map.on('click', 'flights-civ', onFeatureClick);
+    map.on('click', 'flights-mil', onFeatureClick);
+    ['flights-civ', 'flights-mil'].forEach(id => {
+      map.on('mouseenter', id, () => map.getCanvas().style.cursor = 'pointer');
+      map.on('mouseleave', id, () => map.getCanvas().style.cursor = '');
+    });
 
-  const globe = Globe()(document.getElementById('globe'))
-    .globeImageUrl('//unpkg.com/three-globe/example/img/earth-night.jpg')
-    .bumpImageUrl('//unpkg.com/three-globe/example/img/earth-topology.png')
-    .backgroundColor('rgba(0,0,0,0)')
-    .atmosphereColor('#e11d2b')
-    .atmosphereAltitude(0.18)
-    .arcsData(allArcs)
-    .arcColor('color')
-    .arcDashLength(0.5).arcDashGap(2).arcDashAnimateTime(3000)
-    .arcStroke(0.5).arcAltitude(0.25)
-    .pointsData(allPoints)
-    .pointColor('color').pointAltitude(0.005).pointRadius('size')
-    .labelsData(chokepoints)
-    .labelLat('lat').labelLng('lng').labelText('label')
-    .labelSize(0.55).labelDotRadius(0.3)
-    .labelColor(() => '#ffffff')
-    .labelResolution(2)
-    .labelAltitude(0.005);
+    // Initial fetch + interval (60s = OpenSky-friendly)
+    fetchFlights();
+    setInterval(fetchFlights, 60_000);
 
-  globe.controls().autoRotate = true;
-  globe.controls().autoRotateSpeed = 0.4;
-  globe.controls().enableZoom = false;
-
-  function resizeGlobe() {
-    const el = document.getElementById('globe');
-    globe.width(el.clientWidth);
-    globe.height(el.clientHeight);
-  }
-  resizeGlobe();
-  window.addEventListener('resize', resizeGlobe);
+    // Slow ship drift
+    setInterval(() => {
+      const fc = genShips();
+      if (map.getSource('ships')) map.getSource('ships').setData(fc);
+    }, 15_000);
+  });
 
   // ============================================================
   // Live tracked assets feed (realistic military callsigns)
