@@ -1,0 +1,1873 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>NCS — المركز الدراسات المصري</title>
+<meta name="description" content="NCS — موقع إخباري عالمي شامل: أخبار سياسية ورياضية واقتصادية، رادار استراتيجي للطيران المدني والعسكري وحركة السفن، تحقّق من المصادر." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Inter:wght@400;500;700;800&family=Playfair+Display:ital,wght@0,800;0,900;1,800&display=swap" rel="stylesheet" />
+
+<style>
+  /* ============================================================
+     NCS — design tokens
+     palette: black / red / white (matches logo)
+     ============================================================ */
+  :root {
+    --bg: #0a0a0a;
+    --bg-elev-1: #131313;
+    --bg-elev-2: #1a1a1a;
+    --border: #262626;
+    --border-strong: #3a3a3a;
+
+    --red: #e11d2b;
+    --red-dim: #991b1b;
+    --red-glow: rgba(225, 29, 43, 0.5);
+
+    --text: #fafafa;
+    --text-muted: #a3a3a3;
+    --text-dim: #737373;
+
+    --accent-soft: #2a2a2a;
+
+    --font-ar-display: "Cairo", system-ui, sans-serif;
+    --font-ar-body: "Cairo", system-ui, sans-serif;
+    --font-en-display: "Playfair Display", Georgia, serif;
+    --font-en-body: "Inter", system-ui, sans-serif;
+
+    --space-section: clamp(3rem, 2rem + 4vw, 6rem);
+    --container: 1400px;
+
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-ar-body);
+    font-feature-settings: "ss01", "ss02";
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  a { color: inherit; text-decoration: none; }
+  img { max-width: 100%; display: block; }
+
+  .container { max-width: var(--container); margin: 0 auto; padding: 0 1.25rem; }
+
+  /* ============================================================
+     TOP BAR — date, weather, language
+     ============================================================ */
+  .topbar {
+    background: #050505;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.78rem;
+    color: var(--text-muted);
+  }
+  .topbar-inner {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.55rem 1.25rem; max-width: var(--container); margin: 0 auto;
+    gap: 1.5rem;
+  }
+  .topbar .meta { display: flex; gap: 1.25rem; align-items: center; flex-wrap: wrap; }
+  .topbar .meta span { display: inline-flex; align-items: center; gap: 0.4rem; }
+  .topbar .live-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--red); box-shadow: 0 0 0 0 var(--red-glow);
+    animation: pulse 1.6s infinite;
+  }
+  .lang-toggle {
+    display: inline-flex; gap: 0; border: 1px solid var(--border-strong);
+    border-radius: 999px; overflow: hidden; font-weight: 700;
+  }
+  .lang-toggle button {
+    background: transparent; color: var(--text-muted); border: 0;
+    padding: 0.25rem 0.85rem; cursor: pointer; font-size: 0.72rem;
+    font-family: var(--font-en-body);
+  }
+  .lang-toggle button.active { background: var(--text); color: #000; }
+
+  @keyframes pulse {
+    0%   { box-shadow: 0 0 0 0 var(--red-glow); }
+    70%  { box-shadow: 0 0 0 8px transparent; }
+    100% { box-shadow: 0 0 0 0 transparent; }
+  }
+
+  /* ============================================================
+     HEADER — logo + nav
+     ============================================================ */
+  header.site {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(10, 10, 10, 0.85);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-bottom: 1px solid var(--border);
+  }
+  .header-inner {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 2rem; align-items: center;
+    padding: 1rem 1.25rem;
+    max-width: var(--container); margin: 0 auto;
+  }
+  .logo {
+    display: flex; align-items: center; gap: 0.85rem;
+    font-family: var(--font-en-display);
+    font-size: 1.75rem; font-weight: 900; letter-spacing: -0.04em;
+    color: var(--text);
+  }
+  .logo .mark { width: 44px; height: 44px; flex-shrink: 0; }
+  .logo .mark svg { width: 100%; height: 100%; display: block; }
+  nav.primary ul {
+    display: flex; gap: 2rem; list-style: none; padding: 0; margin: 0;
+    justify-content: center;
+    font-weight: 700; font-size: 0.95rem;
+  }
+  nav.primary a {
+    color: var(--text-muted); padding: 0.5rem 0;
+    position: relative; transition: color 200ms var(--ease-out);
+  }
+  nav.primary a:hover, nav.primary a.active { color: var(--text); }
+  nav.primary a.active::after {
+    content: ""; position: absolute; bottom: -1.05rem; left: 0; right: 0;
+    height: 2px; background: var(--red);
+  }
+  .header-actions { display: flex; gap: 0.6rem; align-items: center; }
+  .icon-btn {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: var(--bg-elev-2); border: 1px solid var(--border);
+    color: var(--text-muted); cursor: pointer;
+    display: grid; place-items: center; transition: all 200ms;
+  }
+  .icon-btn:hover { color: var(--text); border-color: var(--red); }
+
+  /* ============================================================
+     BREAKING NEWS TICKER
+     ============================================================ */
+  .ticker {
+    background: var(--red);
+    color: #fff;
+    overflow: hidden;
+    border-bottom: 2px solid #000;
+    font-weight: 700;
+  }
+  .ticker-inner {
+    display: flex; align-items: center;
+    max-width: var(--container); margin: 0 auto;
+    padding: 0.65rem 0;
+  }
+  .ticker-label {
+    flex-shrink: 0;
+    background: #000; color: #fff;
+    padding: 0.65rem 1.25rem;
+    font-weight: 900; font-size: 0.85rem; letter-spacing: 0.05em;
+    margin-inline-start: 0;
+    display: flex; gap: 0.5rem; align-items: center;
+  }
+  .ticker-label .live-dot { background: #fff; }
+  .ticker-track {
+    flex: 1; overflow: hidden; mask-image: linear-gradient(to left, transparent 0%, #000 5%, #000 95%, transparent 100%);
+    padding-inline-start: 1.25rem;
+  }
+  .ticker-content {
+    display: inline-flex; gap: 3rem;
+    animation: scroll-rtl 50s linear infinite;
+    white-space: nowrap;
+  }
+  .ticker-content span::before {
+    content: "•"; margin-inline-end: 1rem; opacity: 0.6;
+  }
+  @keyframes scroll-rtl {
+    from { transform: translateX(0); }
+    to   { transform: translateX(100%); }
+  }
+
+  /* ============================================================
+     SECTION HEADERS
+     ============================================================ */
+  .section-head {
+    display: flex; justify-content: space-between; align-items: end;
+    margin: var(--space-section) 0 1.75rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 1rem;
+  }
+  .section-head h2 {
+    margin: 0; font-size: clamp(1.5rem, 1rem + 1.5vw, 2.25rem);
+    font-weight: 900; letter-spacing: -0.02em;
+    display: flex; gap: 0.75rem; align-items: center;
+  }
+  .section-head h2::before {
+    content: ""; width: 4px; height: 1.75rem; background: var(--red);
+  }
+  .section-head .more {
+    font-size: 0.85rem; color: var(--text-muted); font-weight: 700;
+    text-decoration: none; display: inline-flex; gap: 0.4rem;
+    transition: color 200ms;
+  }
+  .section-head .more:hover { color: var(--red); }
+
+  /* ============================================================
+     HERO
+     ============================================================ */
+  .hero {
+    display: grid;
+    grid-template-columns: 1.7fr 1fr;
+    gap: 1.25rem;
+    margin-top: 2rem;
+  }
+  .hero-main {
+    position: relative;
+    aspect-ratio: 16/10;
+    border-radius: 4px; overflow: hidden;
+    background: #1a1a1a url("https://picsum.photos/seed/ncs-hero/1200/750") center/cover;
+    cursor: pointer;
+  }
+  .hero-main::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(0deg, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.4) 50%, transparent 100%);
+  }
+  .hero-content {
+    position: absolute; inset: auto 0 0 0; padding: 2rem;
+    z-index: 2;
+  }
+  .tag {
+    display: inline-block; padding: 0.3rem 0.7rem;
+    background: var(--red); color: #fff;
+    font-size: 0.72rem; font-weight: 800; letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+  .tag.outline {
+    background: transparent; border: 1px solid var(--border-strong);
+    color: var(--text-muted);
+  }
+  .hero-content h1 {
+    margin: 0 0 0.85rem; font-size: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+    font-weight: 900; line-height: 1.25; letter-spacing: -0.02em;
+  }
+  .hero-content p {
+    margin: 0; color: var(--text-muted); font-size: 0.95rem; max-width: 60ch;
+  }
+  .hero-meta {
+    margin-top: 1rem; display: flex; gap: 1rem; align-items: center;
+    font-size: 0.78rem; color: var(--text-dim); font-weight: 600;
+  }
+  .verified {
+    display: inline-flex; gap: 0.3rem; align-items: center;
+    color: #34d399;
+  }
+  .verified::before { content: "✓"; font-weight: 900; }
+
+  .hero-side { display: flex; flex-direction: column; gap: 1.25rem; }
+  .hero-side .card {
+    background: var(--bg-elev-1); border: 1px solid var(--border);
+    padding: 1.25rem;
+    flex: 1;
+    transition: border-color 200ms;
+    cursor: pointer;
+  }
+  .hero-side .card:hover { border-color: var(--red); }
+  .hero-side .card .tag { margin-bottom: 0.7rem; font-size: 0.65rem; padding: 0.2rem 0.55rem; }
+  .hero-side .card h3 {
+    margin: 0 0 0.5rem; font-size: 1.1rem; font-weight: 800;
+    line-height: 1.4; letter-spacing: -0.01em;
+  }
+  .hero-side .card .meta { font-size: 0.74rem; color: var(--text-dim); }
+
+  /* ============================================================
+     3D GLOBE SECTION
+     ============================================================ */
+  .globe-section {
+    position: relative;
+    margin-top: var(--space-section);
+    background: radial-gradient(ellipse at center, #0d0d0d 0%, #050505 100%);
+    border-block: 1px solid var(--border);
+    padding: clamp(2rem, 1rem + 4vw, 4rem) 0;
+    overflow: hidden;
+  }
+  .globe-section::before {
+    content: ""; position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(225,29,43,0.08), transparent 40%),
+      radial-gradient(circle at 80% 70%, rgba(225,29,43,0.05), transparent 40%);
+    pointer-events: none;
+  }
+  .globe-grid {
+    display: grid; grid-template-columns: 1fr 1.4fr; gap: 3rem;
+    align-items: center; max-width: var(--container);
+    margin: 0 auto; padding: 0 1.25rem; position: relative;
+  }
+  .globe-text h2 {
+    font-size: clamp(2rem, 1.5rem + 2vw, 3.5rem);
+    font-weight: 900; line-height: 1.1; letter-spacing: -0.03em;
+    margin: 0 0 1.25rem;
+  }
+  .globe-text h2 em { color: var(--red); font-style: normal; }
+  .globe-text p {
+    color: var(--text-muted); font-size: 1.05rem;
+    max-width: 50ch; margin: 0 0 1.5rem;
+  }
+  .globe-stats {
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  .stat {
+    background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+    padding: 1rem; backdrop-filter: blur(8px);
+  }
+  .stat .num {
+    font-size: 1.85rem; font-weight: 900; letter-spacing: -0.02em;
+    font-family: var(--font-en-body);
+    color: var(--text);
+    display: flex; align-items: baseline; gap: 0.3rem;
+  }
+  .stat .num small {
+    font-size: 0.85rem; color: var(--red); font-weight: 800;
+  }
+  .stat .label {
+    font-size: 0.78rem; color: var(--text-muted);
+    margin-top: 0.25rem; font-weight: 600;
+  }
+  #globe {
+    width: 100%; height: 600px; min-height: 500px;
+    position: relative;
+  }
+  .globe-legend {
+    position: absolute; bottom: 1rem; inset-inline-start: 1rem;
+    background: rgba(0,0,0,0.7); border: 1px solid var(--border);
+    padding: 0.85rem 1rem; font-size: 0.78rem;
+    backdrop-filter: blur(8px);
+  }
+  .globe-legend div { display: flex; gap: 0.6rem; align-items: center; margin: 0.3rem 0; }
+  .globe-legend .swatch { width: 10px; height: 10px; border-radius: 50%; }
+
+  /* ============================================================
+     LIVE CHANNELS STRIP
+     ============================================================ */
+  .channels {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 0.85rem;
+  }
+  .channel {
+    aspect-ratio: 16/10;
+    background: var(--bg-elev-2);
+    border: 1px solid var(--border);
+    position: relative; overflow: hidden;
+    cursor: pointer; transition: all 200ms var(--ease-out);
+  }
+  .channel:hover { border-color: var(--red); transform: translateY(-2px); }
+  .channel-name {
+    position: absolute; inset: auto 1rem 1rem 1rem;
+    font-weight: 800; font-size: 0.95rem;
+    letter-spacing: -0.01em;
+    z-index: 2;
+  }
+  .channel::before {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.85) 80%);
+  }
+  .channel-thumb {
+    position: absolute; inset: 0; opacity: 0.6;
+    background-size: cover; background-position: center;
+  }
+  .channel:hover .channel-thumb { opacity: 0.9; }
+  .channel .live-badge {
+    position: absolute; top: 0.85rem; inset-inline-start: 0.85rem;
+    background: var(--red); color: #fff;
+    font-weight: 900; font-size: 0.62rem; letter-spacing: 0.1em;
+    padding: 0.2rem 0.55rem; z-index: 2;
+    display: flex; gap: 0.35rem; align-items: center;
+  }
+  .channel .live-badge .live-dot { background: #fff; width: 5px; height: 5px; }
+  .channel .viewers {
+    position: absolute; top: 0.85rem; inset-inline-end: 0.85rem;
+    font-size: 0.7rem; color: rgba(255,255,255,0.85);
+    background: rgba(0,0,0,0.5);
+    padding: 0.15rem 0.5rem;
+    z-index: 2; font-family: var(--font-en-body);
+  }
+
+  /* ============================================================
+     LAYOUT GRID — sports + economy + politics
+     ============================================================ */
+  .grid-3 {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr 1fr;
+    gap: 1.5rem;
+    align-items: start;
+  }
+
+  .panel {
+    background: var(--bg-elev-1);
+    border: 1px solid var(--border);
+  }
+  .panel-head {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1.1rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .panel-head h3 {
+    margin: 0; font-size: 1.05rem; font-weight: 800;
+    display: flex; gap: 0.6rem; align-items: center;
+    letter-spacing: -0.01em;
+  }
+  .panel-head .live-dot { background: var(--red); }
+  .panel-body { padding: 1.25rem; }
+
+  /* ===== Sports live match widget ===== */
+  .match {
+    text-align: center; padding: 1.5rem 1.25rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .match-meta {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 0.72rem; color: var(--text-muted); font-weight: 700;
+    margin-bottom: 1rem;
+  }
+  .match-status {
+    color: var(--red); display: inline-flex; gap: 0.35rem; align-items: center;
+  }
+  .match-status .live-dot { background: var(--red); }
+  .teams {
+    display: grid; grid-template-columns: 1fr auto 1fr;
+    gap: 1rem; align-items: center;
+  }
+  .team { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+  .team-logo {
+    width: 50px; height: 50px; border-radius: 50%;
+    background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
+    border: 1px solid var(--border-strong);
+    display: grid; place-items: center;
+    font-weight: 900; font-size: 1.1rem;
+    font-family: var(--font-en-body);
+  }
+  .team:nth-child(1) .team-logo { background: linear-gradient(135deg, #c8102e, #6b0010); color: #fff; }
+  .team:nth-child(3) .team-logo { background: linear-gradient(135deg, #ffffff, #d0d0d0); color: #000; }
+  .team-name { font-size: 0.85rem; font-weight: 700; }
+  .score {
+    font-family: var(--font-en-body);
+    font-size: 2.5rem; font-weight: 900;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+  .score-divider { color: var(--text-dim); margin: 0 0.5rem; }
+  .goal-alert {
+    margin-top: 1rem;
+    background: linear-gradient(90deg, rgba(225,29,43,0.15), transparent);
+    border-inline-start: 3px solid var(--red);
+    padding: 0.6rem 0.85rem;
+    text-align: start;
+    font-size: 0.85rem;
+    animation: goal-flash 800ms 3 alternate;
+  }
+  .goal-alert strong { color: var(--red); }
+  @keyframes goal-flash {
+    from { background: rgba(225,29,43,0.05); }
+    to   { background: rgba(225,29,43,0.25); }
+  }
+
+  /* ===== Economy widgets ===== */
+  .metric-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.75rem 0; border-bottom: 1px solid var(--border);
+  }
+  .metric-row:last-child { border-bottom: 0; }
+  .metric-label { font-weight: 700; font-size: 0.92rem; }
+  .metric-label small { color: var(--text-dim); font-size: 0.72rem; font-weight: 500; display: block; }
+  .metric-value {
+    font-family: var(--font-en-body); font-weight: 900;
+    font-size: 1.1rem; letter-spacing: -0.02em;
+    text-align: end; min-width: 100px;
+  }
+  .metric-change {
+    font-size: 0.72rem; font-weight: 700;
+    display: inline-block; min-width: 60px; text-align: end;
+  }
+  .metric-change.up { color: #34d399; }
+  .metric-change.down { color: var(--red); }
+  .metric-change::before { content: "▲ "; }
+  .metric-change.down::before { content: "▼ "; }
+
+  /* ===== Politics cards (US/Iran/Israel) ===== */
+  .politics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+  }
+  .country-card {
+    background: var(--bg-elev-1);
+    border: 1px solid var(--border);
+    padding: 1.5rem 1.25rem;
+    cursor: pointer;
+    transition: all 250ms var(--ease-out);
+    position: relative;
+    overflow: hidden;
+  }
+  .country-card::before {
+    content: ""; position: absolute;
+    inset-inline-start: 0; top: 0; bottom: 0; width: 4px;
+    background: var(--country-color, var(--red));
+  }
+  .country-card:hover { border-color: var(--country-color, var(--red)); transform: translateY(-3px); }
+  .country-flag {
+    font-family: var(--font-en-body);
+    font-size: 0.7rem; font-weight: 800;
+    letter-spacing: 0.15em; color: var(--country-color);
+    margin-bottom: 0.5rem; text-transform: uppercase;
+  }
+  .country-card h4 {
+    margin: 0 0 0.75rem; font-size: 1.15rem; font-weight: 800;
+    line-height: 1.4; letter-spacing: -0.01em;
+  }
+  .country-card p {
+    margin: 0; font-size: 0.86rem; color: var(--text-muted);
+    line-height: 1.65;
+  }
+  .country-card .meta {
+    margin-top: 1rem; padding-top: 0.85rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.72rem; color: var(--text-dim);
+    display: flex; justify-content: space-between;
+  }
+
+  /* ===== News grid ===== */
+  .news-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+  }
+  .news-card {
+    cursor: pointer; transition: transform 200ms;
+  }
+  .news-card:hover { transform: translateY(-3px); }
+  .news-thumb {
+    aspect-ratio: 4/3; background: #1a1a1a;
+    background-size: cover; background-position: center;
+    margin-bottom: 0.85rem;
+  }
+  .news-card .tag { font-size: 0.6rem; padding: 0.15rem 0.5rem; margin-bottom: 0.5rem; }
+  .news-card h4 {
+    margin: 0; font-size: 0.98rem; font-weight: 800; line-height: 1.45;
+    letter-spacing: -0.01em;
+  }
+  .news-card .meta {
+    margin-top: 0.6rem; font-size: 0.72rem; color: var(--text-dim);
+    display: flex; gap: 0.85rem;
+  }
+
+  /* ===== NCS Facebook strip ===== */
+  .ncs-section {
+    background: linear-gradient(180deg, #0a0a0a, #131313);
+    border-block: 1px solid var(--border);
+    padding: var(--space-section) 0;
+    margin-top: var(--space-section);
+  }
+  .ncs-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+  }
+  .fb-post {
+    background: var(--bg-elev-2);
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    position: relative;
+  }
+  .fb-post::before {
+    content: ""; position: absolute;
+    top: 0; inset-inline-start: 0; width: 32px; height: 32px;
+    background: #1877f2;
+    clip-path: polygon(0 0, 100% 0, 0 100%);
+  }
+  .fb-post .fb-icon {
+    position: absolute; top: 0.4rem; inset-inline-start: 0.4rem;
+    color: #fff; font-weight: 900; font-family: var(--font-en-body);
+    font-size: 0.75rem;
+  }
+  .fb-post p { margin: 0.5rem 0 1rem; line-height: 1.7; font-size: 0.95rem; }
+  .fb-post .meta { font-size: 0.78rem; color: var(--text-muted); }
+
+  /* ===== Footer ===== */
+  footer.site {
+    border-top: 1px solid var(--border);
+    margin-top: var(--space-section);
+    padding: 3rem 0 1.5rem;
+    background: #050505;
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+  .footer-grid h5 {
+    margin: 0 0 1rem; font-size: 0.85rem;
+    color: var(--text); font-weight: 800; letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .footer-grid ul { list-style: none; padding: 0; margin: 0; }
+  .footer-grid ul li {
+    padding: 0.35rem 0; font-size: 0.88rem;
+    color: var(--text-muted);
+  }
+  .footer-grid ul li a:hover { color: var(--red); }
+  .footer-bottom {
+    border-top: 1px solid var(--border);
+    padding-top: 1.25rem;
+    display: flex; justify-content: space-between;
+    color: var(--text-dim); font-size: 0.78rem;
+    font-family: var(--font-en-body);
+  }
+
+  /* ============================================================
+     STRATEGIC GLOBE LAYOUT
+     ============================================================ */
+  .globe-section { padding: clamp(1.5rem, 1rem + 2vw, 2.5rem) 0; }
+  .globe-header-bar {
+    max-width: var(--container); margin: 0 auto 1.5rem;
+    padding: 0 1.25rem;
+  }
+  .globe-title {
+    font-size: clamp(1.85rem, 1.4rem + 1.6vw, 2.85rem);
+    font-weight: 900; letter-spacing: -0.03em;
+    margin: 0 0 0.4rem;
+  }
+  .globe-tagline { color: var(--text-muted); font-size: 0.95rem; margin: 0; max-width: 60ch; }
+
+  .globe-layout {
+    display: grid;
+    grid-template-columns: 290px 1fr 290px;
+    gap: 1rem;
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: 0 1.25rem;
+    align-items: stretch;
+  }
+  .globe-pane {
+    background: rgba(0,0,0,0.5);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(10px);
+    display: flex; flex-direction: column;
+  }
+  .pane-section {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .pane-section:last-child { border-bottom: 0; }
+  .pane-title {
+    margin: 0 0 0.85rem;
+    font-size: 0.78rem; font-weight: 800;
+    color: var(--text); letter-spacing: 0.05em;
+    text-transform: uppercase;
+    display: flex; gap: 0.5rem; align-items: center;
+  }
+  .pane-title .live-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--red);
+    box-shadow: 0 0 0 0 var(--red-glow);
+    animation: pulse 1.6s infinite;
+  }
+
+  .theater {
+    display: flex; gap: 0.6rem; align-items: stretch;
+    padding: 0.65rem 0;
+    border-bottom: 1px dashed var(--border);
+  }
+  .theater:last-child { border-bottom: 0; }
+  .theater-bar { width: 3px; flex-shrink: 0; background: var(--theater-color, var(--red)); }
+  .theater[data-priority="high"]   { --theater-color: #ef4444; }
+  .theater[data-priority="medium"] { --theater-color: #f59e0b; }
+  .theater[data-priority="low"]    { --theater-color: #10b981; }
+  .theater-body { flex: 1; min-width: 0; }
+  .theater-name {
+    font-weight: 800; font-size: 0.86rem;
+    font-family: var(--font-en-body);
+    letter-spacing: -0.01em;
+  }
+  .theater-name .tlabel {
+    color: var(--text-muted); font-weight: 600;
+    font-size: 0.72rem; font-family: var(--font-ar-body);
+    margin-inline-start: 0.4rem;
+  }
+  .theater-region { font-size: 0.72rem; color: var(--text-dim); margin-top: 0.15rem; }
+  .theater-meta {
+    margin-top: 0.4rem;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 0.7rem;
+  }
+  .threat-pill {
+    padding: 0.1rem 0.5rem; border-radius: 999px;
+    font-weight: 800; letter-spacing: 0.05em; font-size: 0.65rem;
+    background: rgba(239,68,68,0.1);
+    border: 1px solid currentColor;
+  }
+  .threat-pill.high   { color: #ef4444; }
+  .threat-pill.medium { color: #f59e0b; }
+  .threat-pill.low    { color: #10b981; }
+  .t-stat { color: var(--text-muted); font-weight: 700; font-family: var(--font-en-body); font-size: 0.7rem; }
+
+  .bd-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.45rem 0;
+    border-bottom: 1px dashed var(--border);
+    font-size: 0.82rem;
+  }
+  .bd-row:last-child { border-bottom: 0; }
+  .bd-label em { color: var(--text-dim); font-style: normal; font-family: var(--font-en-body); font-size: 0.7rem; margin-inline-start: 0.3rem; }
+  .bd-num { font-family: var(--font-en-body); font-weight: 900; font-size: 1rem; color: var(--text); }
+
+  .globe-center { position: relative; min-height: 580px; }
+  .globe-center #globe {
+    width: 100%; height: 580px;
+    background: radial-gradient(ellipse at center, rgba(225,29,43,0.04) 0%, transparent 60%);
+  }
+  .globe-overlay-top {
+    position: absolute; top: 1rem; inset-inline-start: 1rem;
+    display: flex; gap: 0.5rem; z-index: 5; pointer-events: none;
+  }
+  .ovl-stat {
+    background: rgba(0,0,0,0.85); border: 1px solid var(--border-strong);
+    backdrop-filter: blur(10px);
+    padding: 0.5rem 0.75rem;
+    text-align: center; min-width: 70px;
+  }
+  .ovl-stat.danger { border-color: var(--red); }
+  .ovl-num { font-family: var(--font-en-body); font-weight: 900; font-size: 1.05rem; color: var(--text); letter-spacing: -0.02em; }
+  .ovl-stat.danger .ovl-num { color: #fca5a5; }
+  .ovl-lbl { font-size: 0.65rem; color: var(--text-muted); font-weight: 700; }
+
+  .assets-feed {
+    display: flex; flex-direction: column; gap: 0.4rem;
+    max-height: 360px; overflow: hidden;
+  }
+  .asset {
+    background: rgba(255,255,255,0.025);
+    border-inline-start: 2px solid var(--asset-color, var(--red));
+    padding: 0.5rem 0.6rem;
+    font-size: 0.75rem;
+  }
+  .asset.fresh { animation: asset-flash 1500ms; }
+  @keyframes asset-flash {
+    0%   { background: rgba(225,29,43,0.3); }
+    100% { background: rgba(255,255,255,0.025); }
+  }
+  .asset-line1 {
+    display: flex; justify-content: space-between; gap: 0.4rem;
+    font-family: var(--font-en-body); font-weight: 700;
+  }
+  .asset-callsign { color: var(--text); }
+  .asset-type { color: var(--text-muted); font-size: 0.68rem; font-weight: 700; }
+  .asset-line2 { color: var(--text-dim); font-size: 0.68rem; margin-top: 0.15rem; }
+
+  .choke-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.4rem 0;
+    font-size: 0.78rem;
+    border-bottom: 1px dashed var(--border);
+  }
+  .choke-row:last-child { border-bottom: 0; }
+  .choke-stat {
+    font-family: var(--font-en-body); font-weight: 800; font-size: 0.78rem;
+    color: var(--text-muted);
+  }
+  .choke-stat.danger { color: var(--red); }
+
+  @media (max-width: 1100px) {
+    .globe-layout { grid-template-columns: 1fr; }
+    .globe-center #globe { height: 480px; }
+  }
+
+  /* ============================================================
+     LIVE STATUS PILL — floating bottom-right
+     ============================================================ */
+  .live-pill {
+    position: fixed; bottom: 1.25rem; inset-inline-end: 1.25rem;
+    background: rgba(10,10,10,0.92);
+    border: 1px solid var(--border-strong);
+    backdrop-filter: blur(10px);
+    padding: 0.6rem 1rem;
+    display: flex; gap: 0.6rem; align-items: center;
+    font-size: 0.78rem; font-weight: 700;
+    z-index: 100; border-radius: 999px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+  }
+  .live-pill .dot {
+    width: 9px; height: 9px; border-radius: 50%;
+    background: #34d399;
+    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.6);
+    animation: pulse-green 1.6s infinite;
+  }
+  .live-pill .count {
+    font-family: var(--font-en-body);
+    color: var(--text-muted);
+    border-inline-start: 1px solid var(--border);
+    padding-inline-start: 0.6rem; margin-inline-start: 0.2rem;
+  }
+  @keyframes pulse-green {
+    0%   { box-shadow: 0 0 0 0 rgba(52,211,153,0.6); }
+    70%  { box-shadow: 0 0 0 10px transparent; }
+    100% { box-shadow: 0 0 0 0 transparent; }
+  }
+
+  /* Number tick animation when value changes */
+  .tick {
+    animation: tick-flash 600ms var(--ease-out);
+  }
+  @keyframes tick-flash {
+    0%   { color: var(--red); transform: translateY(-2px); }
+    100% { color: inherit; transform: translateY(0); }
+  }
+
+  /* New article flash */
+  .new-flash {
+    position: relative;
+    animation: new-glow 1500ms var(--ease-out);
+  }
+  .new-flash::after {
+    content: "جديد";
+    position: absolute; top: 0.5rem; inset-inline-start: 0.5rem;
+    background: var(--red); color: #fff;
+    font-size: 0.6rem; font-weight: 900; letter-spacing: 0.05em;
+    padding: 0.15rem 0.45rem; z-index: 5;
+    animation: new-badge-fade 5s forwards;
+  }
+  @keyframes new-glow {
+    0%   { box-shadow: 0 0 0 2px var(--red), 0 0 30px var(--red-glow); }
+    100% { box-shadow: 0 0 0 0 transparent, 0 0 0 transparent; }
+  }
+  @keyframes new-badge-fade {
+    0%   { opacity: 1; }
+    80%  { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* Refresh button in topbar */
+  .refresh-btn {
+    background: transparent; border: 1px solid var(--border-strong);
+    color: var(--text-muted); padding: 0.25rem 0.6rem;
+    border-radius: 999px; cursor: pointer;
+    font-size: 0.7rem; font-weight: 700;
+    display: inline-flex; gap: 0.35rem; align-items: center;
+    transition: all 200ms;
+  }
+  .refresh-btn:hover { color: var(--text); border-color: var(--red); }
+  .refresh-btn.spinning svg { animation: spin 800ms linear; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+  @media (max-width: 1100px) {
+    .grid-3 { grid-template-columns: 1fr 1fr; }
+    .grid-3 > :first-child { grid-column: span 2; }
+    .news-grid { grid-template-columns: repeat(3, 1fr); }
+    .news-grid > :nth-child(n+4) { display: none; }
+    .globe-grid { grid-template-columns: 1fr; }
+    #globe { height: 480px; }
+    nav.primary ul { gap: 1.25rem; font-size: 0.85rem; }
+  }
+  @media (max-width: 768px) {
+    .hero { grid-template-columns: 1fr; }
+    .grid-3 { grid-template-columns: 1fr; }
+    .grid-3 > :first-child { grid-column: span 1; }
+    .news-grid { grid-template-columns: repeat(2, 1fr); }
+    .politics-grid { grid-template-columns: 1fr; }
+    .ncs-grid { grid-template-columns: 1fr; }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    nav.primary { display: none; }
+    .topbar .meta { font-size: 0.7rem; gap: 0.85rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= TOP BAR ================= -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="meta">
+      <span><span class="live-dot"></span> بث مباشر</span>
+      <span>الجمعة، ١ مايو ٢٠٢٦</span>
+      <span id="clock">—</span>
+      <span>القاهرة ٣٠°</span>
+    </div>
+    <div style="display:flex; gap:0.85rem; align-items:center;">
+      <button class="refresh-btn" id="refresh-btn" title="تحديث الآن">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
+        تحديث
+      </button>
+      <div class="lang-toggle">
+        <button class="active">عربي</button>
+        <button>EN</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= HEADER ================= -->
+<header class="site">
+  <div class="header-inner">
+    <a href="#" class="logo">
+      <span class="mark"><img src="logo.jpg" alt="NCS" style="width:100%;height:100%;border-radius:10px;display:block;"/></span>
+      <span>NCS<span style="color:var(--red)">.</span></span>
+    </a>
+    <nav class="primary">
+      <ul>
+        <li><a href="#" class="active">الرئيسية</a></li>
+        <li><a href="#">سياسة</a></li>
+        <li><a href="#">اقتصاد</a></li>
+        <li><a href="#">رياضة</a></li>
+        <li><a href="#">مباشر</a></li>
+        <li><a href="#">المركز</a></li>
+      </ul>
+    </nav>
+    <div class="header-actions">
+      <button class="icon-btn" title="بحث">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      </button>
+      <button class="icon-btn" title="تنبيهات">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ================= BREAKING TICKER ================= -->
+<div class="ticker">
+  <div class="ticker-inner">
+    <div class="ticker-label"><span class="live-dot"></span> عاجل</div>
+    <div class="ticker-track">
+      <div class="ticker-content">
+        <span>مجلس الأمن يعقد جلسة طارئة لمناقشة التصعيد بين واشنطن وطهران</span>
+        <span>ارتفاع جديد في سعر الذهب: عيار ٢١ يتجاوز ٤٦٠٠ جنيه للجرام</span>
+        <span>الأهلي يتقدم على الزمالك بهدف نظيف في الدقيقة ٤٢ من القمة</span>
+        <span>البنك المركزي المصري يثبت أسعار الفائدة في اجتماع اليوم</span>
+        <span>تقرير: ١٢٤ ناقلة بترول في طريقها إلى البحر الأحمر</span>
+        <span>إسرائيل ترد على هجوم صاروخي قادم من جنوب لبنان</span>
+        <!-- duplicate for seamless loop -->
+        <span>مجلس الأمن يعقد جلسة طارئة لمناقشة التصعيد بين واشنطن وطهران</span>
+        <span>ارتفاع جديد في سعر الذهب: عيار ٢١ يتجاوز ٤٦٠٠ جنيه للجرام</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 3D GLOBE SECTION - Strategic Radar ================= -->
+<section class="globe-section">
+  <div class="globe-header-bar">
+    <span class="tag" style="background:var(--red); margin-bottom:0.85rem;">عاجل · مراقبة استراتيجية لحظية</span>
+    <h2 class="globe-title">الرادار العالمي<span style="color:var(--red);">.</span></h2>
+    <p class="globe-tagline">طيران مدني وعسكري · حركة الأساطيل · ناقلات البترول · مضائق العالم — تحديث كل ٥ ثوان</p>
+  </div>
+
+  <div class="globe-layout">
+    <aside class="globe-pane">
+      <div class="pane-section">
+        <h4 class="pane-title">المسارح العسكرية</h4>
+        <div class="theater" data-priority="high">
+          <div class="theater-bar"></div>
+          <div class="theater-body">
+            <div class="theater-name">CENTCOM <span class="tlabel">القيادة المركزية</span></div>
+            <div class="theater-region">الخليج · البحر الأحمر · المتوسط الشرقي</div>
+            <div class="theater-meta">
+              <span class="threat-pill high">تصعيد</span>
+              <span class="t-stat" id="t-centcom">٧٢ أصل</span>
+            </div>
+          </div>
+        </div>
+        <div class="theater" data-priority="high">
+          <div class="theater-bar"></div>
+          <div class="theater-body">
+            <div class="theater-name">INDO-PACIFIC <span class="tlabel">المحيط الهادئ</span></div>
+            <div class="theater-region">تايوان · بحر الصين الجنوبي · شبه الجزيرة الكورية</div>
+            <div class="theater-meta">
+              <span class="threat-pill high">عالي</span>
+              <span class="t-stat" id="t-indopac">٥٤ أصل</span>
+            </div>
+          </div>
+        </div>
+        <div class="theater" data-priority="medium">
+          <div class="theater-bar"></div>
+          <div class="theater-body">
+            <div class="theater-name">EUCOM <span class="tlabel">القيادة الأوروبية</span></div>
+            <div class="theater-region">البحر الأسود · بحر البلطيق · شرق أوروبا</div>
+            <div class="theater-meta">
+              <span class="threat-pill medium">متوسط</span>
+              <span class="t-stat" id="t-eucom">٤١ أصل</span>
+            </div>
+          </div>
+        </div>
+        <div class="theater" data-priority="low">
+          <div class="theater-bar"></div>
+          <div class="theater-body">
+            <div class="theater-name">ARCTIC <span class="tlabel">القطب الشمالي</span></div>
+            <div class="theater-region">طرق الشحن الشمالية · القواعد الروسية</div>
+            <div class="theater-meta">
+              <span class="threat-pill low">عادي</span>
+              <span class="t-stat" id="t-arctic">١٢ أصل</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pane-section">
+        <h4 class="pane-title">طائرات حربية مرصودة</h4>
+        <div class="bd-row"><span class="bd-label">مقاتلات <em>Fighter</em></span><span class="bd-num" id="bd-fighter">٦٨</span></div>
+        <div class="bd-row"><span class="bd-label">قاذفات <em>Bomber</em></span><span class="bd-num" id="bd-bomber">١٢</span></div>
+        <div class="bd-row"><span class="bd-label">تجسس <em>Reconnaissance</em></span><span class="bd-num" id="bd-recon">٢٤</span></div>
+        <div class="bd-row"><span class="bd-label">تزوّد بالوقود <em>Tanker</em></span><span class="bd-num" id="bd-tanker">٣٨</span></div>
+        <div class="bd-row"><span class="bd-label">إنذار مبكر <em>AWACS</em></span><span class="bd-num" id="bd-awacs">٧</span></div>
+        <div class="bd-row"><span class="bd-label">طائرات بدون طيار <em>Drone</em></span><span class="bd-num" id="bd-drone">٤٢</span></div>
+        <div class="bd-row"><span class="bd-label">نقل عسكري <em>Transport</em></span><span class="bd-num" id="bd-transport">٤٩</span></div>
+      </div>
+    </aside>
+
+    <div class="globe-center">
+      <div id="globe"></div>
+      <div class="globe-overlay-top">
+        <div class="ovl-stat">
+          <div class="ovl-num" id="stat-civ-flights">١٢,٨٤٧</div>
+          <div class="ovl-lbl">مدني</div>
+        </div>
+        <div class="ovl-stat danger">
+          <div class="ovl-num" id="stat-mil-flights">٢٤٠</div>
+          <div class="ovl-lbl">حربي</div>
+        </div>
+        <div class="ovl-stat">
+          <div class="ovl-num" id="stat-cargo">٣,٢١٠</div>
+          <div class="ovl-lbl">سفن</div>
+        </div>
+        <div class="ovl-stat danger">
+          <div class="ovl-num" id="stat-warships">١٧٥</div>
+          <div class="ovl-lbl">بحرية حربية</div>
+        </div>
+      </div>
+      <div class="globe-legend">
+        <div><span class="swatch" style="background:#fbbf24"></span> طيران مدني</div>
+        <div><span class="swatch" style="background:#ef4444"></span> طيران حربي</div>
+        <div><span class="swatch" style="background:#10b981"></span> سفن شحن</div>
+        <div><span class="swatch" style="background:#f97316"></span> ناقلات بترول</div>
+        <div><span class="swatch" style="background:#06b6d4"></span> قطع بحرية حربية</div>
+        <div><span class="swatch" style="background:#fff;outline:2px solid #e11d2b;outline-offset:1px;"></span> مضائق استراتيجية</div>
+      </div>
+    </div>
+
+    <aside class="globe-pane">
+      <div class="pane-section">
+        <h4 class="pane-title"><span class="live-dot"></span> أصول مرصودة الآن</h4>
+        <div id="assets-feed" class="assets-feed"></div>
+      </div>
+      <div class="pane-section">
+        <h4 class="pane-title">المضائق الاستراتيجية</h4>
+        <div class="choke-row"><span>مضيق هرمز</span><span class="choke-stat danger" id="ck-hormuz">١٤ سفينة</span></div>
+        <div class="choke-row"><span>قناة السويس</span><span class="choke-stat" id="ck-suez">٢٢ سفينة</span></div>
+        <div class="choke-row"><span>باب المندب</span><span class="choke-stat danger" id="ck-bab">١٨ سفينة</span></div>
+        <div class="choke-row"><span>مضيق ملقا</span><span class="choke-stat" id="ck-malacca">٣٤ سفينة</span></div>
+        <div class="choke-row"><span>مضيق تايوان</span><span class="choke-stat danger" id="ck-taiwan">١١ سفينة</span></div>
+        <div class="choke-row"><span>قناة بنما</span><span class="choke-stat" id="ck-panama">٩ سفن</span></div>
+        <div class="choke-row"><span>مضيق البوسفور</span><span class="choke-stat" id="ck-bosphorus">١٦ سفينة</span></div>
+        <div class="choke-row"><span>مضيق جبل طارق</span><span class="choke-stat" id="ck-gibraltar">٢٧ سفينة</span></div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- ================= HERO ================= -->
+<div class="container">
+  <section class="hero">
+    <article class="hero-main">
+      <div class="hero-content">
+        <span class="tag">عاجل · سياسة دولية</span>
+        <h1>تصاعد غير مسبوق في التوتر بين واشنطن وطهران بعد إعلان عقوبات نووية جديدة</h1>
+        <p>البيت الأبيض أعلن مساء أمس عن حزمة عقوبات تستهدف كيانات إيرانية مرتبطة ببرنامج التخصيب، وطهران ردّت بتعليق التفتيش المؤقت على منشآت نطنز.</p>
+        <div class="hero-meta">
+          <span>منذ ٢٠ دقيقة</span>
+          <span class="verified">مؤكّد من ٤ مصادر</span>
+          <span>رويترز · BBC · الجزيرة · فرانس ٢٤</span>
+        </div>
+      </div>
+    </article>
+
+    <aside class="hero-side">
+      <div class="card" style="background-image:url('https://picsum.photos/seed/ncs-side1/600/360'); background-size:cover; background-position:center; position:relative;">
+        <div style="position:absolute; inset:0; background:linear-gradient(0deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 60%, rgba(0,0,0,0.2) 100%);"></div>
+        <div style="position:relative; z-index:2; display:flex; flex-direction:column; justify-content:flex-end; height:100%; min-height:170px;">
+          <span class="tag">اقتصاد</span>
+          <h3>المركزي يثبّت الفائدة... وقفزة تاريخية للذهب فى الصاغة</h3>
+          <span class="meta">منذ ساعة · مؤكّد من ٣ مصادر</span>
+        </div>
+      </div>
+      <div class="card" style="background-image:url('https://picsum.photos/seed/ncs-side2/600/360'); background-size:cover; background-position:center; position:relative;">
+        <div style="position:absolute; inset:0; background:linear-gradient(0deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 60%, rgba(0,0,0,0.2) 100%);"></div>
+        <div style="position:relative; z-index:2; display:flex; flex-direction:column; justify-content:flex-end; height:100%; min-height:170px;">
+          <span class="tag">رياضة</span>
+          <h3>محمد صلاح يقود ليفربول لتأهل دراماتيكي في دوري الأبطال</h3>
+          <span class="meta">منذ ٣٥ دقيقة · مؤكّد من مصدرين</span>
+        </div>
+      </div>
+    </aside>
+  </section>
+</div>
+
+<!-- ================= LIVE CHANNELS ================= -->
+<div class="container">
+  <div class="section-head">
+    <h2>قنوات مباشرة</h2>
+    <a href="#" class="more">كل القنوات ←</a>
+  </div>
+  <div class="channels">
+    <div class="channel">
+      <div class="channel-thumb" style="background-image:linear-gradient(135deg,#1a3a52,#0a1f30);"></div>
+      <div class="live-badge"><span class="live-dot"></span> مباشر</div>
+      <div class="viewers">12.4K</div>
+      <div class="channel-name">الجزيرة مباشر</div>
+    </div>
+    <div class="channel">
+      <div class="channel-thumb" style="background-image:linear-gradient(135deg,#7c1d1d,#3f0a0a);"></div>
+      <div class="live-badge"><span class="live-dot"></span> مباشر</div>
+      <div class="viewers">8.7K</div>
+      <div class="channel-name">BBC Arabic</div>
+    </div>
+    <div class="channel">
+      <div class="channel-thumb" style="background-image:linear-gradient(135deg,#0c4a6e,#082f49);"></div>
+      <div class="live-badge"><span class="live-dot"></span> مباشر</div>
+      <div class="viewers">5.3K</div>
+      <div class="channel-name">العربية الحدث</div>
+    </div>
+    <div class="channel">
+      <div class="channel-thumb" style="background-image:linear-gradient(135deg,#1f2937,#0f172a);"></div>
+      <div class="live-badge"><span class="live-dot"></span> مباشر</div>
+      <div class="viewers">3.9K</div>
+      <div class="channel-name">Sky News عربية</div>
+    </div>
+    <div class="channel">
+      <div class="channel-thumb" style="background-image:linear-gradient(135deg,#581c87,#2e1065);"></div>
+      <div class="live-badge"><span class="live-dot"></span> مباشر</div>
+      <div class="viewers">2.1K</div>
+      <div class="channel-name">France 24 عربية</div>
+    </div>
+    <div class="channel">
+      <div class="channel-thumb" style="background-image:linear-gradient(135deg,#78350f,#451a03);"></div>
+      <div class="live-badge"><span class="live-dot"></span> مباشر</div>
+      <div class="viewers">1.8K</div>
+      <div class="channel-name">DW عربية</div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 3-COLUMN GRID: SPORTS + ECONOMY + EXTRA ================= -->
+<div class="container">
+  <div class="section-head">
+    <h2>متابعة لحظية</h2>
+    <a href="#" class="more">المزيد ←</a>
+  </div>
+
+  <div class="grid-3">
+
+    <!-- SPORTS LIVE WIDGET -->
+    <div class="panel">
+      <div class="panel-head">
+        <h3><span class="live-dot"></span> مباراة الآن — الدوري المصري</h3>
+        <span style="font-size:0.78rem;color:var(--text-dim);">استاد القاهرة</span>
+      </div>
+      <div class="match">
+        <div class="match-meta">
+          <span>الجولة ٢٢ · الدوري الممتاز</span>
+          <span class="match-status"><span class="live-dot"></span> الشوط الثاني · ٧٢'</span>
+        </div>
+        <div class="teams">
+          <div class="team">
+            <div class="team-logo">AHL</div>
+            <div class="team-name">الأهلي</div>
+          </div>
+          <div class="score">
+            <span id="score-home">2</span><span class="score-divider">−</span><span id="score-away">1</span>
+          </div>
+          <div class="team">
+            <div class="team-logo">ZAM</div>
+            <div class="team-name">الزمالك</div>
+          </div>
+        </div>
+        <div class="goal-alert" id="goal-alert">
+          <strong>هدف!</strong> الأهلي يضيف الثاني — تسديدة صاروخية من إمام عاشور (الدقيقة ٧١')
+        </div>
+      </div>
+      <div style="padding:1rem 1.25rem; border-top:1px solid var(--border);">
+        <div class="metric-row" style="padding:0.5rem 0;">
+          <span class="metric-label">ريال مدريد <small>vs</small> برشلونة</span>
+          <span class="metric-value">3 − 2</span>
+          <span class="metric-change" style="color:var(--text-dim);">انتهت</span>
+        </div>
+        <div class="metric-row" style="padding:0.5rem 0;">
+          <span class="metric-label">مانشستر سيتي <small>vs</small> آرسنال</span>
+          <span class="metric-value">1 − 1</span>
+          <span class="metric-change" style="color:var(--red);">٦٧'</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ECONOMY: GOLD -->
+    <div class="panel">
+      <div class="panel-head">
+        <h3>أسعار الذهب — الصاغة</h3>
+        <span style="font-size:0.72rem;color:var(--text-dim);">جنيه / جرام</span>
+      </div>
+      <div class="panel-body">
+        <div class="metric-row">
+          <div class="metric-label">عيار ٢٤<small>الأنقى</small></div>
+          <div class="metric-value">٥,٢٤٠</div>
+          <div class="metric-change up">١٫٢٪</div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">عيار ٢١<small>الأكثر تداولاً</small></div>
+          <div class="metric-value">٤,٥٨٥</div>
+          <div class="metric-change up">١٫١٪</div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">عيار ١٨<small>للمشغولات</small></div>
+          <div class="metric-value">٣,٩٣٠</div>
+          <div class="metric-change up">٠٫٩٪</div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">الجنيه الذهب<small>٨ جرامات</small></div>
+          <div class="metric-value">٣٦,٦٨٠</div>
+          <div class="metric-change up">١٫١٪</div>
+        </div>
+        <div style="margin-top:0.85rem; padding-top:0.85rem; border-top:1px solid var(--border); font-size:0.72rem; color:var(--text-dim);">
+          آخر تحديث: <span id="gold-updated">قبل ٢ دقيقة</span> · المصدر: شعبة الذهب
+        </div>
+      </div>
+    </div>
+
+    <!-- ECONOMY: FX -->
+    <div class="panel">
+      <div class="panel-head">
+        <h3>عملات مقابل الجنيه</h3>
+        <span style="font-size:0.72rem;color:var(--text-dim);">البنك المركزي</span>
+      </div>
+      <div class="panel-body">
+        <div class="metric-row">
+          <div class="metric-label">دولار أمريكي<small>USD</small></div>
+          <div class="metric-value">٤٧٫٩٢</div>
+          <div class="metric-change up">٠٫٢٪</div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">يورو<small>EUR</small></div>
+          <div class="metric-value">٥٢٫١٤</div>
+          <div class="metric-change up">٠٫٤٪</div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">جنيه إسترليني<small>GBP</small></div>
+          <div class="metric-value">٦١٫٣٧</div>
+          <div class="metric-change down">٠٫١٪</div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">ريال سعودي<small>SAR</small></div>
+          <div class="metric-value">١٢٫٧٨</div>
+          <div class="metric-change up">٠٫٢٪</div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">درهم إماراتي<small>AED</small></div>
+          <div class="metric-value">١٣٫٠٤</div>
+          <div class="metric-change up">٠٫٢٪</div>
+        </div>
+        <div style="margin-top:0.85rem; padding-top:0.85rem; border-top:1px solid var(--border); font-size:0.72rem; color:var(--text-dim);">
+          آخر تحديث: <span id="fx-updated">قبل ٥ دقائق</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= POLITICS — USA / IRAN / ISRAEL ================= -->
+  <div class="section-head">
+    <h2>أخبار العالم — ساحة الصراع</h2>
+    <a href="#" class="more">كل الأخبار الدولية ←</a>
+  </div>
+
+  <div class="politics-grid">
+    <div class="country-card" style="--country-color:#3b82f6;">
+      <div class="country-flag">USA · الولايات المتحدة</div>
+      <h4>الكونغرس يقرّ ميزانية دفاعية بقيمة ٨٨٠ مليار دولار</h4>
+      <p>التصويت تم بأغلبية ٣١٢ صوتاً مقابل ١٢٠، مع زيادة ٣٪ في الإنفاق العسكري وحزمة دعم جديدة لإسرائيل وأوكرانيا.</p>
+      <div class="meta">
+        <span>منذ ٤٥ دقيقة</span>
+        <span class="verified">٣ مصادر</span>
+      </div>
+    </div>
+    <div class="country-card" style="--country-color:#10b981;">
+      <div class="country-flag">IRAN · إيران</div>
+      <h4>طهران: لن نتراجع عن التخصيب وسنردّ على أي عقوبات جديدة</h4>
+      <p>المرشد الأعلى وصف العقوبات الأمريكية بـ"العدائية" وأكّد أن البرنامج النووي السلمي سيستمر، مع تلويح بتعليق التعاون مع الوكالة.</p>
+      <div class="meta">
+        <span>منذ ساعة</span>
+        <span class="verified">٤ مصادر</span>
+      </div>
+    </div>
+    <div class="country-card" style="--country-color:#e11d2b;">
+      <div class="country-flag">ISRAEL · إسرائيل</div>
+      <h4>غارات على جنوب لبنان رداً على ٢٠ صاروخاً سقطت في الجليل</h4>
+      <p>الجيش الإسرائيلي أعلن استهداف ٤٠ موقعاً لحزب الله، فيما أكّد الأخير ردّاً وشيكاً على ما وصفه بـ"الاعتداء الجبان".</p>
+      <div class="meta">
+        <span>منذ ٢٠ دقيقة</span>
+        <span class="verified">٥ مصادر</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= NEWS GRID ================= -->
+  <div class="section-head">
+    <h2>آخر الأخبار</h2>
+    <a href="#" class="more">المزيد ←</a>
+  </div>
+
+  <div class="news-grid">
+    <article class="news-card">
+      <div class="news-thumb" style="background-image:url('https://picsum.photos/seed/news1/400/300');"></div>
+      <span class="tag">اقتصاد</span>
+      <h4>قمة استثمارية مرتقبة بين القاهرة والرياض الأسبوع المقبل</h4>
+      <div class="meta"><span>منذ ساعتين</span><span>٣ مصادر</span></div>
+    </article>
+    <article class="news-card">
+      <div class="news-thumb" style="background-image:url('https://picsum.photos/seed/news2/400/300');"></div>
+      <span class="tag">تكنولوجيا</span>
+      <h4>إطلاق Gemini 3.0 من جوجل بقدرات تفوق GPT-5 في الاختبارات</h4>
+      <div class="meta"><span>منذ ٣ ساعات</span><span>٢ مصادر</span></div>
+    </article>
+    <article class="news-card">
+      <div class="news-thumb" style="background-image:url('https://picsum.photos/seed/news3/400/300');"></div>
+      <span class="tag">صحة</span>
+      <h4>دواء جديد للسكري يتجاوز نتائج Ozempic بـ ٣٠٪ في تجربة سريرية</h4>
+      <div class="meta"><span>منذ ٤ ساعات</span><span>٤ مصادر</span></div>
+    </article>
+    <article class="news-card">
+      <div class="news-thumb" style="background-image:url('https://picsum.photos/seed/news4/400/300');"></div>
+      <span class="tag">ثقافة</span>
+      <h4>مهرجان القاهرة السينمائي يفتح باب التسجيل لـ ٢٠٢٦</h4>
+      <div class="meta"><span>منذ ٥ ساعات</span><span>٢ مصادر</span></div>
+    </article>
+  </div>
+</div>
+
+<!-- ================= NCS FACEBOOK STRIP ================= -->
+<section class="ncs-section">
+  <div class="container">
+    <div class="section-head" style="margin-top:0;">
+      <h2>من المركز · فيسبوك NCS</h2>
+      <a href="#" class="more">صفحة المركز ←</a>
+    </div>
+    <div class="ncs-grid">
+      <div class="fb-post">
+        <span class="fb-icon">f</span>
+        <span class="tag outline" style="margin-top:0.5rem;">دراسة</span>
+        <p>أصدر المركز اليوم تقريراً بعنوان "آفاق العلاقات المصرية-الخليجية ٢٠٢٦" ويتناول التحولات الاقتصادية والسياسية في ضوء أزمة البحر الأحمر.</p>
+        <div class="meta">منذ ساعتين · ١٢٤ تفاعل</div>
+      </div>
+      <div class="fb-post">
+        <span class="fb-icon">f</span>
+        <span class="tag outline" style="margin-top:0.5rem;">ندوة</span>
+        <p>غداً ندوة على الزووم بعنوان "حرب أوكرانيا في عامها الرابع" بحضور الدكتور أحمد فؤاد والباحث Mark Andrews. التسجيل عبر الموقع.</p>
+        <div class="meta">منذ ٤ ساعات · ٨٧ تفاعل</div>
+      </div>
+      <div class="fb-post">
+        <span class="fb-icon">f</span>
+        <span class="tag outline" style="margin-top:0.5rem;">إعلان</span>
+        <p>المركز يعلن عن منحة دراسية للباحثين الشباب في تخصصات العلوم السياسية والاقتصاد. التقديم متاح حتى ١٥ مايو.</p>
+        <div class="meta">منذ يوم · ٥٤٢ تفاعل</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer class="site">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="logo" style="margin-bottom:1rem;">
+          <span class="mark"><img src="logo.jpg" alt="NCS" style="width:100%;height:100%;border-radius:10px;display:block;"/></span>
+          <span>NCS<span style="color:var(--red)">.</span></span>
+        </div>
+        <p style="color:var(--text-muted); font-size:0.88rem; margin:0; max-width:32ch;">
+          المركز الدراسات المصري — منصّة إخبارية تجمع وتحقّق الأخبار العالمية والمحلية لحظياً من أكثر من ٣٠ مصدراً.
+        </p>
+      </div>
+      <div>
+        <h5>الأقسام</h5>
+        <ul>
+          <li><a href="#">سياسة</a></li>
+          <li><a href="#">اقتصاد</a></li>
+          <li><a href="#">رياضة</a></li>
+          <li><a href="#">تكنولوجيا</a></li>
+          <li><a href="#">ثقافة</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>المركز</h5>
+        <ul>
+          <li><a href="#">عن المركز</a></li>
+          <li><a href="#">الأبحاث</a></li>
+          <li><a href="#">الباحثون</a></li>
+          <li><a href="#">اتصل بنا</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>تابعنا</h5>
+        <ul>
+          <li><a href="#">Facebook</a></li>
+          <li><a href="#">X / Twitter</a></li>
+          <li><a href="#">YouTube</a></li>
+          <li><a href="#">RSS</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 NCS — National Center for Studies</span>
+      <span>v0.1 · draft</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ================= LIVE STATUS PILL ================= -->
+<div class="live-pill" id="live-pill">
+  <span class="dot"></span>
+  <span>متصل · مباشر</span>
+  <span class="count" id="article-count">٢٤٧ خبر اليوم</span>
+</div>
+
+<!-- ================= GLOBE.GL ================= -->
+<script src="https://unpkg.com/three@0.155/build/three.min.js"></script>
+<script src="https://unpkg.com/globe.gl"></script>
+<script>
+  // ============================================================
+  // Helpers
+  // ============================================================
+  const ar = (n, opts = {}) => n.toLocaleString('ar-EG', opts);
+  const $ = (sel) => document.querySelector(sel);
+  const tick = (el) => {
+    if (!el) return;
+    el.classList.remove('tick');
+    void el.offsetHeight;
+    el.classList.add('tick');
+  };
+
+  // ============================================================
+  // Live clock (Cairo) — updates every second
+  // ============================================================
+  function updateClock() {
+    const d = new Date();
+    const h = String(d.getHours()).padStart(2, '0');
+    const m = String(d.getMinutes()).padStart(2, '0');
+    const s = String(d.getSeconds()).padStart(2, '0');
+    document.getElementById('clock').textContent = `${h}:${m}:${s} القاهرة`;
+  }
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  // ============================================================
+  // Manual refresh button — visual feedback + simulate fresh data
+  // ============================================================
+  const refreshBtn = document.getElementById('refresh-btn');
+  refreshBtn.addEventListener('click', () => {
+    refreshBtn.classList.add('spinning');
+    setTimeout(() => refreshBtn.classList.remove('spinning'), 800);
+    // Trigger jitter on all live values
+    jitterFx();
+    jitterGold();
+    bumpArticleCount();
+  });
+
+  // ============================================================
+  // Match minute counter — increments every 60s while live
+  // ============================================================
+  let matchMinute = 72;
+  const matchStatusEl = document.querySelector('.match-status');
+  setInterval(() => {
+    if (matchMinute < 90) {
+      matchMinute += 1;
+      matchStatusEl.innerHTML = `<span class="live-dot"></span> الشوط الثاني · ${matchMinute}'`;
+    }
+  }, 60_000);
+
+  // ============================================================
+  // Goal events — random goal between 90s and 240s
+  // ============================================================
+  const goalAlert = document.getElementById('goal-alert');
+  const goalScorers = [
+    { team: 'home', el: 'score-home', name: 'محمد شريف', minute: () => matchMinute },
+    { team: 'away', el: 'score-away', name: 'شيكو بانزا', minute: () => matchMinute },
+    { team: 'home', el: 'score-home', name: 'إمام عاشور', minute: () => matchMinute },
+  ];
+  function triggerGoal() {
+    const g = goalScorers[Math.floor(Math.random() * goalScorers.length)];
+    const scoreEl = document.getElementById(g.el);
+    scoreEl.textContent = parseInt(scoreEl.textContent, 10) + 1;
+    tick(scoreEl);
+    const teamName = g.team === 'home' ? 'الأهلي' : 'الزمالك';
+    goalAlert.innerHTML = `<strong>هدف!</strong> ${teamName} عبر ${g.name} — الدقيقة ${g.minute()}'`;
+    goalAlert.style.animation = 'none';
+    void goalAlert.offsetHeight;
+    goalAlert.style.animation = 'goal-flash 800ms 4 alternate';
+  }
+  function scheduleNextGoal() {
+    const delay = 90_000 + Math.random() * 150_000; // 1.5–4 min
+    setTimeout(() => { triggerGoal(); scheduleNextGoal(); }, delay);
+  }
+  scheduleNextGoal();
+
+  // ============================================================
+  // FX / Gold jitter — simulates live price feed
+  // ============================================================
+  const fxBaseline = {};
+  const goldBaseline = {};
+
+  function jitterFx() {
+    document.querySelectorAll('.grid-3 > .panel:nth-child(3) .metric-row .metric-value').forEach((el, i) => {
+      const txt = el.textContent.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+      const base = parseFloat(txt) || 0;
+      if (!fxBaseline[i]) fxBaseline[i] = base;
+      const delta = (Math.random() - 0.5) * 0.04;
+      const next = (fxBaseline[i] + delta).toFixed(2);
+      el.textContent = ar(parseFloat(next), { minimumFractionDigits: 2 });
+      tick(el);
+    });
+    document.getElementById('fx-updated').textContent = 'الآن';
+  }
+
+  function jitterGold() {
+    const goldRows = document.querySelectorAll('.grid-3 > .panel:nth-child(2) .metric-row .metric-value');
+    goldRows.forEach((el, i) => {
+      const txt = el.textContent.replace(/[,٬]/g, '').replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+      const base = parseFloat(txt) || 0;
+      if (!goldBaseline[i]) goldBaseline[i] = base;
+      const delta = Math.round((Math.random() - 0.4) * 25);
+      const next = goldBaseline[i] + delta;
+      el.textContent = ar(next);
+      tick(el);
+    });
+    document.getElementById('gold-updated').textContent = 'الآن';
+  }
+
+  setInterval(jitterFx, 12_000);
+  setInterval(jitterGold, 9_000);
+
+  // ============================================================
+  // "Just now" timestamps — rolling
+  // ============================================================
+  const minuteWords = (n) => {
+    if (n === 0) return 'الآن';
+    if (n === 1) return 'قبل دقيقة';
+    if (n === 2) return 'قبل دقيقتين';
+    if (n <= 10) return `قبل ${ar(n)} دقائق`;
+    return `قبل ${ar(n)} دقيقة`;
+  };
+  const startTime = Date.now();
+  setInterval(() => {
+    const minsSince = Math.floor((Date.now() - startTime) / 60_000);
+    const goldEl = document.getElementById('gold-updated');
+    const fxEl = document.getElementById('fx-updated');
+    if (goldEl.textContent !== 'الآن' || minsSince > 0) goldEl.textContent = minuteWords(minsSince % 5);
+    if (fxEl.textContent !== 'الآن' || minsSince > 0) fxEl.textContent = minuteWords(minsSince % 8);
+  }, 30_000);
+
+  // ============================================================
+  // Article counter & "new article" insertion every 35s
+  // ============================================================
+  let articleCount = 247;
+  function bumpArticleCount() {
+    articleCount += Math.floor(Math.random() * 3) + 1;
+    document.getElementById('article-count').textContent = `${ar(articleCount)} خبر اليوم`;
+  }
+  setInterval(bumpArticleCount, 14_000);
+
+  const breakingHeadlines = [
+    { tag: 'سياسة', title: 'البيت الأبيض: لا مفاوضات قبل تعليق التخصيب', sources: 3 },
+    { tag: 'اقتصاد', title: 'البنك الدولي يخفّض توقعات نمو مصر إلى ٤٫١٪', sources: 2 },
+    { tag: 'رياضة', title: 'بنزيما يعود لتدريبات الاتحاد بعد إصابة دامت ٣ أسابيع', sources: 2 },
+    { tag: 'تكنولوجيا', title: 'تسريبات: آبل تختبر شاشة قابلة للطي في iPhone 19', sources: 4 },
+    { tag: 'صحة', title: 'منظمة الصحة العالمية تحذّر من سلالة إنفلونزا جديدة', sources: 5 },
+    { tag: 'دولي', title: 'انفجار قرب السفارة الأمريكية في بغداد دون إصابات', sources: 3 },
+  ];
+  const newsGrid = document.querySelector('.news-grid');
+  function insertFreshArticle() {
+    const news = breakingHeadlines[Math.floor(Math.random() * breakingHeadlines.length)];
+    const article = document.createElement('article');
+    article.className = 'news-card new-flash';
+    article.innerHTML = `
+      <div class="news-thumb" style="background-image:url('https://picsum.photos/seed/news${Date.now()}/400/300');"></div>
+      <span class="tag">${news.tag}</span>
+      <h4>${news.title}</h4>
+      <div class="meta"><span>الآن</span><span>مؤكّد من ${ar(news.sources)} مصادر</span></div>
+    `;
+    newsGrid.insertBefore(article, newsGrid.firstChild);
+    while (newsGrid.children.length > 8) newsGrid.removeChild(newsGrid.lastChild);
+    bumpArticleCount();
+  }
+  setTimeout(() => {
+    insertFreshArticle();
+    setInterval(insertFreshArticle, 35_000);
+  }, 8_000);
+
+  // ============================================================
+  // Ticker — occasionally swap a headline
+  // ============================================================
+  const tickerContent = document.querySelector('.ticker-content');
+  setInterval(() => {
+    const span = document.createElement('span');
+    span.textContent = breakingHeadlines[Math.floor(Math.random() * breakingHeadlines.length)].title;
+    tickerContent.insertBefore(span, tickerContent.firstChild);
+    if (tickerContent.children.length > 16) tickerContent.removeChild(tickerContent.lastChild);
+  }, 25_000);
+
+  // ============================================================
+  // 3D Globe — civilian + military air + cargo + tankers + warships
+  // + naval chokepoint labels (worldmonitor-style)
+  // ============================================================
+  const N_CIV_FLIGHTS = 70;
+
+  const randArc = () => ({
+    startLat: (Math.random() - 0.5) * 140,
+    startLng: (Math.random() - 0.5) * 360,
+    endLat:   (Math.random() - 0.5) * 140,
+    endLng:   (Math.random() - 0.5) * 360,
+  });
+
+  const civFlights = Array.from({ length: N_CIV_FLIGHTS }, () => ({
+    ...randArc(),
+    color: ['rgba(251, 191, 36, 0.85)', 'rgba(251, 191, 36, 0.25)']
+  }));
+
+  const milRoutes = [
+    [49.4, 7.6, 36.0, 51.0], [40.9, 14.5, 32.0, 35.5], [37.0, 35.4, 33.5, 44.4],
+    [25.0, 56.0, 30.0, 50.0], [12.0, 44.0, 15.5, 42.5], [33.0, 35.0, 33.9, 35.5],
+    [44.5, 33.0, 47.0, 37.0], [55.7, 37.6, 48.0, 38.0],
+    [22.3, 114.0, 12.0, 110.0], [25.0, 121.5, 9.0, 117.0], [37.5, 127.0, 38.5, 128.0],
+    [49.4, 7.6, 31.0, 35.0], [38.0, 23.7, 32.0, 35.5], [40.0, 32.8, 34.0, 36.3],
+    [25.4, 51.5, 27.5, 57.0], [24.4, 54.4, 27.0, 56.5], [12.5, 45.0, 14.0, 48.0],
+    [33.0, 44.4, 35.6, 45.5],
+  ];
+  const milFlights = milRoutes.map(([a,b,c,d]) => ({
+    startLat: a + (Math.random()-0.5)*1.5,
+    startLng: b + (Math.random()-0.5)*1.5,
+    endLat:   c + (Math.random()-0.5)*1.5,
+    endLng:   d + (Math.random()-0.5)*1.5,
+    color: ['rgba(239, 68, 68, 0.95)', 'rgba(239, 68, 68, 0.35)']
+  }));
+
+  const allArcs = [...civFlights, ...milFlights];
+
+  const tankerHotspots = [
+    [26.5, 56.2], [27.0, 51.0], [25.0, 38.0], [21.5, 39.0],
+    [12.5, 43.5], [1.3, 103.8], [30.0, 32.5], [25.5, -90.0],
+    [35.0, -5.5], [41.0, 28.0], [29.5, 48.0], [24.5, 53.5],
+  ];
+  const tankers = [];
+  for (const [lat, lng] of tankerHotspots) {
+    for (let i = 0; i < 3; i++) tankers.push({
+      lat: lat + (Math.random() - 0.5) * 4,
+      lng: lng + (Math.random() - 0.5) * 4,
+      color: '#f97316', size: 0.4
+    });
+  }
+
+  const cargoLanes = [
+    [31.0, 32.0], [36.0, 14.0], [50.0, 0.0], [22.0, 70.0],
+    [35.0, 130.0], [6.0, 100.0], [33.0, -118.0], [-34.0, 18.0],
+    [40.0, -73.0], [22.0, 113.5], [-23.5, -46.5], [49.0, 2.0],
+  ];
+  const cargo = [];
+  for (const [lat, lng] of cargoLanes) {
+    for (let i = 0; i < 4; i++) cargo.push({
+      lat: lat + (Math.random() - 0.5) * 6,
+      lng: lng + (Math.random() - 0.5) * 6,
+      color: '#10b981', size: 0.3
+    });
+  }
+
+  const navalZones = [
+    [34.5, 32.5], [33.5, 34.0], [26.5, 56.2], [12.5, 43.5],
+    [25.0, 35.0], [44.5, 33.0], [35.5, 19.0], [22.0, 117.0],
+    [25.0, 122.0], [37.5, 124.5], [-5.0, 52.0], [55.0, 13.0],
+  ];
+  const warships = [];
+  for (const [lat, lng] of navalZones) {
+    for (let i = 0; i < 3; i++) warships.push({
+      lat: lat + (Math.random() - 0.5) * 3,
+      lng: lng + (Math.random() - 0.5) * 3,
+      color: '#06b6d4', size: 0.55
+    });
+  }
+
+  const allPoints = [...tankers, ...cargo, ...warships];
+
+  // Naval chokepoints — labeled on the globe
+  const chokepoints = [
+    { lat: 26.5, lng: 56.5, label: 'Hormuz' },
+    { lat: 30.0, lng: 32.5, label: 'Suez' },
+    { lat: 12.5, lng: 43.5, label: 'Bab el-Mandeb' },
+    { lat:  2.5, lng: 101.5, label: 'Malacca' },
+    { lat: 24.5, lng: 119.5, label: 'Taiwan' },
+    { lat:  9.0, lng: -79.5, label: 'Panama' },
+    { lat: 41.0, lng: 28.0, label: 'Bosphorus' },
+    { lat: 35.9, lng: -5.5, label: 'Gibraltar' },
+  ];
+
+  const globe = Globe()(document.getElementById('globe'))
+    .globeImageUrl('//unpkg.com/three-globe/example/img/earth-night.jpg')
+    .bumpImageUrl('//unpkg.com/three-globe/example/img/earth-topology.png')
+    .backgroundColor('rgba(0,0,0,0)')
+    .atmosphereColor('#e11d2b')
+    .atmosphereAltitude(0.18)
+    .arcsData(allArcs)
+    .arcColor('color')
+    .arcDashLength(0.5).arcDashGap(2).arcDashAnimateTime(3000)
+    .arcStroke(0.5).arcAltitude(0.25)
+    .pointsData(allPoints)
+    .pointColor('color').pointAltitude(0.005).pointRadius('size')
+    .labelsData(chokepoints)
+    .labelLat('lat').labelLng('lng').labelText('label')
+    .labelSize(0.55).labelDotRadius(0.3)
+    .labelColor(() => '#ffffff')
+    .labelResolution(2)
+    .labelAltitude(0.005);
+
+  globe.controls().autoRotate = true;
+  globe.controls().autoRotateSpeed = 0.4;
+  globe.controls().enableZoom = false;
+
+  function resizeGlobe() {
+    const el = document.getElementById('globe');
+    globe.width(el.clientWidth);
+    globe.height(el.clientHeight);
+  }
+  resizeGlobe();
+  window.addEventListener('resize', resizeGlobe);
+
+  // ============================================================
+  // Live tracked assets feed (realistic military callsigns)
+  // ============================================================
+  const callsignPool = [
+    { cs: 'RCH3142',  ac: 'USAF C-17',          color: '#ef4444', loc: 'Doha → Ramstein' },
+    { cs: 'BOLT41',   ac: 'USAF F-16',          color: '#ef4444', loc: 'CENTCOM patrol' },
+    { cs: 'KING23',   ac: 'KC-135 Tanker',      color: '#fbbf24', loc: 'E. Med refueling' },
+    { cs: 'SHELL51',  ac: 'KC-46 Tanker',       color: '#fbbf24', loc: 'Persian Gulf' },
+    { cs: 'SNTRY01',  ac: 'E-3 AWACS',          color: '#06b6d4', loc: 'Eastern Med' },
+    { cs: 'COBRA12',  ac: 'RC-135 SIGINT',      color: '#a855f7', loc: 'Black Sea coast' },
+    { cs: 'DOOM77',   ac: 'B-52 Stratofortress',color: '#ef4444', loc: 'Indo-Pacific' },
+    { cs: 'BONE15',   ac: 'B-1B Lancer',        color: '#ef4444', loc: 'CENTCOM' },
+    { cs: 'VIPER33',  ac: 'F-16 Fighting Falcon',color: '#ef4444', loc: 'Iraqi airspace' },
+    { cs: 'RAPTOR8',  ac: 'F-22 Raptor',        color: '#ef4444', loc: 'INDOPACOM' },
+    { cs: 'MOOSE91',  ac: 'C-17 Globemaster',   color: '#fbbf24', loc: 'Aviano → Cairo' },
+    { cs: 'HERKY44',  ac: 'C-130 Hercules',     color: '#fbbf24', loc: 'Africa Command' },
+    { cs: 'JAKE07',   ac: 'E-8 JSTARS',         color: '#a855f7', loc: 'Eastern Europe' },
+    { cs: 'IAF101',   ac: 'F-35I Adir',         color: '#ef4444', loc: 'Lebanon airspace' },
+    { cs: 'RAF202',   ac: 'Typhoon FGR4',       color: '#ef4444', loc: 'NATO Black Sea' },
+    { cs: 'CASA88',   ac: 'C-295 Tactical',     color: '#fbbf24', loc: 'Mali → Niger' },
+    { cs: 'NCHO12',   ac: 'MC-130J Specops',    color: '#a855f7', loc: 'Classified' },
+    { cs: 'EVAC44',   ac: 'C-17 Aeromedical',   color: '#fbbf24', loc: 'Doha → Landstuhl' },
+    { cs: 'GOLD09',   ac: 'AC-130J Specops',    color: '#a855f7', loc: 'CENTCOM AOR' },
+    { cs: 'PLAAF77',  ac: 'J-20 Mighty Dragon', color: '#ef4444', loc: 'Taiwan Strait' },
+    { cs: 'PLAN333',  ac: 'Y-20 Transport',     color: '#fbbf24', loc: 'South China Sea' },
+    { cs: 'VKS505',   ac: 'Su-35 Flanker',      color: '#ef4444', loc: 'Black Sea' },
+    { cs: 'CSAR23',   ac: 'HH-60 Pave Hawk',    color: '#fbbf24', loc: 'Red Sea SAR' },
+    { cs: 'DRAGN1',   ac: 'U-2 Dragon Lady',    color: '#a855f7', loc: '70,000 ft · classified' },
+  ];
+
+  function nowHHMM() {
+    const d = new Date();
+    return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')} UTC+2`;
+  }
+
+  function renderAsset(item, fresh = false) {
+    const div = document.createElement('div');
+    div.className = 'asset' + (fresh ? ' fresh' : '');
+    div.style.setProperty('--asset-color', item.color);
+    div.innerHTML = `
+      <div class="asset-line1">
+        <span class="asset-callsign">${item.cs}</span>
+        <span class="asset-type">${item.ac}</span>
+      </div>
+      <div class="asset-line2">${item.loc} · ${nowHHMM()}</div>
+    `;
+    return div;
+  }
+
+  const feed = document.getElementById('assets-feed');
+  // Initial fill: 7 random
+  const shuffled = [...callsignPool].sort(() => Math.random() - 0.5);
+  for (let i = 0; i < 7; i++) feed.appendChild(renderAsset(shuffled[i]));
+
+  // Push fresh asset every 6s
+  setInterval(() => {
+    const item = callsignPool[Math.floor(Math.random() * callsignPool.length)];
+    feed.insertBefore(renderAsset(item, true), feed.firstChild);
+    while (feed.children.length > 8) feed.removeChild(feed.lastChild);
+  }, 6000);
+
+  // Theater stat counters jitter
+  const theaterIds = ['t-centcom', 't-indopac', 't-eucom', 't-arctic'];
+  const theaterBase = [72, 54, 41, 12];
+  setInterval(() => {
+    theaterIds.forEach((id, i) => {
+      const v = theaterBase[i] + Math.floor((Math.random() - 0.5) * 6);
+      const el = document.getElementById(id);
+      if (el) el.textContent = `${v.toLocaleString('ar-EG')} أصل`;
+    });
+  }, 8000);
+
+  // Aircraft type breakdown jitter
+  const bdMap = {
+    'bd-fighter': 68, 'bd-bomber': 12, 'bd-recon': 24, 'bd-tanker': 38,
+    'bd-awacs': 7, 'bd-drone': 42, 'bd-transport': 49,
+  };
+  setInterval(() => {
+    Object.entries(bdMap).forEach(([id, base]) => {
+      const v = base + Math.floor((Math.random() - 0.5) * 4);
+      const el = document.getElementById(id);
+      if (el) el.textContent = v.toLocaleString('ar-EG');
+    });
+  }, 7000);
+
+  // Chokepoint vessel counts jitter
+  const ckMap = {
+    'ck-hormuz': 14, 'ck-suez': 22, 'ck-bab': 18, 'ck-malacca': 34,
+    'ck-taiwan': 11, 'ck-panama': 9, 'ck-bosphorus': 16, 'ck-gibraltar': 27,
+  };
+  setInterval(() => {
+    Object.entries(ckMap).forEach(([id, base]) => {
+      const v = Math.max(0, base + Math.floor((Math.random() - 0.5) * 6));
+      const el = document.getElementById(id);
+      if (el) el.textContent = `${v.toLocaleString('ar-EG')} ${v === 1 ? 'سفينة' : v === 2 ? 'سفينتين' : v <= 10 ? 'سفن' : 'سفينة'}`;
+    });
+  }, 9000);
+
+  // ============================================================
+  // Simulated live updates — flight count + ship count animate
+  // ============================================================
+  setInterval(() => {
+    const civ = 12500 + Math.floor(Math.random() * 800);
+    const mil = 220 + Math.floor(Math.random() * 60);
+    const cargo = 3100 + Math.floor(Math.random() * 250);
+    const navy = 165 + Math.floor(Math.random() * 25);
+    document.getElementById('stat-civ-flights').textContent = civ.toLocaleString('ar-EG');
+    document.getElementById('stat-mil-flights').textContent = mil.toLocaleString('ar-EG');
+    document.getElementById('stat-cargo').textContent = cargo.toLocaleString('ar-EG');
+    document.getElementById('stat-warships').textContent = navy.toLocaleString('ar-EG');
+  }, 4000);
+
+  // Simulated goal trigger every 30s
+  setInterval(() => {
+    const home = document.getElementById('score-home');
+    const flash = document.getElementById('goal-alert');
+    flash.style.animation = 'none';
+    flash.offsetHeight; // reflow
+    flash.style.animation = '';
+  }, 25000);
+</script>
+</body>
+</html>
