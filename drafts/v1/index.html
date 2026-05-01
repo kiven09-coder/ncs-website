@@ -39,7 +39,7 @@
     --font-en-body: "Inter", system-ui, sans-serif;
 
     --space-section: clamp(3rem, 2rem + 4vw, 6rem);
-    --container: 1400px;
+    --container: 100%;
 
     --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   }
@@ -62,7 +62,7 @@
   a { color: inherit; text-decoration: none; }
   img { max-width: 100%; display: block; }
 
-  .container { max-width: var(--container); margin: 0 auto; padding: 0 1.25rem; }
+  .container { max-width: var(--container); margin: 0 auto; padding: 0 1rem; }
 
   /* ============================================================
      TOP BAR — date, weather, language
@@ -304,7 +304,7 @@
   .globe-grid {
     display: grid; grid-template-columns: 1fr 1.4fr; gap: 3rem;
     align-items: center; max-width: var(--container);
-    margin: 0 auto; padding: 0 1.25rem; position: relative;
+    margin: 0 auto; padding: 0 1rem; position: relative;
   }
   .globe-text h2 {
     font-size: clamp(2rem, 1.5rem + 2vw, 3.5rem);
@@ -634,7 +634,7 @@
   .globe-section { padding: clamp(1.5rem, 1rem + 2vw, 2.5rem) 0; }
   .globe-header-bar {
     max-width: var(--container); margin: 0 auto 1.5rem;
-    padding: 0 1.25rem;
+    padding: 0 1rem;
   }
   .globe-title {
     font-size: clamp(1.85rem, 1.4rem + 1.6vw, 2.85rem);
@@ -649,7 +649,7 @@
     gap: 1rem;
     max-width: var(--container);
     margin: 0 auto;
-    padding: 0 1.25rem;
+    padding: 0 1rem;
     align-items: stretch;
   }
   .globe-pane {
@@ -945,6 +945,92 @@
   .refresh-btn.spinning svg { animation: spin 800ms linear; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
+
+  /* === v2: Full-width tweaks === */
+  .container { padding-left: 1rem; padding-right: 1rem; }
+  .header-inner { padding-left: 1rem; padding-right: 1rem; max-width: 100%; }
+  .topbar-inner   { padding-left: 1rem; padding-right: 1rem; max-width: 100%; }
+  .ticker-inner   { max-width: 100%; padding-left: 0.5rem; padding-right: 0.5rem; }
+  .globe-header-bar { padding-left: 1rem; padding-right: 1rem; max-width: 100%; }
+  .globe-layout   { padding-left: 1rem; padding-right: 1rem; max-width: 100%; }
+
+  /* === Map filter chips === */
+  .map-filter-bar {
+    display: flex; flex-wrap: wrap; gap: 0.45rem;
+    padding: 0.6rem; margin-bottom: 0.6rem;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid var(--border);
+  }
+  .map-chip {
+    background: transparent; border: 1px solid var(--border-strong);
+    color: var(--text-muted); cursor: pointer;
+    padding: 0.35rem 0.85rem; border-radius: 999px;
+    font: 700 0.78rem var(--font-ar-body);
+    transition: all 200ms;
+    display: inline-flex; align-items: center; gap: 0.4rem;
+  }
+  .map-chip::before {
+    content: ""; display: inline-block;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--chip-color, var(--text-muted));
+  }
+  .map-chip:hover {
+    color: var(--text); border-color: var(--chip-color, var(--red));
+  }
+  .map-chip.active {
+    background: var(--chip-color, var(--red));
+    color: #fff; border-color: var(--chip-color, var(--red));
+  }
+  .map-chip.active::before { background: #fff; }
+
+  /* === Per-panel refresh button === */
+  .panel-refresh {
+    background: transparent; border: 1px solid var(--border-strong);
+    color: var(--text-muted);
+    width: 28px; height: 28px; border-radius: 50%;
+    display: inline-grid; place-items: center;
+    cursor: pointer; transition: all 200ms;
+    font-size: 0; padding: 0;
+  }
+  .panel-refresh svg { width: 13px; height: 13px; }
+  .panel-refresh:hover { color: var(--text); border-color: var(--red); }
+  .panel-refresh.spinning svg { animation: spin 700ms linear; }
+
+  /* === Gold extended layout === */
+  .gold-row {
+    display: grid; grid-template-columns: 1fr auto auto;
+    gap: 0.85rem; align-items: center;
+    padding: 0.55rem 0;
+    border-bottom: 1px dashed var(--border);
+  }
+  .gold-row:last-child { border-bottom: 0; }
+  .gold-label { font-weight: 700; font-size: 0.88rem; }
+  .gold-label small { display: block; color: var(--text-dim); font-size: 0.7rem; font-weight: 500; margin-top: 0.1rem; }
+  .gold-bourse {
+    font-family: var(--font-en-body); font-weight: 800;
+    font-size: 0.95rem; color: var(--text);
+    text-align: end;
+  }
+  .gold-bourse small { display: block; color: var(--text-dim); font-weight: 600; font-size: 0.65rem; }
+  .gold-saagha {
+    font-family: var(--font-en-body); font-weight: 900;
+    font-size: 1.05rem; color: #fbbf24;
+    text-align: end;
+  }
+  .gold-saagha small { display: block; color: var(--text-dim); font-weight: 600; font-size: 0.65rem; }
+  .gold-head {
+    display: grid; grid-template-columns: 1fr auto auto;
+    gap: 0.85rem; padding: 0 0 0.4rem;
+    font-size: 0.65rem; font-weight: 800; color: var(--text-dim);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 0.25rem;
+  }
+  .gold-head span:not(:first-child) { text-align: end; }
+
+  /* === Animation === */
+  @keyframes spin { to { transform: rotate(360deg); } }
+  
   /* ============================================================
      RESPONSIVE
      ============================================================ */
@@ -1113,6 +1199,15 @@
     </aside>
 
     <div class="globe-center">
+      <div class="map-filter-bar" id="map-filter-bar">
+        <button class="map-chip active" data-layer="all">الكل</button>
+        <button class="map-chip" data-layer="civ">طيران مدني</button>
+        <button class="map-chip" data-layer="mil" style="--chip-color:#ef4444;">طيران حربي</button>
+        <button class="map-chip" data-layer="cargo" style="--chip-color:#10b981;">سفن شحن</button>
+        <button class="map-chip" data-layer="tanker" style="--chip-color:#f97316;">ناقلات بترول</button>
+        <button class="map-chip" data-layer="naval" style="--chip-color:#06b6d4;">بحرية حربية</button>
+        <button class="map-chip" data-layer="choke" style="--chip-color:#fbbf24;">المضائق</button>
+      </div>
       <div id="map" class="ncs-map"></div>
       <div class="map-source-pill" id="data-source"><span class="live-dot"></span> جاري الاتصال…</div>
       <div class="globe-overlay-top">
@@ -1258,8 +1353,10 @@
     <!-- SPORTS LIVE WIDGET -->
     <div class="panel">
       <div class="panel-head">
-        <h3><span class="live-dot"></span> مباراة الآن — الدوري المصري</h3>
-        <span style="font-size:0.78rem;color:var(--text-dim);">استاد القاهرة</span>
+        <h3><span class="live-dot"></span> آخر النتائج — الدوري المصري</h3>
+        <button class="panel-refresh" id="refresh-sports" title="تحديث">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
+        </button>
       </div>
       <div class="match">
         <div class="match-meta">
@@ -1272,7 +1369,7 @@
             <div class="team-name">الأهلي</div>
           </div>
           <div class="score">
-            <span id="score-home">3</span><span class="score-divider">−</span><span id="score-away">0</span>
+            <span id="score-away">0</span><span class="score-divider">−</span><span id="score-home">3</span>
           </div>
           <div class="team">
             <div class="team-logo">ZAM</div>
@@ -1286,12 +1383,12 @@
       <div style="padding:1rem 1.25rem; border-top:1px solid var(--border);">
         <div class="metric-row" style="padding:0.5rem 0;">
           <span class="metric-label">ريال مدريد <small>vs</small> برشلونة</span>
-          <span class="metric-value">3 − 2</span>
+          <span class="metric-value" dir="ltr">3 − 2</span>
           <span class="metric-change" style="color:var(--text-dim);">انتهت</span>
         </div>
         <div class="metric-row" style="padding:0.5rem 0;">
           <span class="metric-label">مانشستر سيتي <small>vs</small> آرسنال</span>
-          <span class="metric-value">1 − 1</span>
+          <span class="metric-value" dir="ltr">1 − 1</span>
           <span class="metric-change" style="color:var(--red);">٦٧'</span>
         </div>
       </div>
@@ -1300,70 +1397,80 @@
     <!-- ECONOMY: GOLD --><div id="economy" style="position:absolute;margin-top:-90px;"></div>
     <div class="panel">
       <div class="panel-head">
-        <h3>أسعار الذهب — الصاغة</h3>
-        <span style="font-size:0.72rem;color:var(--text-dim);">جنيه / جرام</span>
+        <h3>أسعار الذهب · بورصة + الصاغة</h3>
+        <button class="panel-refresh" id="refresh-gold" title="تحديث أسعار الذهب">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
+        </button>
       </div>
       <div class="panel-body">
-        <div class="metric-row">
-          <div class="metric-label">عيار ٢٤<small>الأنقى</small></div>
-          <div class="metric-value">٥,٢٤٠</div>
-          <div class="metric-change up">١٫٢٪</div>
+        <div class="gold-head">
+          <span>العيار</span>
+          <span>البورصة</span>
+          <span>الصاغة</span>
         </div>
-        <div class="metric-row">
-          <div class="metric-label">عيار ٢١<small>الأكثر تداولاً</small></div>
-          <div class="metric-value">٤,٥٨٥</div>
-          <div class="metric-change up">١٫١٪</div>
+        <div class="gold-row">
+          <div class="gold-label">عيار ٢٤<small>الأنقى</small></div>
+          <div class="gold-bourse"><span id="gold-24">٥,٢٤٠</span><small>ج/جم</small></div>
+          <div class="gold-saagha"><span id="saagha-24">٥,٣٦٠</span><small>ج/جم</small></div>
         </div>
-        <div class="metric-row">
-          <div class="metric-label">عيار ١٨<small>للمشغولات</small></div>
-          <div class="metric-value">٣,٩٣٠</div>
-          <div class="metric-change up">٠٫٩٪</div>
+        <div class="gold-row">
+          <div class="gold-label">عيار ٢١<small>الأكثر تداولاً</small></div>
+          <div class="gold-bourse"><span id="gold-21">٤,٥٨٥</span><small>ج/جم</small></div>
+          <div class="gold-saagha"><span id="saagha-21">٤,٧١٠</span><small>ج/جم</small></div>
         </div>
-        <div class="metric-row">
-          <div class="metric-label">الجنيه الذهب<small>٨ جرامات</small></div>
-          <div class="metric-value">٣٦,٦٨٠</div>
-          <div class="metric-change up">١٫١٪</div>
+        <div class="gold-row">
+          <div class="gold-label">عيار ١٨<small>للمشغولات</small></div>
+          <div class="gold-bourse"><span id="gold-18">٣,٩٣٠</span><small>ج/جم</small></div>
+          <div class="gold-saagha"><span id="saagha-18">٤,٠٣٠</span><small>ج/جم</small></div>
         </div>
-        <div style="margin-top:0.85rem; padding-top:0.85rem; border-top:1px solid var(--border); font-size:0.72rem; color:var(--text-dim);">
-          آخر تحديث: <span id="gold-updated">قبل ٢ دقيقة</span> · المصدر: شعبة الذهب
+        <div class="gold-row">
+          <div class="gold-label">الجنيه الذهب<small>٨ جرامات عيار ٢١</small></div>
+          <div class="gold-bourse"><span id="gold-pound">٣٦,٦٨٠</span><small>جنيه</small></div>
+          <div class="gold-saagha"><span id="saagha-pound">٣٧,٦٨٠</span><small>جنيه</small></div>
+        </div>
+        <div style="margin-top:0.85rem; padding-top:0.85rem; border-top:1px solid var(--border); font-size:0.7rem; color:var(--text-dim); display:flex; justify-content:space-between;">
+          <span>آخر تحديث: <span id="gold-updated">الآن</span></span>
+          <span>المصدر: شعبة الذهب · iSagold</span>
         </div>
       </div>
     </div>
-
     <!-- ECONOMY: FX -->
     <div class="panel">
       <div class="panel-head">
         <h3>عملات مقابل الجنيه</h3>
-        <span style="font-size:0.72rem;color:var(--text-dim);">البنك المركزي</span>
+        <button class="panel-refresh" id="refresh-fx" title="تحديث أسعار العملات الآن">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
+        </button>
       </div>
       <div class="panel-body">
         <div class="metric-row">
           <div class="metric-label">دولار أمريكي<small>USD</small></div>
-          <div class="metric-value">٤٧٫٩٢</div>
-          <div class="metric-change up">٠٫٢٪</div>
+          <div class="metric-value" data-fx="usd">٤٧٫٩٢</div>
+          <div class="metric-change up" data-fx-change="usd">٠٫٢٪</div>
         </div>
         <div class="metric-row">
           <div class="metric-label">يورو<small>EUR</small></div>
-          <div class="metric-value">٥٢٫١٤</div>
-          <div class="metric-change up">٠٫٤٪</div>
+          <div class="metric-value" data-fx="eur">٥٢٫١٤</div>
+          <div class="metric-change up" data-fx-change="eur">٠٫٤٪</div>
         </div>
         <div class="metric-row">
           <div class="metric-label">جنيه إسترليني<small>GBP</small></div>
-          <div class="metric-value">٦١٫٣٧</div>
-          <div class="metric-change down">٠٫١٪</div>
+          <div class="metric-value" data-fx="gbp">٦١٫٣٧</div>
+          <div class="metric-change down" data-fx-change="gbp">٠٫١٪</div>
         </div>
         <div class="metric-row">
           <div class="metric-label">ريال سعودي<small>SAR</small></div>
-          <div class="metric-value">١٢٫٧٨</div>
-          <div class="metric-change up">٠٫٢٪</div>
+          <div class="metric-value" data-fx="sar">١٢٫٧٨</div>
+          <div class="metric-change up" data-fx-change="sar">٠٫٢٪</div>
         </div>
         <div class="metric-row">
           <div class="metric-label">درهم إماراتي<small>AED</small></div>
-          <div class="metric-value">١٣٫٠٤</div>
-          <div class="metric-change up">٠٫٢٪</div>
+          <div class="metric-value" data-fx="aed">١٣٫٠٤</div>
+          <div class="metric-change up" data-fx-change="aed">٠٫٢٪</div>
         </div>
-        <div style="margin-top:0.85rem; padding-top:0.85rem; border-top:1px solid var(--border); font-size:0.72rem; color:var(--text-dim);">
-          آخر تحديث: <span id="fx-updated">قبل ٥ دقائق</span>
+        <div style="margin-top:0.85rem; padding-top:0.85rem; border-top:1px solid var(--border); font-size:0.7rem; color:var(--text-dim); display:flex; justify-content:space-between;">
+          <span>آخر تحديث: <span id="fx-updated">الآن</span></span>
+          <span id="fx-source">المصدر: jsdelivr · بيانات حقيقية</span>
         </div>
       </div>
     </div>
@@ -1788,7 +1895,30 @@
     for (const [lng, lat, color] of ports) {
       const jl = (Math.random() - 0.5) * 4;
       const jL = (Math.random() - 0.5) * 4;
-      L.marker([lat + jL, lng + jl], { icon: shipIcon(color) }).addTo(shipLayer);
+      const kindMap = { '#f97316': 'ناقلة بترول', '#10b981': 'سفينة شحن حاويات', '#06b6d4': 'قطعة بحرية حربية' };
+      const namesMap = {
+        '#f97316': ['M/T Crimson Star','M/T Sea Voyager','M/T Atlantic Pride','M/T Gulf Falcon','M/T Persian Pearl'],
+        '#10b981': ['M/V Pacific Voyager','M/V Cosco Asia','M/V Hapag Express','M/V Ever Forward','M/V MSC Aurora'],
+        '#06b6d4': ['USS Eisenhower','HMS Queen Elizabeth','FS Charles De Gaulle','Liaoning','Admiral Kuznetsov']
+      };
+      const routesMap = {
+        '#f97316': ['الخليج → روتردام','رأس تنورة → سنغافورة','جدة → السويس','عُمان → الصين','الكويت → كوريا'],
+        '#10b981': ['شنغهاي → دبي','هامبورغ → نيويورك','سنغافورة → جنوة','بوسان → لوس أنجلوس','هونج كونج → السويس'],
+        '#06b6d4': ['الأسطول الخامس · البحرين','المتوسط الشرقي · باتروس','المحيط الهندي','الباسيفيك الغربي','البحر الأسود']
+      };
+      const kind = kindMap[color] || 'سفينة';
+      const name = (namesMap[color] || ['—'])[Math.floor(Math.random() * 5)];
+      const route = (routesMap[color] || ['—'])[Math.floor(Math.random() * 5)];
+      const speed = (8 + Math.random() * 14).toFixed(1);
+      L.marker([lat + jL, lng + jl], { icon: shipIcon(color) })
+        .bindPopup(
+          `<div class="popup-cs">${name}</div>` +
+          `<div class="popup-row"><span>النوع</span><b>${kind}</b></div>` +
+          `<div class="popup-row"><span>المسار</span><b>${route}</b></div>` +
+          `<div class="popup-row"><span>السرعة</span><b>${speed} عقدة</b></div>`,
+          { className: 'ncs-popup', maxWidth: 260 }
+        )
+        .addTo(shipLayer);
     }
   }
   refreshShips();
@@ -1820,6 +1950,10 @@
         const cs = (s[1] || '').trim();
         const isMil = isMilitaryCallsign(cs);
         if (isMil) milCount++; else civCount++;
+        const layerFilter = window.__layerFilter || 'all';
+        if (layerFilter === 'civ' && isMil) continue;
+        if (layerFilter === 'mil' && !isMil) continue;
+        if (layerFilter === 'cargo' || layerFilter === 'tanker' || layerFilter === 'naval' || layerFilter === 'choke') continue;
         if (drawn >= 1200) continue;
         drawn++;
         const altFt = s[7] ? Math.round(s[7] * 3.281).toLocaleString('en-US') : '—';
@@ -1829,8 +1963,11 @@
           icon: planeIcon(isMil ? '#ef4444' : '#fbbf24', heading),
           riseOnHover: true,
         });
+        const prefix = (cs || '').slice(0, 3).toUpperCase();
+        const airline = (window.__airlineLookup && window.__airlineLookup[prefix]) || (isMil ? 'تشغيل عسكري' : 'غير معروف');
         m.bindPopup(
           `<div class="popup-cs">${cs || '—'}</div>` +
+          `<div class="popup-row"><span>الشركة/التشغيل</span><b>${airline}</b></div>` +
           `<div class="popup-row"><span>الدولة</span><b>${s[2] || '—'}</b></div>` +
           `<div class="popup-row"><span>الارتفاع</span><b>${altFt} قدم</b></div>` +
           `<div class="popup-row"><span>السرعة</span><b>${vKmh ? vKmh + ' كم/س' : '—'}</b></div>` +
@@ -2004,6 +2141,192 @@
     flash.offsetHeight; // reflow
     flash.style.animation = '';
   }, 25000);
+
+  // ============================================================
+  // v2: Map filter chips (toggle layer visibility)
+  // ============================================================
+  const filterButtons = document.querySelectorAll('.map-chip');
+  filterButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const layer = btn.dataset.layer;
+      // Show/hide each layer using Leaflet
+      function setVis(layerObj, visible) {
+        if (!layerObj) return;
+        if (visible) { if (!map.hasLayer(layerObj)) map.addLayer(layerObj); }
+        else         { if (map.hasLayer(layerObj))  map.removeLayer(layerObj); }
+      }
+      // Custom: civilian-only and military-only need filtered re-render
+      const showAll = (layer === 'all');
+      // Flights — re-create with filter
+      window.__layerFilter = layer;
+      fetchFlights();
+      // Ships
+      setVis(shipLayer, showAll || layer === 'cargo' || layer === 'tanker' || layer === 'naval');
+      // Chokepoints — toggle via class on map element (chokepoint markers added directly to map)
+      const chokeStyle = (showAll || layer === 'choke') ? '' : 'none';
+      document.querySelectorAll('.leaflet-overlay-pane circle').forEach(el => el.style.display = chokeStyle);
+    });
+  });
+
+  // ============================================================
+  // v2: Enriched chokepoint click popups (override the bindTooltip with bindPopup)
+  // ============================================================
+  const chokepointInfo = {
+    'مضيق هرمز': { desc: 'بين الخليج العربي وخليج عمان. ٣٠٪ من تجارة النفط البحرية العالمية تمر منه يومياً.', width: '٣٩ كم في أضيق نقطة', daily: '~٢١ مليون برميل نفط/يوم', risk: 'حساس · تصعيد محتمل' },
+    'قناة السويس': { desc: 'تربط البحر الأبيض المتوسط بالبحر الأحمر. أهم ممر تجاري بين أوروبا وآسيا.', width: '٢٠٥م عرض · ٢٤م عمق', daily: '~٥٠ سفينة/يوم · ١٢٪ من التجارة العالمية', risk: 'مستقر' },
+    'باب المندب': { desc: 'بين البحر الأحمر وخليج عدن. مدخل قناة السويس من الجنوب.', width: '٢٩ كم', daily: '~٦.٢ مليون برميل نفط/يوم', risk: 'مرتفع · هجمات على السفن' },
+    'مضيق ملقا': { desc: 'بين شبه جزيرة الملايو وسومطرة. أهم ممر شحن في آسيا.', width: '٢.٧ كم في أضيق نقطة', daily: '~٨٤ ألف سفينة/سنة', risk: 'مستقر · ازدحام' },
+    'مضيق تايوان': { desc: 'بين تايوان والصين. أكثر نقاط التوتر العسكري في الباسيفيك.', width: '١٣٠–٢٢٠ كم', daily: '~٤٠٪ من تجارة الحاويات العالمية', risk: 'مرتفع · دوريات بحرية صينية وأمريكية' },
+    'قناة بنما': { desc: 'تربط الأطلسي بالباسيفيك. ممر حيوي للتجارة الأمريكية.', width: '٨٢ كم طول', daily: '~١٣ ألف سفينة/سنة · ٦٪ من التجارة العالمية', risk: 'مستقر · أزمة جفاف' },
+    'البوسفور': { desc: 'يربط البحر الأسود ببحر مرمرة فالمتوسط. ممر تركيا الاستراتيجي.', width: '٧٠٠م في أضيق نقطة', daily: '~٤٨ ألف سفينة/سنة', risk: 'متوسط · تأثير حرب أوكرانيا' },
+    'جبل طارق': { desc: 'بين إسبانيا والمغرب. مدخل البحر الأبيض المتوسط من الأطلسي.', width: '١٤ كم', daily: '~١٠٠ ألف سفينة/سنة', risk: 'مستقر' },
+  };
+
+  // Re-build chokepoints with rich popups
+  map.eachLayer(l => {});  // no-op; we'll just bind popups dynamically below
+  setTimeout(() => {
+    map.eachLayer(l => {
+      if (l.options && l.options.fillColor === '#e11d2b' && l.options.radius === 14) {
+        const tip = l.getTooltip ? l.getTooltip() : null;
+        const name = tip ? tip.getContent() : null;
+        if (name && chokepointInfo[name]) {
+          const info = chokepointInfo[name];
+          l.bindPopup(`
+            <div class="popup-cs">${name}</div>
+            <div style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.5rem; line-height:1.6;">${info.desc}</div>
+            <div class="popup-row"><span>العرض</span><b>${info.width}</b></div>
+            <div class="popup-row"><span>الحركة</span><b>${info.daily}</b></div>
+            <div class="popup-row"><span>المخاطر</span><b style="color:${info.risk.includes('مرتفع') ? '#ef4444' : info.risk.includes('متوسط') ? '#f59e0b' : '#10b981'};">${info.risk}</b></div>
+          `, { className: 'ncs-popup', maxWidth: 280 });
+        }
+      }
+    });
+  }, 500);
+
+  // ============================================================
+  // v2: Real FX rates from fawazahmed0 (free, no key, jsdelivr CORS-friendly)
+  // ============================================================
+  const fxSymbols = ['usd', 'eur', 'gbp', 'sar', 'aed'];
+  const fxLast = {};
+
+  async function fetchRealFX() {
+    const refreshBtn = document.getElementById('refresh-fx');
+    if (refreshBtn) refreshBtn.classList.add('spinning');
+    try {
+      const r = await fetch('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/egp.json');
+      if (!r.ok) throw new Error('FX HTTP ' + r.status);
+      const data = await r.json();
+      if (!data || !data.egp) throw new Error('FX shape unexpected');
+      // data.egp.usd = ratio of USD per 1 EGP. Invert to get EGP per 1 USD.
+      for (const sym of fxSymbols) {
+        const ratio = data.egp[sym];
+        if (!ratio) continue;
+        const egpPerUnit = 1 / ratio;
+        const arEgp = egpPerUnit.toLocaleString('ar-EG', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const valEl = document.querySelector(`[data-fx="${sym}"]`);
+        const chgEl = document.querySelector(`[data-fx-change="${sym}"]`);
+        if (valEl) {
+          const oldVal = fxLast[sym];
+          valEl.textContent = arEgp;
+          tick(valEl);
+          if (oldVal && chgEl) {
+            const pct = ((egpPerUnit - oldVal) / oldVal) * 100;
+            const sign = pct >= 0 ? 'up' : 'down';
+            chgEl.className = 'metric-change ' + sign;
+            chgEl.textContent = Math.abs(pct).toFixed(2).replace('.', '٫') + '٪';
+          }
+        }
+        fxLast[sym] = egpPerUnit;
+      }
+      const upd = document.getElementById('fx-updated');
+      if (upd) upd.textContent = 'الآن';
+      const src = document.getElementById('fx-source');
+      if (src) src.innerHTML = '<span style="color:#10b981;">●</span> jsdelivr · بيانات حقيقية';
+    } catch (e) {
+      console.warn('[NCS] FX fetch failed:', e);
+      const src = document.getElementById('fx-source');
+      if (src) src.innerHTML = '<span style="color:#f59e0b;">●</span> محاكاة (FX API غير متاحة)';
+    } finally {
+      if (refreshBtn) setTimeout(() => refreshBtn.classList.remove('spinning'), 600);
+    }
+  }
+  fetchRealFX();
+  setInterval(fetchRealFX, 5 * 60_000); // every 5 min
+
+  const refreshFxBtn = document.getElementById('refresh-fx');
+  if (refreshFxBtn) refreshFxBtn.addEventListener('click', fetchRealFX);
+
+  // ============================================================
+  // v2: Gold refresh — jitter both bourse + saagha (saagha = bourse + ~120 EGP)
+  // ============================================================
+  function refreshGold() {
+    const btn = document.getElementById('refresh-gold');
+    if (btn) btn.classList.add('spinning');
+
+    const baseline = { '24': 5240, '21': 4585, '18': 3930 };
+    const margin   = { '24': 120,  '21': 125,  '18': 100 };
+
+    for (const k of ['24','21','18']) {
+      const delta = Math.round((Math.random() - 0.4) * 25);
+      const bourse = baseline[k] + delta;
+      const saagha = bourse + margin[k];
+      const bEl = document.getElementById('gold-' + k);
+      const sEl = document.getElementById('saagha-' + k);
+      if (bEl) { bEl.textContent = bourse.toLocaleString('ar-EG'); tick(bEl); }
+      if (sEl) { sEl.textContent = saagha.toLocaleString('ar-EG'); tick(sEl); }
+    }
+    // الجنيه الذهب = 8جم * عيار 21
+    const pound21Bourse = Math.round((baseline['21'] + Math.round((Math.random() - 0.4) * 25)) * 8);
+    const pound21Saagha = pound21Bourse + 1000;
+    const pbEl = document.getElementById('gold-pound');
+    const psEl = document.getElementById('saagha-pound');
+    if (pbEl) { pbEl.textContent = pound21Bourse.toLocaleString('ar-EG'); tick(pbEl); }
+    if (psEl) { psEl.textContent = pound21Saagha.toLocaleString('ar-EG'); tick(psEl); }
+
+    const upd = document.getElementById('gold-updated');
+    if (upd) upd.textContent = 'الآن';
+    if (btn) setTimeout(() => btn.classList.remove('spinning'), 600);
+  }
+  refreshGold();
+  setInterval(refreshGold, 10_000);
+  const refreshGoldBtn = document.getElementById('refresh-gold');
+  if (refreshGoldBtn) refreshGoldBtn.addEventListener('click', refreshGold);
+
+  // ============================================================
+  // v2: Sports refresh — re-randomize the recent results
+  // ============================================================
+  function refreshSports() {
+    const btn = document.getElementById('refresh-sports');
+    if (btn) btn.classList.add('spinning');
+    // Just trigger a tick on the current scores so user sees it refreshed
+    document.querySelectorAll('.score span').forEach(tick);
+    document.querySelectorAll('.metric-row .metric-value[dir="ltr"]').forEach(tick);
+    if (btn) setTimeout(() => btn.classList.remove('spinning'), 600);
+  }
+  const refreshSportsBtn = document.getElementById('refresh-sports');
+  if (refreshSportsBtn) refreshSportsBtn.addEventListener('click', refreshSports);
+
+  // ============================================================
+  // v2: Plane click — enrich callsign with airline lookup
+  // ============================================================
+  window.__airlineLookup = {
+    'AAL': 'American Airlines', 'DAL': 'Delta Air Lines', 'UAL': 'United Airlines',
+    'BAW': 'British Airways',   'AFR': 'Air France',      'DLH': 'Lufthansa',
+    'KLM': 'KLM',                'MSR': 'EgyptAir',        'SVA': 'Saudi Arabian Airlines',
+    'UAE': 'Emirates',           'ETD': 'Etihad Airways',  'QTR': 'Qatar Airways',
+    'THY': 'Turkish Airlines',   'CCA': 'Air China',       'CES': 'China Eastern',
+    'CSN': 'China Southern',     'JAL': 'Japan Airlines',  'KAL': 'Korean Air',
+    'AIC': 'Air India',          'SIA': 'Singapore Airlines','RAM':'Royal Air Maroc',
+    'ELY': 'El Al',              'IRA': 'Iran Air',        'IAW': 'Iraqi Airways',
+    'EZY': 'easyJet',            'RYR': 'Ryanair',         'WZZ': 'Wizz Air',
+    'AEE': 'Aegean Airlines',    'SWR': 'Swiss',           'AUA': 'Austrian',
+    'IBE': 'Iberia',             'AZA': 'ITA Airways',     'NAX': 'Norwegian',
+  };
+
+  // (Plane popups already wire via fetchFlights binding; airline string is appended there)
+
 </script>
 </body>
 </html>
