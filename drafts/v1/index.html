@@ -767,35 +767,40 @@
     width: 100%;
     height: 720px;
     min-height: 540px;
-    background: #1a1a1a;
+    background: #0a0a0a;
     position: relative;
   }
-  /* Map dark-gray theme via CSS filter on OSM tiles */
-  .leaflet-tile.osm-dark-tiles {
-    filter: grayscale(1) brightness(0.55) contrast(1.05);
+  /* Leaflet container and tile pane should fill cleanly */
+  .ncs-map .leaflet-container {
+    background: #0a0a0a;
+    height: 100%; width: 100%;
   }
-  /* Map view mode toggle (2D / 3D) */
+  /* dark-gray filter moved to .ncs-map .leaflet-tile rule */
+  /* Map view mode toggle (2D / 3D) — bottom-LEFT to avoid Leaflet zoom controls */
   .map-view-toggle {
     position: absolute;
-    top: 0.85rem; inset-inline-start: 0.85rem;
+    bottom: 1rem; inset-inline-start: 1rem;
     z-index: 500;
     display: inline-flex;
-    background: rgba(0,0,0,0.85);
+    background: rgba(0,0,0,0.92);
     border: 1px solid var(--border-strong);
-    border-radius: 999px;
+    border-radius: 4px;
     overflow: hidden;
     font-size: 0.72rem; font-weight: 800;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
   }
   .map-view-toggle button {
     background: transparent; border: 0;
     color: var(--text-muted); cursor: pointer;
-    padding: 0.35rem 0.85rem;
-    transition: all 200ms;
+    padding: 0.45rem 0.95rem;
+    transition: all 180ms;
+    font-family: var(--font-en-body);
+    letter-spacing: 0.05em;
   }
   .map-view-toggle button.active {
-    background: #10b981; color: #000;
+    background: var(--red); color: #fff;
   }
-  .map-view-toggle button:not(.active):hover { color: var(--text); }
+  .map-view-toggle button:not(.active):hover { color: var(--text); background: rgba(255,255,255,0.05); }
   .map-fake-3d .leaflet-map-pane {
     transform: perspective(1500px) rotateX(35deg);
     transform-origin: center center;
@@ -811,11 +816,14 @@
   .globe-layout .globe-pane::-webkit-scrollbar-track { background: transparent; }
   .globe-layout .globe-pane::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
   /* OSM tiles → dark theme via CSS filter (works without external dark tile servers) */
-  .leaflet-tile.osm-dark-tiles, .leaflet-layer .osm-dark-tiles {
-    filter: brightness(0.6) invert(1) contrast(2.5) hue-rotate(200deg) saturate(0.4) brightness(0.78);
+  /* Reliable grayscale on ALL tiles inside the NCS map */
+  .ncs-map .leaflet-tile-pane,
+  .ncs-map .leaflet-tile {
+    filter: grayscale(1) brightness(0.45) contrast(1.05);
+    -webkit-filter: grayscale(1) brightness(0.45) contrast(1.05);
   }
   /* Leaflet dark theming */
-  .leaflet-container { background: #050505 !important; font-family: var(--font-ar-body); }
+  .leaflet-container { background: #0a0a0a !important; font-family: var(--font-ar-body); }
   .leaflet-control-attribution {
     background: rgba(0,0,0,0.7) !important;
     color: var(--text-muted) !important;
@@ -851,6 +859,25 @@
     box-shadow: none !important;
   }
   .ncs-tooltip::before { display: none !important; }
+
+  /* === v3.11: Leaflet zoom controls — match dark theme === */
+  .leaflet-control-zoom {
+    border-radius: 4px !important;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5) !important;
+  }
+  .leaflet-control-zoom a {
+    width: 36px !important; height: 36px !important;
+    line-height: 36px !important;
+    font-size: 1.1rem !important;
+    background: rgba(0,0,0,0.92) !important;
+    color: var(--text) !important;
+    border: 1px solid var(--border-strong) !important;
+    border-bottom: 0 !important;
+  }
+  .leaflet-control-zoom a:last-child { border-bottom: 1px solid var(--border-strong) !important; }
+  .leaflet-control-zoom a:hover { background: var(--red) !important; color: #fff !important; }
+
   /* Pulsing chokepoint rings */
   @keyframes choke-pulse-anim {
     0%   { stroke-opacity: 0.85; stroke-width: 1.5; }
@@ -1215,6 +1242,29 @@
   .custom-src-pill button { background: transparent; border: 0; color: var(--text-muted);
     cursor: pointer; font-size: 1.1rem; }
   .custom-src-pill button:hover { color: var(--red); }
+
+
+  /* === v3.11: Channel play icon === */
+  .channel-play {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: rgba(225,29,43,0.92);
+    color: #fff;
+    display: grid; place-items: center;
+    z-index: 3;
+    opacity: 0;
+    transition: opacity 250ms, transform 250ms;
+    pointer-events: none;
+    box-shadow: 0 8px 24px rgba(225,29,43,0.4);
+  }
+  .channel:hover .channel-play {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.05);
+  }
+  .channel { position: relative; }
 
   /* Channel iframe wrapper */
   .iframe-wrap {
@@ -1598,7 +1648,7 @@
       </div>
       <div style="padding: 0.85rem 1.25rem; background: var(--bg-elev-2); border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem;">
         <span style="color: var(--text-muted);">لو البث ما ظهرش، القناة بتمنع التضمين. افتحها على YouTube مباشرة:</span>
-        <a id="channel-yt-link" href="#" target="_blank" rel="noopener" style="background: var(--red); color: #fff; padding: 0.4rem 0.85rem; border-radius: 4px; font-weight: 800;">▶ YouTube</a>
+        <a id="channel-yt-link" href="#" target="_blank" rel="noopener" style="background: var(--red); color: #fff; padding: 0.55rem 1.1rem; border-radius: 4px; font-weight: 800; display:inline-flex; align-items:center; gap:0.5rem; font-size:0.85rem;">▶ افتح على يوتيوب</a>
       </div>
     </div>
   </div>
@@ -1808,41 +1858,59 @@
     <a href="news.html?cat=live" class="more" data-i18n="more.channels">كل القنوات ←</a>
   </div>
   <div class="channels">
-    <button class="channel channel-trigger" data-video-id="BNVrqyu4QSU" data-channel-name="الجزيرة مباشر">
+    <button class="channel channel-trigger" data-embed-path="live_stream?channel=UCfiwzLy-8yKzIbsmZTzxDgw" data-watch-path="aljazeerachannel/live" data-channel-name="الجزيرة مباشر">
       <div class="channel-thumb" style="background-image:linear-gradient(135deg,#1a3a52,#0a1f30);"></div>
       <div class="live-badge"><span class="live-dot"></span> مباشر</div>
       <div class="viewers">12.4K</div>
       <div class="channel-name">الجزيرة مباشر</div>
+      <div class="channel-play">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M8 5v14l11-7z"/></svg>
+      </div>
     </button>
-    <button class="channel channel-trigger" data-video-id="gCNeDWCI0vo" data-channel-name="Al Jazeera English">
+    <button class="channel channel-trigger" data-embed-path="live_stream?channel=UC-Eu5UEgrVwlHJxk2EuCkkA" data-watch-path="aljazeeraenglish/live" data-channel-name="Al Jazeera English">
       <div class="channel-thumb" style="background-image:linear-gradient(135deg,#7c1d1d,#3f0a0a);"></div>
       <div class="live-badge"><span class="live-dot"></span> مباشر</div>
       <div class="viewers">8.7K</div>
       <div class="channel-name">Al Jazeera English</div>
+      <div class="channel-play">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M8 5v14l11-7z"/></svg>
+      </div>
     </button>
-    <button class="channel channel-trigger" data-video-id="h3MuIUNB9W0" data-channel-name="France 24 English">
+    <button class="channel channel-trigger" data-embed-path="live_stream?channel=UCQfwfsi5VrQ8yKZ-UWmAEFg" data-watch-path="@FRANCE24English/live" data-channel-name="France 24 English">
       <div class="channel-thumb" style="background-image:linear-gradient(135deg,#581c87,#2e1065);"></div>
       <div class="live-badge"><span class="live-dot"></span> مباشر</div>
       <div class="viewers">5.3K</div>
       <div class="channel-name">France 24 English</div>
+      <div class="channel-play">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M8 5v14l11-7z"/></svg>
+      </div>
     </button>
-    <button class="channel channel-trigger" data-video-id="tZTGSJ6_PeU" data-channel-name="DW News">
+    <button class="channel channel-trigger" data-embed-path="live_stream?channel=UCknLrEdhRCp1aegoMqRaCZg" data-watch-path="@dwnews/live" data-channel-name="DW News">
       <div class="channel-thumb" style="background-image:linear-gradient(135deg,#78350f,#451a03);"></div>
       <div class="live-badge"><span class="live-dot"></span> مباشر</div>
       <div class="viewers">3.9K</div>
       <div class="channel-name">DW News</div>
+      <div class="channel-play">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M8 5v14l11-7z"/></svg>
+      </div>
     </button>
-    <button class="channel channel-trigger" data-video-id="YDvsBbKfLPA" data-channel-name="Sky News">
-      <div class="channel-thumb" style="background-image:linear-gradient(135deg,#1f2937,#0f172a);"></div>
-      <div class="live-badge"><span class="live-dot"></span> مباشر</div>
-      <div class="viewers">2.1K</div>
-      <div class="channel-name">Sky News</div>
-    </button>
-    <button class="channel channel-trigger" data-video-id="iEpJwprxDdk" data-channel-name="Bloomberg">
+    <button class="channel channel-trigger" data-embed-path="live_stream?channel=UCIALMKvObZNtJ6AmdCLP7Lg" data-watch-path="@markets/live" data-channel-name="Bloomberg TV">
       <div class="channel-thumb" style="background-image:linear-gradient(135deg,#0c4a6e,#082f49);"></div>
       <div class="live-badge"><span class="live-dot"></span> مباشر</div>
+      <div class="viewers">2.1K</div>
+      <div class="channel-name">Bloomberg TV</div>
+      <div class="channel-play">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M8 5v14l11-7z"/></svg>
+      </div>
+    </button>
+    <button class="channel channel-trigger" data-embed-path="live_stream?channel=UCoMdktPbSTixAyNGwb-UYkQ" data-watch-path="@SkyNews/live" data-channel-name="Sky News">
+      <div class="channel-thumb" style="background-image:linear-gradient(135deg,#1f2937,#0f172a);"></div>
+      <div class="live-badge"><span class="live-dot"></span> مباشر</div>
       <div class="viewers">1.8K</div>
-      <div class="channel-name">Bloomberg</div>
+      <div class="channel-name">Sky News</div>
+      <div class="channel-play">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M8 5v14l11-7z"/></svg>
+      </div>
     </button>
   </div>
 </div>
@@ -3119,10 +3187,12 @@
       const cat = catFromArticle(a);
       const title = (a.title || '').replace(/\s*-\s*[^-]*$/, '').trim();
       const sources = (a.source && a.source.name) || 'NewsAPI';
-      const imgUrl = a.urlToImage || '';
+      // Route through weserv.nl image proxy: handles HTTP->HTTPS + CORS reliably
+      const rawUrl = a.urlToImage || '';
+      const proxyUrl = rawUrl ? `https://images.weserv.nl/?url=${encodeURIComponent(rawUrl.replace(/^https?:\/\//, ''))}&w=600&h=400&fit=cover&output=jpg` : '';
       const fallbackHtml = `<div class="news-thumb-cat cat-${cat}">${ICONS_INDEX[cat] || ICONS_INDEX.world}</div>`;
-      const thumb = imgUrl
-        ? `<div class="news-thumb-wrap"><img src="${imgUrl.replace(/"/g, '&quot;')}" alt="" class="news-thumb-img-tag" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.outerHTML=this.dataset.fallback;" data-fallback="${fallbackHtml.replace(/"/g, '&quot;')}"/></div>`
+      const thumb = proxyUrl
+        ? `<div class="news-thumb-wrap"><img src="${proxyUrl}" alt="" class="news-thumb-img-tag" loading="lazy" onerror="this.parentElement.outerHTML=this.dataset.fb;" data-fb="${fallbackHtml.replace(/"/g, '&quot;')}"/></div>`
         : fallbackHtml;
       return `<button class="news-card news-card-btn" data-article='${JSON.stringify(a).replace(/'/g, "&apos;")}' style="display:flex;flex-direction:column;background:transparent;border:0;padding:0;text-align:start;color:inherit;cursor:pointer;width:100%;">
         ${thumb}
@@ -3652,13 +3722,16 @@
   const channelTitle = document.getElementById('channel-title');
   document.querySelectorAll('.channel-trigger').forEach(btn => {
     btn.addEventListener('click', () => {
-      const videoId = btn.dataset.videoId;
+      const embedPath = btn.dataset.embedPath || ('live_stream?channel=' + (btn.dataset.channelId || ''));
+      const watchPath = btn.dataset.watchPath || (btn.dataset.channelId || '');
       const name = btn.dataset.channelName;
-      if (!videoId || !channelModal || !channelIframe) return;
+      if (!channelModal || !channelIframe) return;
       channelTitle.textContent = name + ' — البث المباشر';
-      channelIframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&modestbranding=1&rel=0`;
+      // Add autoplay parameters
+      const sep = embedPath.includes('?') ? '&' : '?';
+      channelIframe.src = `https://www.youtube.com/embed/${embedPath}${sep}autoplay=1&mute=1&modestbranding=1&rel=0`;
       const yt = document.getElementById('channel-yt-link');
-      if (yt) yt.href = `https://www.youtube.com/watch?v=${videoId}`;
+      if (yt) yt.href = `https://www.youtube.com/${watchPath}`;
       channelModal.hidden = false;
     });
   });
