@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>NCS — Map Diagnostic</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  body { margin: 0; padding: 0; font-family: system-ui; background: #0a0a0a; color: #fff; }
+  header { padding: 1rem; background: #131313; border-bottom: 1px solid #333; }
+  #log { padding: 1rem; background: #131313; font-family: monospace; font-size: 0.8rem; max-height: 200px; overflow: auto; border-bottom: 1px solid #333; }
+  #log div { margin: 0.2rem 0; }
+  #log .ok { color: #34d399; }
+  #log .err { color: #ef4444; }
+  #log .warn { color: #fbbf24; }
+  #map1, #map2 { height: 280px; margin: 0; border-bottom: 4px solid #e11d2b; }
+  h2 { padding: 0.5rem 1rem; margin: 0; background: #1a1a1a; font-size: 0.9rem; }
+</style>
+</head>
+<body>
+
+<header>
+  <strong>NCS — Map Loading Diagnostic</strong>
+  <div style="font-size:0.8rem;color:#a3a3a3;margin-top:0.3rem;">
+    لو شفت خريطة في أي قسم تحت → Leaflet شغّال. لو فاضي → في حاجة بتبلوكها في شبكتك.
+  </div>
+</header>
+
+<div id="log"></div>
+
+<h2>Test 1: OpenStreetMap (the most reliable tile source)</h2>
+<div id="map1"></div>
+
+<h2>Test 2: Carto Dark (alternative tile source)</h2>
+<div id="map2"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  const log = document.getElementById('log');
+  function addLog(msg, cls = '') {
+    const d = document.createElement('div');
+    d.className = cls;
+    d.textContent = '[' + new Date().toLocaleTimeString() + '] ' + msg;
+    log.appendChild(d);
+  }
+
+  addLog('Page loaded', 'ok');
+  addLog('Leaflet ' + (typeof L !== 'undefined' ? 'LOADED v' + (L.version || '?') : 'NOT LOADED'), typeof L !== 'undefined' ? 'ok' : 'err');
+
+  // Test 1: OSM
+  try {
+    const m1 = L.map('map1', { worldCopyJump: false, minZoom: 2, maxZoom: 8 }).setView([20, 25], 2);
+    const t1 = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OSM',
+      subdomains: 'abc',
+      noWrap: true,
+    });
+    t1.on('tileload', () => addLog('OSM: tile loaded ✓', 'ok'));
+    t1.on('tileerror', (e) => addLog('OSM: tile FAILED ' + (e.tile ? e.tile.src : ''), 'err'));
+    t1.addTo(m1);
+    addLog('OSM map initialized', 'ok');
+  } catch (e) {
+    addLog('OSM map ERROR: ' + e.message, 'err');
+  }
+
+  // Test 2: Carto Dark
+  try {
+    const m2 = L.map('map2', { worldCopyJump: false, minZoom: 2, maxZoom: 8 }).setView([20, 25], 2);
+    const t2 = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
+      attribution: '© Carto',
+      subdomains: 'abcd',
+      noWrap: true,
+    });
+    t2.on('tileload', () => addLog('Carto: tile loaded ✓', 'ok'));
+    t2.on('tileerror', (e) => addLog('Carto: tile FAILED ' + (e.tile ? e.tile.src : ''), 'err'));
+    t2.addTo(m2);
+    addLog('Carto map initialized', 'ok');
+  } catch (e) {
+    addLog('Carto map ERROR: ' + e.message, 'err');
+  }
+</script>
+</body>
+</html>

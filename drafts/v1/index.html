@@ -362,6 +362,11 @@
     grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
     gap: 0.85rem;
   }
+  .channel-trigger {
+    background: transparent; border: 0; padding: 0;
+    color: inherit; font-family: inherit;
+    text-align: start; width: 100%;
+  }
   .channel {
     aspect-ratio: 16/10;
     background: var(--bg-elev-2);
@@ -1062,6 +1067,117 @@
 
 
 
+
+  /* === v3.6: Settings + channel modal === */
+  .settings-btn {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: transparent; border: 1px solid var(--border-strong);
+    color: var(--text-muted); cursor: pointer;
+    display: grid; place-items: center; transition: all 200ms;
+    margin-inline-start: 0.4rem;
+  }
+  .settings-btn:hover { color: var(--text); border-color: var(--red); transform: rotate(45deg); }
+
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 1rem;
+  }
+  .modal-overlay[hidden] { display: none; }
+  .modal {
+    background: var(--bg-elev-1); border: 1px solid var(--border-strong);
+    border-radius: 6px; max-width: 600px; width: 100%;
+    max-height: 90vh; display: flex; flex-direction: column;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.7);
+  }
+  .modal.modal-wide { max-width: 900px; }
+  .modal header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1rem 1.25rem; border-bottom: 1px solid var(--border);
+  }
+  .modal h3 { margin: 0; font-size: 1.05rem; font-weight: 800; }
+  .modal-close {
+    background: transparent; border: 0; color: var(--text-muted);
+    font-size: 1.5rem; cursor: pointer; line-height: 1;
+    width: 32px; height: 32px; border-radius: 50%;
+    transition: all 200ms;
+  }
+  .modal-close:hover { background: rgba(225,29,43,0.15); color: var(--text); }
+  .modal-body { padding: 1.25rem; overflow-y: auto; }
+
+  /* Source list */
+  .src-list { display: flex; flex-direction: column; gap: 0.5rem; }
+  .src-row {
+    display: grid; grid-template-columns: auto 1fr auto auto;
+    gap: 0.75rem; align-items: center;
+    padding: 0.75rem 0.85rem;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+  }
+  .src-status {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--text-dim); flex-shrink: 0;
+  }
+  .src-status.ok { background: #10b981; box-shadow: 0 0 6px #10b981; }
+  .src-status.fail { background: #ef4444; box-shadow: 0 0 6px #ef4444; }
+  .src-status.testing { background: #fbbf24; animation: pulse-yellow 1s infinite; }
+  @keyframes pulse-yellow { 50% { opacity: 0.4; } }
+  .src-info { min-width: 0; }
+  .src-name { font-weight: 800; font-size: 0.88rem; }
+  .src-name a { color: var(--red); }
+  .src-meta { font-size: 0.7rem; color: var(--text-dim); margin-top: 0.15rem;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+  .src-test-btn, .btn-primary {
+    background: transparent; border: 1px solid var(--border-strong);
+    color: var(--text-muted); padding: 0.35rem 0.75rem;
+    font-size: 0.74rem; font-weight: 700; border-radius: 4px;
+    cursor: pointer; transition: all 200ms; white-space: nowrap;
+  }
+  .src-test-btn:hover { color: var(--text); border-color: var(--red); }
+  .btn-primary {
+    background: var(--red); color: #fff; border-color: var(--red);
+  }
+  .btn-primary:hover { background: var(--red-dim); }
+  .src-add-row {
+    display: grid; grid-template-columns: 1fr 2fr auto;
+    gap: 0.5rem;
+  }
+  .src-add-row input {
+    background: var(--bg-elev-2); border: 1px solid var(--border-strong);
+    color: var(--text); padding: 0.5rem 0.75rem;
+    font-family: inherit; font-size: 0.85rem; border-radius: 4px;
+  }
+  .src-add-row input:focus { outline: none; border-color: var(--red); }
+  .custom-srcs { margin-top: 1rem; display: flex; flex-direction: column; gap: 0.4rem; }
+  .custom-src-pill {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.55rem 0.85rem;
+    background: rgba(225,29,43,0.05); border: 1px solid rgba(225,29,43,0.3);
+    border-radius: 4px; font-size: 0.82rem;
+  }
+  .custom-src-pill a { color: var(--red); font-weight: 700;
+    text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 70%; }
+  .custom-src-pill button { background: transparent; border: 0; color: var(--text-muted);
+    cursor: pointer; font-size: 1.1rem; }
+  .custom-src-pill button:hover { color: var(--red); }
+
+  /* Channel iframe wrapper */
+  .iframe-wrap {
+    position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;
+    background: #000;
+  }
+  .iframe-wrap iframe {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    border: 0;
+  }
+
+  @media (max-width: 600px) {
+    .src-add-row { grid-template-columns: 1fr; }
+    .src-row { grid-template-columns: auto 1fr auto; }
+  }
+
   /* === v3.4: vertical LAYERS list === */
   .pane-layers .layers-list {
     display: flex; flex-direction: column; gap: 0.35rem;
@@ -1192,6 +1308,9 @@
         <button class="active" data-lang="ar">عربي</button>
         <button data-lang="en">EN</button>
       </div>
+      <button class="settings-btn" id="settings-btn" title="إعدادات">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
     </div>
   </div>
 </div>
@@ -1223,6 +1342,48 @@
     </div>
   </div>
 </header>
+
+<!-- ================= SETTINGS MODAL ================= -->
+<div class="modal-overlay" id="settings-modal" hidden>
+  <div class="modal" role="dialog" aria-labelledby="settings-title">
+    <header>
+      <h3 id="settings-title">إعدادات الموقع · مصادر البيانات</h3>
+      <button class="modal-close" data-close-modal>×</button>
+    </header>
+    <div class="modal-body">
+      <p style="color:var(--text-muted);font-size:0.85rem;margin:0 0 1rem;">
+        مصادر البيانات الحقيقية المتصلة بالموقع. اضغط "اختبار" لتأكيد الاتصال.
+      </p>
+
+      <div class="src-list" id="src-list">
+        <!-- Populated by JS -->
+      </div>
+
+      <h4 style="margin: 1.75rem 0 0.85rem;font-size:0.92rem;font-weight:800;">إضافة مصدر مخصّص</h4>
+      <div class="src-add-row">
+        <input type="url" id="custom-src-name" placeholder="اسم المصدر (مثال: WorldMonitor)" />
+        <input type="url" id="custom-src-url" placeholder="https://..." />
+        <button id="add-src-btn" class="btn-primary">إضافة</button>
+      </div>
+      <div class="custom-srcs" id="custom-srcs"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= LIVE CHANNEL MODAL ================= -->
+<div class="modal-overlay" id="channel-modal" hidden>
+  <div class="modal modal-wide" role="dialog">
+    <header>
+      <h3 id="channel-title">قناة مباشرة</h3>
+      <button class="modal-close" data-close-modal>×</button>
+    </header>
+    <div class="modal-body" style="padding: 0;">
+      <div class="iframe-wrap">
+        <iframe id="channel-iframe" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- ================= BREAKING TICKER ================= -->
 <div class="ticker">
@@ -1423,30 +1584,42 @@
     <a href="news.html?cat=live" class="more" data-i18n="more.channels">كل القنوات ←</a>
   </div>
   <div class="channels">
-    <a href="https://www.aljazeera.net/live" target="_blank" rel="noopener" class="channel" style="display:block;color:inherit;text-decoration:none;"><div class="channel-thumb" style="background-image:linear-gradient(135deg,#1a3a52,#0a1f30);"></div>
+    <button class="channel channel-trigger" data-channel-id="UCfiwzLy-8yKzIbsmZTzxDgw" data-channel-name="الجزيرة مباشر">
+      <div class="channel-thumb" style="background-image:linear-gradient(135deg,#1a3a52,#0a1f30);"></div>
       <div class="live-badge"><span class="live-dot"></span> مباشر</div>
       <div class="viewers">12.4K</div>
-      <div class="channel-name">الجزيرة مباشر</div></a>
-    <a href="https://www.bbc.com/arabic/live/c41dz3vym2nt" target="_blank" rel="noopener" class="channel" style="display:block;color:inherit;text-decoration:none;"><div class="channel-thumb" style="background-image:linear-gradient(135deg,#7c1d1d,#3f0a0a);"></div>
+      <div class="channel-name">الجزيرة مباشر</div>
+    </button>
+    <button class="channel channel-trigger" data-channel-id="UC2pTnwmvZc0iHWIDVVRGUpA" data-channel-name="BBC Arabic">
+      <div class="channel-thumb" style="background-image:linear-gradient(135deg,#7c1d1d,#3f0a0a);"></div>
       <div class="live-badge"><span class="live-dot"></span> مباشر</div>
       <div class="viewers">8.7K</div>
-      <div class="channel-name">BBC Arabic</div></a>
-    <a href="https://www.alarabiya.net/live" target="_blank" rel="noopener" class="channel" style="display:block;color:inherit;text-decoration:none;"><div class="channel-thumb" style="background-image:linear-gradient(135deg,#0c4a6e,#082f49);"></div>
+      <div class="channel-name">BBC Arabic</div>
+    </button>
+    <button class="channel channel-trigger" data-channel-id="UCD8tn26zL9_mUXsnoG0VYNg" data-channel-name="العربية الحدث">
+      <div class="channel-thumb" style="background-image:linear-gradient(135deg,#0c4a6e,#082f49);"></div>
       <div class="live-badge"><span class="live-dot"></span> مباشر</div>
       <div class="viewers">5.3K</div>
-      <div class="channel-name">العربية الحدث</div></a>
-    <a href="https://www.skynewsarabia.com/live/" target="_blank" rel="noopener" class="channel" style="display:block;color:inherit;text-decoration:none;"><div class="channel-thumb" style="background-image:linear-gradient(135deg,#1f2937,#0f172a);"></div>
+      <div class="channel-name">العربية الحدث</div>
+    </button>
+    <button class="channel channel-trigger" data-channel-id="UCa4oLDdVtBSYBqKbdENH8XA" data-channel-name="Sky News عربية">
+      <div class="channel-thumb" style="background-image:linear-gradient(135deg,#1f2937,#0f172a);"></div>
       <div class="live-badge"><span class="live-dot"></span> مباشر</div>
       <div class="viewers">3.9K</div>
-      <div class="channel-name">Sky News عربية</div></a>
-    <a href="https://www.france24.com/ar/البث-المباشر/" target="_blank" rel="noopener" class="channel" style="display:block;color:inherit;text-decoration:none;"><div class="channel-thumb" style="background-image:linear-gradient(135deg,#581c87,#2e1065);"></div>
+      <div class="channel-name">Sky News عربية</div>
+    </button>
+    <button class="channel channel-trigger" data-channel-id="UCC8B3R6NItlIH5-JVRRYXTw" data-channel-name="France 24 عربية">
+      <div class="channel-thumb" style="background-image:linear-gradient(135deg,#581c87,#2e1065);"></div>
       <div class="live-badge"><span class="live-dot"></span> مباشر</div>
       <div class="viewers">2.1K</div>
-      <div class="channel-name">France 24 عربية</div></a>
-    <a href="https://www.dw.com/ar/live" target="_blank" rel="noopener" class="channel" style="display:block;color:inherit;text-decoration:none;"><div class="channel-thumb" style="background-image:linear-gradient(135deg,#78350f,#451a03);"></div>
+      <div class="channel-name">France 24 عربية</div>
+    </button>
+    <button class="channel channel-trigger" data-channel-id="UCm0LVuCUtbCypl0i2RJrZ-w" data-channel-name="DW عربية">
+      <div class="channel-thumb" style="background-image:linear-gradient(135deg,#78350f,#451a03);"></div>
       <div class="live-badge"><span class="live-dot"></span> مباشر</div>
       <div class="viewers">1.8K</div>
-      <div class="channel-name">DW عربية</div></a>
+      <div class="channel-name">DW عربية</div>
+    </button>
   </div>
 </div>
 
@@ -1946,14 +2119,66 @@
 
   L.control.zoom({ position: 'topright' }).addTo(map);
 
-  // OpenStreetMap tiles (always works) + CSS filter to give it a dark look
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap contributors',
-    subdomains: 'abc',
-    maxZoom: 19,
-    noWrap: true,
-    className: 'osm-dark-tiles',
-  }).addTo(map);
+  // Robust tile loading: try Carto Dark first, fall back through chain
+  const tileSources = [
+    {
+      name: 'Carto Dark',
+      url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
+      subdomains: 'abcd',
+      attribution: '&copy; OSM &copy; CARTO',
+      className: '',
+    },
+    {
+      name: 'OpenStreetMap (filtered)',
+      url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      subdomains: 'abc',
+      attribution: '&copy; OpenStreetMap contributors',
+      className: 'osm-dark-tiles',
+    },
+    {
+      name: 'Wikimedia',
+      url: 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png',
+      subdomains: '',
+      attribution: '&copy; Wikimedia',
+      className: 'osm-dark-tiles',
+    },
+  ];
+  let tileIdx = 0;
+  let currentTileLayer = null;
+  function addTileLayer() {
+    if (currentTileLayer) map.removeLayer(currentTileLayer);
+    if (tileIdx >= tileSources.length) {
+      console.warn('[NCS] All tile sources failed.');
+      return;
+    }
+    const src = tileSources[tileIdx];
+    console.log('[NCS] Trying tile source: ' + src.name);
+    const layer = L.tileLayer(src.url, {
+      subdomains: src.subdomains,
+      attribution: src.attribution,
+      maxZoom: 19, minZoom: 2, noWrap: true,
+      className: src.className,
+    });
+    let errorCount = 0;
+    layer.on('tileerror', () => {
+      errorCount++;
+      if (errorCount > 3) {
+        console.warn('[NCS] ' + src.name + ' failed (' + errorCount + ' errors). Trying next.');
+        tileIdx++;
+        addTileLayer();
+      }
+    });
+    layer.on('tileload', () => {
+      const indicator = document.getElementById('data-source');
+      if (indicator && indicator.dataset.tilesource !== src.name) {
+        indicator.dataset.tilesource = src.name;
+        // updateDataSourcePill is a no-op until OpenSky finishes its first fetch
+      }
+    });
+    layer.addTo(map);
+    currentTileLayer = layer;
+  }
+  addTileLayer();
 
   // ----- Icon helpers -----
   function planeIcon(color, heading) {
@@ -2784,6 +3009,176 @@
   }
   refreshIndexNewsGrid();
   setInterval(refreshIndexNewsGrid, 30 * 60_000);
+
+
+  // ============================================================
+  // v3.6: Settings modal — data source registry + status check
+  // ============================================================
+  const NCS_SOURCES = [
+    { name: 'OpenSky Network',   key: 'opensky',   url: 'https://opensky-network.org/api/states/all', desc: 'طيران لحظي عالمي', test: 'https://opensky-network.org/api/states/all' },
+    { name: 'NewsAPI',           key: 'newsapi',   url: 'https://newsapi.org/v2/top-headlines', desc: 'أخبار عالمية', test: 'https://newsapi.org/v2/top-headlines?country=us&apiKey=c345e2b01b2843feb66095becc480996&pageSize=1' },
+    { name: 'Currency API',      key: 'fx',        url: 'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api', desc: 'أسعار العملات', test: 'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/egp.json' },
+    { name: 'OpenStreetMap',     key: 'osm',       url: 'https://tile.openstreetmap.org', desc: 'بلاطات الخريطة', test: 'https://a.tile.openstreetmap.org/0/0/0.png' },
+    { name: 'Carto Dark',        key: 'carto',     url: 'https://basemaps.cartocdn.com', desc: 'بلاطات الخريطة الداكنة', test: 'https://a.basemaps.cartocdn.com/dark_all/0/0/0.png' },
+    { name: 'WorldMonitor',      key: 'wm',        url: 'https://finance.worldmonitor.app/?lat=5.0000&lon=20.0000&zoom=1.66&view=africa&timeRange=48h&layers=sanctions%2Ceconomic%2Coutages%2Cnatural&country=AE', desc: 'مرجع — مراقبة عالمية', test: '', external: true },
+  ];
+
+  function renderSourceList() {
+    const list = document.getElementById('src-list');
+    if (!list) return;
+    list.innerHTML = '';
+    for (const src of NCS_SOURCES) {
+      const row = document.createElement('div');
+      row.className = 'src-row';
+      row.innerHTML = `
+        <span class="src-status" data-src="${src.key}"></span>
+        <div class="src-info">
+          <div class="src-name">${src.external ? '<a href="' + src.url + '" target="_blank" rel="noopener">' + src.name + ' ↗</a>' : src.name}</div>
+          <div class="src-meta">${src.desc}</div>
+        </div>
+        <button class="src-test-btn" data-test="${src.key}">${src.external ? 'فتح' : 'اختبار'}</button>
+      `;
+      list.appendChild(row);
+    }
+    // Wire test buttons
+    list.querySelectorAll('[data-test]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const k = btn.dataset.test;
+        const src = NCS_SOURCES.find(s => s.key === k);
+        if (!src) return;
+        if (src.external) {
+          window.open(src.url, '_blank', 'noopener');
+          return;
+        }
+        testSource(src);
+      });
+    });
+    // Auto-test all on open
+    NCS_SOURCES.filter(s => !s.external).forEach(testSource);
+  }
+
+  async function testSource(src) {
+    const dot = document.querySelector(`.src-status[data-src="${src.key}"]`);
+    if (!dot) return;
+    dot.classList.remove('ok', 'fail');
+    dot.classList.add('testing');
+    try {
+      const res = await fetch(src.test, { method: 'GET', mode: 'cors', cache: 'no-store' });
+      if (res.ok) dot.classList.replace('testing', 'ok');
+      else dot.classList.replace('testing', 'fail');
+    } catch (e) {
+      dot.classList.replace('testing', 'fail');
+    }
+  }
+
+  function loadCustomSources() {
+    try { return JSON.parse(localStorage.getItem('ncs.custom-sources') || '[]'); } catch (e) { return []; }
+  }
+  function saveCustomSources(arr) {
+    try { localStorage.setItem('ncs.custom-sources', JSON.stringify(arr)); } catch (e) {}
+  }
+  function renderCustomSources() {
+    const wrap = document.getElementById('custom-srcs');
+    if (!wrap) return;
+    const arr = loadCustomSources();
+    wrap.innerHTML = arr.map((s, i) => `
+      <div class="custom-src-pill">
+        <a href="${s.url}" target="_blank" rel="noopener">${s.name || s.url}</a>
+        <button data-rm="${i}" title="حذف">×</button>
+      </div>
+    `).join('');
+    wrap.querySelectorAll('[data-rm]').forEach(b => {
+      b.addEventListener('click', () => {
+        const idx = parseInt(b.dataset.rm, 10);
+        const a = loadCustomSources();
+        a.splice(idx, 1);
+        saveCustomSources(a);
+        renderCustomSources();
+      });
+    });
+  }
+
+  // Pre-seed worldmonitor as a custom source if empty
+  (function seedDefaults() {
+    const arr = loadCustomSources();
+    if (arr.length === 0) {
+      saveCustomSources([{
+        name: 'WorldMonitor — Africa view',
+        url: 'https://finance.worldmonitor.app/?lat=5.0000&lon=20.0000&zoom=1.66&view=africa&timeRange=48h&layers=sanctions%2Ceconomic%2Coutages%2Cnatural&country=AE'
+      }]);
+    }
+  })();
+
+  // Settings open/close
+  const settingsBtn = document.getElementById('settings-btn');
+  const settingsModal = document.getElementById('settings-modal');
+  if (settingsBtn && settingsModal) {
+    settingsBtn.addEventListener('click', () => {
+      settingsModal.hidden = false;
+      renderSourceList();
+      renderCustomSources();
+    });
+  }
+  document.querySelectorAll('[data-close-modal]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      btn.closest('.modal-overlay').hidden = true;
+      const iframe = document.getElementById('channel-iframe');
+      if (iframe) iframe.src = ''; // stop playing
+    });
+  });
+  // Click outside modal closes it
+  document.querySelectorAll('.modal-overlay').forEach(o => {
+    o.addEventListener('click', (e) => {
+      if (e.target === o) {
+        o.hidden = true;
+        const iframe = document.getElementById('channel-iframe');
+        if (iframe) iframe.src = '';
+      }
+    });
+  });
+
+  // Add custom source form
+  const addSrcBtn = document.getElementById('add-src-btn');
+  if (addSrcBtn) {
+    addSrcBtn.addEventListener('click', () => {
+      const name = document.getElementById('custom-src-name').value.trim();
+      const url = document.getElementById('custom-src-url').value.trim();
+      if (!url) { alert('من فضلك أدخل URL'); return; }
+      const a = loadCustomSources();
+      a.push({ name: name || url, url });
+      saveCustomSources(a);
+      document.getElementById('custom-src-name').value = '';
+      document.getElementById('custom-src-url').value = '';
+      renderCustomSources();
+    });
+  }
+
+  // ============================================================
+  // v3.6: Live channel modal — embed YouTube live stream
+  // ============================================================
+  const channelModal = document.getElementById('channel-modal');
+  const channelIframe = document.getElementById('channel-iframe');
+  const channelTitle = document.getElementById('channel-title');
+  document.querySelectorAll('.channel-trigger').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.channelId;
+      const name = btn.dataset.channelName;
+      if (!id || !channelModal || !channelIframe) return;
+      channelTitle.textContent = name + ' — البث المباشر';
+      channelIframe.src = `https://www.youtube.com/embed/live_stream?channel=${id}&autoplay=1&mute=1`;
+      channelModal.hidden = false;
+    });
+  });
+
+  // ============================================================
+  // v3.6: Re-ensure i18n applies on first load (race fix)
+  // ============================================================
+  setTimeout(() => {
+    try {
+      const saved = localStorage.getItem('ncs.lang') || 'ar';
+      if (typeof applyLang === 'function') applyLang(saved);
+    } catch (e) {}
+  }, 100);
 
 </script>
 </body>
