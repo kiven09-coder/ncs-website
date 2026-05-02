@@ -125,8 +125,11 @@
     font-size: 1.75rem; font-weight: 900; letter-spacing: -0.04em;
     color: var(--text);
   }
-  .logo .mark { width: 44px; height: 44px; flex-shrink: 0; }
-  .logo .mark svg { width: 100%; height: 100%; display: block; }
+  .logo .mark { width: 52px; height: 52px; flex-shrink: 0; transition: transform 250ms; }
+  .logo:hover .mark { transform: scale(1.05); }
+  .logo-img-only { display: inline-flex; }
+  .logo-img-only > span:not(.mark) { display: none !important; }
+  .logo .mark svg, .logo .mark img { width: 100%; height: 100%; display: block; border-radius: 10px; object-fit: cover; }
   nav.primary ul {
     display: flex; gap: 0; list-style: none; padding: 0; margin: 0;
     justify-content: center;
@@ -776,10 +779,10 @@
     height: 100%; width: 100%;
   }
   /* dark-gray filter moved to .ncs-map .leaflet-tile rule */
-  /* Map view mode toggle (2D / 3D) — bottom-LEFT to avoid Leaflet zoom controls */
+  /* Map view mode toggle (2D / 3D) — bottom-RIGHT corner */
   .map-view-toggle {
     position: absolute;
-    bottom: 1rem; inset-inline-start: 1rem;
+    bottom: 1.25rem; inset-inline-end: 1.25rem;
     z-index: 500;
     display: inline-flex;
     background: rgba(0,0,0,0.92);
@@ -801,12 +804,23 @@
     background: var(--red); color: #fff;
   }
   .map-view-toggle button:not(.active):hover { color: var(--text); background: rgba(255,255,255,0.05); }
-  .map-fake-3d .leaflet-map-pane {
-    transform: perspective(1500px) rotateX(35deg);
-    transform-origin: center center;
+  /* 3D mode: tilt the entire map container (tiles + markers together) */
+  .ncs-map.map-fake-3d {
+    perspective: 1400px;
+  }
+  .ncs-map.map-fake-3d > .leaflet-container {
+    transform: rotateX(45deg) scale(0.95);
+    transform-origin: center 60%;
+    transition: transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .ncs-map.map-fake-3d > .leaflet-container::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.4), transparent 50%);
+    pointer-events: none;
+  }
+  .ncs-map > .leaflet-container {
     transition: transform 500ms ease;
   }
-  .map-fake-3d .leaflet-control-container { transform: none; }
   /* Match aside heights to map for balanced layout */
   .globe-layout .globe-pane {
     max-height: 720px;
@@ -921,13 +935,7 @@
     width: 100%; height: 580px;
     background: radial-gradient(ellipse at center, rgba(225,29,43,0.04) 0%, transparent 60%);
   }
-  .globe-stats-bar {
-    display: flex; gap: 0.5rem; flex-wrap: wrap;
-    margin-top: 0.7rem;
-    padding: 0.5rem;
-    background: rgba(0,0,0,0.5);
-    border: 1px solid var(--border);
-  }
+  .globe-stats-bar { display: none; /* moved to map overlay in v3.12 */ }
   .ovl-stat {
     flex: 1; min-width: 90px;
     background: rgba(255,255,255,0.03); border: 1px solid var(--border-strong);
@@ -1378,6 +1386,71 @@
 
 
 
+
+  /* === v3.12: Stats overlay on map (top-left) === */
+  .map-stats-overlay {
+    position: absolute;
+    top: 0.85rem;
+    inset-inline-start: 0.85rem;
+    z-index: 450;
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    max-width: 50%;
+  }
+  .map-stats-overlay .ovl-stat {
+    background: rgba(0,0,0,0.88);
+    border: 1px solid var(--border-strong);
+    backdrop-filter: blur(6px);
+    padding: 0.45rem 0.7rem;
+    border-radius: 4px;
+    text-align: center;
+    min-width: 64px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  }
+  .map-stats-overlay .ovl-stat.danger { border-color: var(--red); }
+  .map-stats-overlay .ovl-num {
+    font-family: var(--font-en-body);
+    font-weight: 900;
+    font-size: 0.95rem;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+  .map-stats-overlay .ovl-stat.danger .ovl-num { color: #fca5a5; }
+  .map-stats-overlay .ovl-lbl {
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    font-weight: 700;
+    margin-top: 0.1rem;
+  }
+
+
+  /* === v3.12: Tighter professional spacing === */
+  :root {
+    --space-section: clamp(2rem, 1.25rem + 2.5vw, 3.5rem);
+  }
+  .header-inner { padding: 0.75rem 1rem; }
+  .topbar-inner { padding: 0.45rem 1rem; }
+  .container { padding-left: 1rem; padding-right: 1rem; }
+  .hero { gap: 1rem; margin-top: 1.5rem; }
+  .hero-side { gap: 0.85rem; }
+  .grid-3 { gap: 0.85rem; }
+  .channels { gap: 0.6rem; }
+  .news-grid { gap: 1rem; }
+  .politics-grid { gap: 1rem; }
+  .ncs-grid { gap: 1rem; }
+  .footer-grid { gap: 1.5rem; margin-bottom: 1.5rem; }
+  .section-head {
+    margin-block: clamp(2rem, 1.25rem + 2vw, 3rem) 1rem;
+    padding-bottom: 0.85rem;
+  }
+  .section-head h2 { font-size: clamp(1.35rem, 1rem + 1.2vw, 1.85rem); }
+  .panel-head { padding: 0.85rem 1rem; }
+  .panel-body { padding: 1rem; }
+  .ticker-inner { padding: 0; }
+  .ticker-label { padding: 0.5rem 1rem; font-size: 0.78rem; }
+  .ticker-content { padding: 0.5rem 0; }
+
   /* === v3.10: Design polish === */
 
   /* Hero section: ensure side cards equal height */
@@ -1557,10 +1630,7 @@
 <!-- ================= HEADER ================= -->
 <header class="site">
   <div class="header-inner">
-    <a href="#" class="logo">
-      <span class="mark"><img src="logo.jpg" alt="NCS" style="width:100%;height:100%;border-radius:10px;display:block;"/></span>
-      <span>NCS<span style="color:var(--red)">.</span></span>
-    </a>
+    <a href="#top" class="logo logo-img-only"><span class="mark"><img src="logo.jpg" alt="NCS" /></span></a>
     <nav class="primary">
       <ul>
         <li><a href="#top" class="active" data-i18n="nav.home">الرئيسية</a></li>
@@ -1762,11 +1832,26 @@
         <div class="map-view-toggle">
           <button data-view="2d" class="active">2D</button>
           <button data-view="3d">3D</button>
+        <div class="map-stats-overlay">
+          <div class="ovl-stat">
+            <div class="ovl-num" id="stat-civ-flights">١٢,٨٤٧</div>
+            <div class="ovl-lbl">مدني</div>
+          </div>
+          <div class="ovl-stat danger">
+            <div class="ovl-num" id="stat-mil-flights">٢٤٠</div>
+            <div class="ovl-lbl">حربي</div>
+          </div>
+          <div class="ovl-stat">
+            <div class="ovl-num" id="stat-cargo">٣,٢١٠</div>
+            <div class="ovl-lbl">سفن</div>
+          </div>
+          <div class="ovl-stat danger">
+            <div class="ovl-num" id="stat-warships">١٧٥</div>
+            <div class="ovl-lbl">حربية</div>
+          </div>
         </div>
       </div>
-      <div class="globe-stats-bar">
-        <div class="ovl-stat">
-          <div class="ovl-num" id="stat-civ-flights">١٢,٨٤٧</div>
+      </div>
           <div class="ovl-lbl">مدني</div>
         </div>
         <div class="ovl-stat danger">
@@ -2156,10 +2241,7 @@
   <div class="container">
     <div class="footer-grid">
       <div>
-        <div class="logo" style="margin-bottom:1rem;">
-          <span class="mark"><img src="logo.jpg" alt="NCS" style="width:100%;height:100%;border-radius:10px;display:block;"/></span>
-          <span>NCS<span style="color:var(--red)">.</span></span>
-        </div>
+        <div class="logo logo-img-only" style="margin-bottom:1rem;"><span class="mark"><img src="logo.jpg" alt="NCS" /></span></div>
         <p style="color:var(--text-muted); font-size:0.88rem; margin:0; max-width:32ch;">
           المركز الدراسات المصري — منصّة إخبارية تجمع وتحقّق الأخبار العالمية والمحلية لحظياً من أكثر من ٣٠ مصدراً.
         </p>
@@ -3189,7 +3271,8 @@
       const sources = (a.source && a.source.name) || 'NewsAPI';
       // Route through weserv.nl image proxy: handles HTTP->HTTPS + CORS reliably
       const rawUrl = a.urlToImage || '';
-      const proxyUrl = rawUrl ? `https://images.weserv.nl/?url=${encodeURIComponent(rawUrl.replace(/^https?:\/\//, ''))}&w=600&h=400&fit=cover&output=jpg` : '';
+      const proxyUrl = rawUrl ? `https://images.weserv.nl/?url=${encodeURIComponent(rawUrl.replace(/^https?:\/\//, ''))}&w=600&h=400&fit=cover` : '';
+      if (!rawUrl) console.info('[NCS] article without urlToImage:', a.title?.slice(0, 60));
       const fallbackHtml = `<div class="news-thumb-cat cat-${cat}">${ICONS_INDEX[cat] || ICONS_INDEX.world}</div>`;
       const thumb = proxyUrl
         ? `<div class="news-thumb-wrap"><img src="${proxyUrl}" alt="" class="news-thumb-img-tag" loading="lazy" onerror="this.parentElement.outerHTML=this.dataset.fb;" data-fb="${fallbackHtml.replace(/"/g, '&quot;')}"/></div>`
