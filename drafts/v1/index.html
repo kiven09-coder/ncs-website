@@ -691,10 +691,7 @@
     padding: 0 1rem;
     align-items: stretch;
   }
-  .globe-aside-left {
-    max-height: 800px;
-    overflow-y: auto;
-  }
+  .globe-aside-left { display: none; /* v3.15: replaced by full-map layout */ }
   .globe-pane {
     background: rgba(0,0,0,0.5);
     border: 1px solid var(--border);
@@ -1592,6 +1589,138 @@
   }
   .panel { position: relative; }
 
+
+  /* === v3.15: Full-bleed map with LEFT overlays + below-map grid === */
+  .globe-fullmap {
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+  .globe-fullmap .ncs-map {
+    width: 100%;
+    height: 720px;
+    position: relative;
+    background: #050505;
+    overflow: hidden;
+  }
+  /* The Leaflet container fills the box completely */
+  .globe-fullmap .ncs-map > .leaflet-container {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  /* LEFT side overlay: LAYERS + stats stacked */
+  .map-ovl-left {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    width: 250px;
+    z-index: 500;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    max-height: calc(100% - 2rem);
+    overflow-y: auto;
+    pointer-events: none;
+  }
+  .map-ovl-left > * {
+    pointer-events: auto;
+  }
+  .map-ovl-left::-webkit-scrollbar { width: 4px; }
+  .map-ovl-left::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 2px; }
+
+  .map-ovl-section {
+    background: rgba(10, 10, 10, 0.92);
+    border: 1px solid var(--border-strong);
+    backdrop-filter: blur(8px);
+    padding: 0.75rem 0.85rem;
+    border-radius: 4px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+  }
+  .map-ovl-section .pane-title {
+    font-size: 0.7rem;
+    margin: 0 0 0.6rem;
+    color: var(--text);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 800;
+  }
+
+  /* Stats stacked vertically */
+  .map-ovl-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+  .ovl-stat-row {
+    background: rgba(10, 10, 10, 0.92);
+    border: 1px solid var(--border-strong);
+    backdrop-filter: blur(8px);
+    padding: 0.55rem 0.75rem;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    transition: border-color 200ms;
+  }
+  .ovl-stat-row.danger { border-color: var(--red); }
+  .ovl-stat-row .ovl-num {
+    font-family: var(--font-en-body);
+    font-weight: 900;
+    font-size: 1.1rem;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+  .ovl-stat-row.danger .ovl-num { color: #fca5a5; }
+  .ovl-stat-row .ovl-lbl {
+    font-size: 0.74rem;
+    color: var(--text-muted);
+    font-weight: 700;
+  }
+
+  /* Below-map: 4-column grid of detailed panels */
+  .below-map-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.85rem;
+    max-width: var(--container);
+    margin: 1rem auto 0;
+    padding: 0 1rem;
+  }
+  .below-map-cell {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .below-map-cell .pane-section {
+    padding: 1rem;
+    height: 100%;
+  }
+  .below-map-cell .pane-title {
+    font-size: 0.78rem;
+    margin: 0 0 0.85rem;
+    color: var(--text);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-weight: 800;
+    display: flex; gap: 0.5rem; align-items: center;
+  }
+
+  /* Tablet/mobile: stack into 2 columns then 1 */
+  @media (max-width: 1100px) {
+    .globe-fullmap .ncs-map { height: 560px; }
+    .below-map-grid { grid-template-columns: repeat(2, 1fr); }
+    .map-ovl-left { width: 220px; }
+  }
+  @media (max-width: 700px) {
+    .globe-fullmap .ncs-map { height: 460px; }
+    .below-map-grid { grid-template-columns: 1fr; }
+    .map-ovl-left { width: 180px; top: 0.5rem; left: 0.5rem; }
+  }
+
   /* ============================================================
      RESPONSIVE
      ============================================================ */
@@ -1769,9 +1898,17 @@
     <p class="globe-tagline" data-i18n="globe.tagline">طيران مدني وعسكري · حركة الأساطيل · ناقلات البترول · مضائق العالم — تحديث كل ٥ ثوان</p>
   </div>
 
-  <div class="globe-layout">
-    <aside class="globe-pane globe-aside-left">
-      <div class="pane-section pane-layers">
+  <div class="globe-fullmap">
+    <div id="map" class="ncs-map">
+        <div class="map-view-toggle">
+          <button data-view="2d" class="active">2D</button>
+          <button data-view="3d">3D</button>
+        <div class="map-stats-overlay">
+          <div class="ovl-stat">
+            <div class="ovl-num" id="stat-civ-flights">١٢,٨٤٧
+      <!-- LAYERS overlay top-left -->
+      <div class="map-ovl-left">
+        <div class="map-ovl-section pane-layers">
         <h4 class="pane-title" data-i18n="globe.layers">الطبقات · LAYERS</h4>
         <div class="layers-list">
           <button class="map-chip active" data-layer="all" data-i18n="chip.all">الكل</button>
@@ -1784,7 +1921,33 @@
         <button class="map-chip active" data-layer="daynight" style="--chip-color:#a3a3a3;" data-i18n="chip.daynight">ليل / نهار</button>
         </div>
       </div>
-      <div class="pane-section">
+      
+        <!-- Stats stacked vertically below LAYERS -->
+        <div class="map-ovl-stats">
+          <div class="ovl-stat-row">
+            <span class="ovl-num" id="stat-civ-flights">١٢,٨٤٧</span>
+            <span class="ovl-lbl" data-i18n="stat.civ">طيران مدني</span>
+          </div>
+          <div class="ovl-stat-row danger">
+            <span class="ovl-num" id="stat-mil-flights">٢٤٠</span>
+            <span class="ovl-lbl" data-i18n="stat.mil">طيران حربي</span>
+          </div>
+          <div class="ovl-stat-row">
+            <span class="ovl-num" id="stat-cargo">٣,٢١٠</span>
+            <span class="ovl-lbl" data-i18n="stat.cargo">سفن شحن</span>
+          </div>
+          <div class="ovl-stat-row danger">
+            <span class="ovl-num" id="stat-warships">١٧٥</span>
+            <span class="ovl-lbl" data-i18n="stat.naval">قطع بحرية حربية</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Below-map: 4-column grid of remaining panels -->
+  <div class="below-map-grid">
+    <div class="below-map-cell"><div class="pane-section">
         <h4 class="pane-title" data-i18n="globe.theaters">المسارح العسكرية</h4>
         <div class="theater" data-priority="high">
           <div class="theater-bar"></div>
@@ -1832,7 +1995,8 @@
         </div>
       </div>
 
-      <div class="pane-section">
+      </div>
+    <div class="below-map-cell"><div class="pane-section">
         <h4 class="pane-title" data-i18n="globe.tracked_mil">طائرات حربية مرصودة</h4>
         <div class="bd-row"><span class="bd-label">مقاتلات <em>Fighter</em></span><span class="bd-num" id="bd-fighter">٦٨</span></div>
         <div class="bd-row"><span class="bd-label">قاذفات <em>Bomber</em></span><span class="bd-num" id="bd-bomber">١٢</span></div>
@@ -1843,11 +2007,9 @@
         <div class="bd-row"><span class="bd-label">نقل عسكري <em>Transport</em></span><span class="bd-num" id="bd-transport">٤٩</span></div>
       </div>
     
-      <div class="pane-section">
-        <h4 class="pane-title"><span class="live-dot"></span> <span data-i18n="globe.assets_now">أصول مرصودة الآن</span></h4>
-        <div id="assets-feed" class="assets-feed"></div>
       </div>
-      <div class="pane-section">
+    <div class="below-map-cell"></div>
+    <div class="below-map-cell"><div class="pane-section">
         <h4 class="pane-title" data-i18n="globe.chokepoints">المضائق الاستراتيجية</h4>
         <div class="choke-row"><span>مضيق هرمز</span><span class="choke-stat danger" id="ck-hormuz">١٤ سفينة</span></div>
         <div class="choke-row"><span>قناة السويس</span><span class="choke-stat" id="ck-suez">٢٢ سفينة</span></div>
@@ -1858,59 +2020,7 @@
         <div class="choke-row"><span>مضيق البوسفور</span><span class="choke-stat" id="ck-bosphorus">١٦ سفينة</span></div>
         <div class="choke-row"><span>مضيق جبل طارق</span><span class="choke-stat" id="ck-gibraltar">٢٧ سفينة</span></div>
       </div>
-      </aside>
-
-    <div class="globe-center">
-      <div id="map" class="ncs-map">
-        <div class="map-view-toggle">
-          <button data-view="2d" class="active">2D</button>
-          <button data-view="3d">3D</button>
-        <div class="map-stats-overlay">
-          <div class="ovl-stat">
-            <div class="ovl-num" id="stat-civ-flights">١٢,٨٤٧</div>
-            <div class="ovl-lbl" data-i18n="stat.civ">مدني</div>
-          </div>
-          <div class="ovl-stat danger">
-            <div class="ovl-num" id="stat-mil-flights">٢٤٠</div>
-            <div class="ovl-lbl" data-i18n="stat.mil">حربي</div>
-          </div>
-          <div class="ovl-stat">
-            <div class="ovl-num" id="stat-cargo">٣,٢١٠</div>
-            <div class="ovl-lbl" data-i18n="stat.cargo">سفن</div>
-          </div>
-          <div class="ovl-stat danger">
-            <div class="ovl-num" id="stat-warships">١٧٥</div>
-            <div class="ovl-lbl" data-i18n="stat.naval">حربية</div>
-          </div>
-        </div>
       </div>
-      </div>
-          <div class="ovl-lbl" data-i18n="stat.civ">مدني</div>
-        </div>
-        <div class="ovl-stat danger">
-          <div class="ovl-num" id="stat-mil-flights">٢٤٠</div>
-          <div class="ovl-lbl" data-i18n="stat.mil">حربي</div>
-        </div>
-        <div class="ovl-stat">
-          <div class="ovl-num" id="stat-cargo">٣,٢١٠</div>
-          <div class="ovl-lbl" data-i18n="stat.cargo">سفن</div>
-        </div>
-        <div class="ovl-stat danger">
-          <div class="ovl-num" id="stat-warships">١٧٥</div>
-          <div class="ovl-lbl">بحرية حربية</div>
-        </div>
-      </div>
-      <div class="map-source-pill" id="data-source"><span class="live-dot"></span> جاري الاتصال…</div>
-      
-      <div class="globe-legend">
-        <div><span class="swatch" style="background:#fbbf24"></span> طيران مدني</div>
-        <div><span class="swatch" style="background:#ef4444"></span> طيران حربي</div>
-        <div><span class="swatch" style="background:#10b981"></span> سفن شحن</div>
-        <div><span class="swatch" style="background:#f97316"></span> ناقلات بترول</div>
-        <div><span class="swatch" style="background:#06b6d4"></span> قطع بحرية حربية</div>
-        <div><span class="swatch" style="background:#fff;outline:2px solid #e11d2b;outline-offset:1px;"></span> مضائق استراتيجية</div>
-      </div>
-    </div>
   </div>
 </section>
 
