@@ -2573,69 +2573,6 @@
   }, 25000);
 
   // ============================================================
-  // v2: Map filter chips (toggle layer visibility)
-  // ============================================================
-  const filterButtons = document.querySelectorAll('.map-chip');
-  filterButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      filterButtons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const layer = btn.dataset.layer;
-      // Show/hide each layer using Leaflet
-      function setVis(layerObj, visible) {
-        if (!layerObj) return;
-        if (visible) { if (!map.hasLayer(layerObj)) map.addLayer(layerObj); }
-        else         { if (map.hasLayer(layerObj))  map.removeLayer(layerObj); }
-      }
-      // Custom: civilian-only and military-only need filtered re-render
-      const showAll = (layer === 'all');
-      // Flights — re-create with filter
-      window.__layerFilter = layer;
-      fetchFlights();
-      // Ships
-      setVis(shipLayer, showAll || layer === 'cargo' || layer === 'tanker' || layer === 'naval');
-      // Chokepoints — toggle via class on map element (chokepoint markers added directly to map)
-      const chokeStyle = (showAll || layer === 'choke') ? '' : 'none';
-      document.querySelectorAll('.leaflet-overlay-pane circle').forEach(el => el.style.display = chokeStyle);
-    });
-  });
-
-  // ============================================================
-  // v2: Enriched chokepoint click popups (override the bindTooltip with bindPopup)
-  // ============================================================
-  const chokepointInfo = {
-    'مضيق هرمز': { desc: 'بين الخليج العربي وخليج عمان. ٣٠٪ من تجارة النفط البحرية العالمية تمر منه يومياً.', width: '٣٩ كم في أضيق نقطة', daily: '~٢١ مليون برميل نفط/يوم', risk: 'حساس · تصعيد محتمل' },
-    'قناة السويس': { desc: 'تربط البحر الأبيض المتوسط بالبحر الأحمر. أهم ممر تجاري بين أوروبا وآسيا.', width: '٢٠٥م عرض · ٢٤م عمق', daily: '~٥٠ سفينة/يوم · ١٢٪ من التجارة العالمية', risk: 'مستقر' },
-    'باب المندب': { desc: 'بين البحر الأحمر وخليج عدن. مدخل قناة السويس من الجنوب.', width: '٢٩ كم', daily: '~٦.٢ مليون برميل نفط/يوم', risk: 'مرتفع · هجمات على السفن' },
-    'مضيق ملقا': { desc: 'بين شبه جزيرة الملايو وسومطرة. أهم ممر شحن في آسيا.', width: '٢.٧ كم في أضيق نقطة', daily: '~٨٤ ألف سفينة/سنة', risk: 'مستقر · ازدحام' },
-    'مضيق تايوان': { desc: 'بين تايوان والصين. أكثر نقاط التوتر العسكري في الباسيفيك.', width: '١٣٠–٢٢٠ كم', daily: '~٤٠٪ من تجارة الحاويات العالمية', risk: 'مرتفع · دوريات بحرية صينية وأمريكية' },
-    'قناة بنما': { desc: 'تربط الأطلسي بالباسيفيك. ممر حيوي للتجارة الأمريكية.', width: '٨٢ كم طول', daily: '~١٣ ألف سفينة/سنة · ٦٪ من التجارة العالمية', risk: 'مستقر · أزمة جفاف' },
-    'البوسفور': { desc: 'يربط البحر الأسود ببحر مرمرة فالمتوسط. ممر تركيا الاستراتيجي.', width: '٧٠٠م في أضيق نقطة', daily: '~٤٨ ألف سفينة/سنة', risk: 'متوسط · تأثير حرب أوكرانيا' },
-    'جبل طارق': { desc: 'بين إسبانيا والمغرب. مدخل البحر الأبيض المتوسط من الأطلسي.', width: '١٤ كم', daily: '~١٠٠ ألف سفينة/سنة', risk: 'مستقر' },
-  };
-
-  // Re-build chokepoints with rich popups
-  map.eachLayer(l => {});  // no-op; we'll just bind popups dynamically below
-  setTimeout(() => {
-    map.eachLayer(l => {
-      if (l.options && l.options.fillColor === '#e11d2b' && l.options.radius === 14) {
-        const tip = l.getTooltip ? l.getTooltip() : null;
-        const name = tip ? tip.getContent() : null;
-        if (name && chokepointInfo[name]) {
-          const info = chokepointInfo[name];
-          l.bindPopup(`
-            <div class="popup-cs">${name}</div>
-            <div style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.5rem; line-height:1.6;">${info.desc}</div>
-            <div class="popup-row"><span>العرض</span><b>${info.width}</b></div>
-            <div class="popup-row"><span>الحركة</span><b>${info.daily}</b></div>
-            <div class="popup-row"><span>المخاطر</span><b style="color:${info.risk.includes('مرتفع') ? '#ef4444' : info.risk.includes('متوسط') ? '#f59e0b' : '#10b981'};">${info.risk}</b></div>
-          `, { className: 'ncs-popup', maxWidth: 280 });
-        }
-      }
-    });
-  }, 500);
-
-  // ============================================================
   // v2: Real FX rates from fawazahmed0 (free, no key, jsdelivr CORS-friendly)
   // ============================================================
   const fxSymbols = ['usd', 'eur', 'gbp', 'sar', 'aed'];
