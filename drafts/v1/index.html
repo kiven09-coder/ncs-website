@@ -1061,6 +1061,36 @@
   
 
 
+
+  /* === v3.4: vertical LAYERS list === */
+  .pane-layers .layers-list {
+    display: flex; flex-direction: column; gap: 0.35rem;
+  }
+  .pane-layers .map-chip {
+    width: 100%;
+    justify-content: flex-start;
+    padding: 0.45rem 0.7rem;
+    border-radius: 4px;
+    font-size: 0.78rem;
+  }
+  .pane-layers .map-chip::before {
+    width: 14px; height: 14px;
+    border-radius: 3px;
+    border: 1.5px solid var(--chip-color, var(--text-muted));
+    background: transparent;
+    flex-shrink: 0;
+    transition: all 200ms;
+  }
+  .pane-layers .map-chip.active {
+    background: rgba(225,29,43,0.08);
+    border-color: var(--chip-color, var(--red));
+    color: var(--text);
+  }
+  .pane-layers .map-chip.active::before {
+    background: var(--chip-color, var(--red));
+    border-color: var(--chip-color, var(--red));
+  }
+
   /* === v3.3: Category-themed news thumbnails (no external images) === */
   .news-thumb-cat {
     aspect-ratio: 4/3;
@@ -1224,6 +1254,19 @@
 
   <div class="globe-layout">
     <aside class="globe-pane">
+      <div class="pane-section pane-layers">
+        <h4 class="pane-title" data-i18n="globe.layers">الطبقات · LAYERS</h4>
+        <div class="layers-list">
+          <button class="map-chip active" data-layer="all" data-i18n="chip.all">الكل</button>
+        <button class="map-chip" data-layer="civ" data-i18n="chip.civ">طيران مدني</button>
+        <button class="map-chip" data-layer="mil" style="--chip-color:#ef4444;" data-i18n="chip.mil">طيران حربي</button>
+        <button class="map-chip" data-layer="cargo" style="--chip-color:#10b981;" data-i18n="chip.cargo">سفن شحن</button>
+        <button class="map-chip" data-layer="tanker" style="--chip-color:#f97316;" data-i18n="chip.tanker">ناقلات بترول</button>
+        <button class="map-chip" data-layer="naval" style="--chip-color:#06b6d4;" data-i18n="chip.naval">بحرية حربية</button>
+        <button class="map-chip" data-layer="choke" style="--chip-color:#fbbf24;" data-i18n="chip.choke">المضائق</button>
+        <button class="map-chip" data-layer="daynight" style="--chip-color:#a3a3a3;" data-i18n="chip.daynight">ليل / نهار</button>
+        </div>
+      </div>
       <div class="pane-section">
         <h4 class="pane-title" data-i18n="globe.theaters">المسارح العسكرية</h4>
         <div class="theater" data-priority="high">
@@ -1285,16 +1328,6 @@
     </aside>
 
     <div class="globe-center">
-      <div class="map-filter-bar" id="map-filter-bar">
-        <button class="map-chip active" data-layer="all" data-i18n="chip.all">الكل</button>
-        <button class="map-chip" data-layer="civ" data-i18n="chip.civ">طيران مدني</button>
-        <button class="map-chip" data-layer="mil" style="--chip-color:#ef4444;" data-i18n="chip.mil">طيران حربي</button>
-        <button class="map-chip" data-layer="cargo" style="--chip-color:#10b981;" data-i18n="chip.cargo">سفن شحن</button>
-        <button class="map-chip" data-layer="tanker" style="--chip-color:#f97316;" data-i18n="chip.tanker">ناقلات بترول</button>
-        <button class="map-chip" data-layer="naval" style="--chip-color:#06b6d4;" data-i18n="chip.naval">بحرية حربية</button>
-        <button class="map-chip" data-layer="choke" style="--chip-color:#fbbf24;" data-i18n="chip.choke">المضائق</button>
-        <button class="map-chip" data-layer="daynight" style="--chip-color:#a3a3a3;" data-i18n="chip.daynight">ليل / نهار</button>
-      </div>
       <div id="map" class="ncs-map"></div>
       <div class="globe-stats-bar">
         <div class="ovl-stat">
@@ -1328,7 +1361,7 @@
 
     <aside class="globe-pane">
       <div class="pane-section">
-        <h4 class="pane-title"><span class="live-dot"></span> أصول مرصودة الآن</h4>
+        <h4 class="pane-title"><span class="live-dot"></span> <span data-i18n="globe.assets_now">أصول مرصودة الآن</span></h4>
         <div id="assets-feed" class="assets-feed"></div>
       </div>
       <div class="pane-section">
@@ -1387,7 +1420,7 @@
 <div class="container">
   <div class="section-head" id="live" style="scroll-margin-top:90px;">
     <h2 data-i18n="section.live_channels">قنوات مباشرة</h2>
-    <a href="#" class="more">كل القنوات ←</a>
+    <a href="news.html?cat=live" class="more" data-i18n="more.channels">كل القنوات ←</a>
   </div>
   <div class="channels">
     <a href="https://www.aljazeera.net/live" target="_blank" rel="noopener" class="channel" style="display:block;color:inherit;text-decoration:none;"><div class="channel-thumb" style="background-image:linear-gradient(135deg,#1a3a52,#0a1f30);"></div>
@@ -1421,7 +1454,7 @@
 <div class="container">
   <div class="section-head" id="sports" style="scroll-margin-top:90px;">
     <h2 data-i18n="section.live_tracking">متابعة لحظية — رياضة واقتصاد</h2>
-    <a href="#" class="more">المزيد ←</a>
+    <a href="news.html?cat=sports" class="more">المزيد ←</a>
   </div>
 
   <div class="grid-3">
@@ -1559,7 +1592,7 @@
   <!-- ================= POLITICS — USA / IRAN / ISRAEL ================= -->
   <div class="section-head" id="politics" style="scroll-margin-top:90px;">
     <h2 data-i18n="section.world_news">أخبار العالم — ساحة الصراع</h2>
-    <a href="#" class="more">كل الأخبار الدولية ←</a>
+    <a href="news.html?cat=politics" class="more" data-i18n="more.world">كل الأخبار الدولية ←</a>
   </div>
 
   <div class="politics-grid">
@@ -1595,7 +1628,7 @@
   <!-- ================= NEWS GRID ================= -->
   <div class="section-head">
     <h2 data-i18n="section.latest">آخر الأخبار</h2>
-    <a href="#" class="more">المزيد ←</a>
+    <a href="news.html?cat=all" class="more">المزيد ←</a>
   </div>
 
   <div class="news-grid">
@@ -1669,11 +1702,11 @@
       <div>
         <h5>الأقسام</h5>
         <ul>
-          <li><a href="#">سياسة</a></li>
-          <li><a href="#">اقتصاد</a></li>
-          <li><a href="#">رياضة</a></li>
-          <li><a href="#">تكنولوجيا</a></li>
-          <li><a href="#">ثقافة</a></li>
+          <li><a href="news.html?cat=politics">سياسة</a></li>
+          <li><a href="news.html?cat=economy">اقتصاد</a></li>
+          <li><a href="news.html?cat=sports">رياضة</a></li>
+          <li><a href="news.html?cat=tech">تكنولوجيا</a></li>
+          <li><a href="news.html?cat=culture">ثقافة</a></li>
         </ul>
       </div>
       <div>
@@ -2510,9 +2543,11 @@
       'ui.refresh': 'تحديث', 'ui.breaking': 'عاجل',
       'globe.urgent': 'عاجل · مراقبة استراتيجية لحظية',
       'globe.title': 'الرادار العالمي',
+      'globe.layers': 'الطبقات · LAYERS',
       'globe.theaters': 'المسارح العسكرية',
       'globe.tracked_mil': 'طائرات حربية مرصودة',
       'globe.chokepoints': 'المضائق الاستراتيجية',
+      'globe.assets_now': 'أصول مرصودة الآن',
       'section.live_channels': 'قنوات مباشرة',
       'section.live_tracking': 'متابعة لحظية — رياضة واقتصاد',
       'section.world_news': 'أخبار العالم — ساحة الصراع',
@@ -2523,7 +2558,10 @@
       'panel.sports': 'آخر النتائج — الدوري المصري',
       'chip.all': 'الكل', 'chip.civ': 'طيران مدني', 'chip.mil': 'طيران حربي',
       'chip.cargo': 'سفن شحن', 'chip.tanker': 'ناقلات بترول',
-      'chip.naval': 'بحرية حربية', 'chip.choke': 'المضائق', 'chip.daynight': 'ليل / نهار',
+      'chip.naval': 'بحرية حربية', 'chip.choke': 'المضائق',
+      'chip.daynight': 'ليل / نهار',
+      'more.channels': 'كل القنوات ←', 'more.world': 'كل الأخبار الدولية ←',
+      'more.all': 'المزيد ←',
     },
     en: {
       'nav.home': 'Home', 'nav.politics': 'Politics', 'nav.economy': 'Economy',
@@ -2531,9 +2569,11 @@
       'ui.refresh': 'Refresh', 'ui.breaking': 'BREAKING',
       'globe.urgent': 'BREAKING · LIVE STRATEGIC MONITORING',
       'globe.title': 'Global Radar',
+      'globe.layers': 'LAYERS',
       'globe.theaters': 'Military Theaters',
       'globe.tracked_mil': 'Tracked Military Aircraft',
       'globe.chokepoints': 'Strategic Chokepoints',
+      'globe.assets_now': 'Live Tracked Assets',
       'section.live_channels': 'Live Channels',
       'section.live_tracking': 'Live Tracking — Sports & Economy',
       'section.world_news': 'World News — Conflict Zone',
@@ -2544,7 +2584,10 @@
       'panel.sports': 'Latest Results — Egyptian League',
       'chip.all': 'All', 'chip.civ': 'Civilian', 'chip.mil': 'Military',
       'chip.cargo': 'Cargo', 'chip.tanker': 'Tankers',
-      'chip.naval': 'Naval', 'chip.choke': 'Chokepoints', 'chip.daynight': 'Day / Night',
+      'chip.naval': 'Naval', 'chip.choke': 'Chokepoints',
+      'chip.daynight': 'Day / Night',
+      'more.channels': 'All Channels →', 'more.world': 'All International →',
+      'more.all': 'More →',
     },
   };
 

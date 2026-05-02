@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>أخبار · NCS — National Center for Studies</title>
+<meta name="description" content="آخر الأخبار العالمية والمحلية مع تحقّق من المصادر — NCS" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Inter:wght@400;500;700;800&family=Playfair+Display:ital,wght@0,800;0,900;1,800&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --bg: #0a0a0a; --bg-elev-1: #131313; --bg-elev-2: #1a1a1a;
+    --border: #262626; --border-strong: #3a3a3a;
+    --red: #e11d2b; --red-dim: #991b1b; --red-glow: rgba(225, 29, 43, 0.5);
+    --text: #fafafa; --text-muted: #a3a3a3; --text-dim: #737373;
+    --font-ar-body: "Cairo", system-ui, sans-serif;
+    --font-en-body: "Inter", system-ui, sans-serif;
+    --font-en-display: "Playfair Display", Georgia, serif;
+    --container: 100%;
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg); color: var(--text);
+    font-family: var(--font-ar-body);
+    line-height: 1.6;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* === Header === */
+  header.site {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(18px);
+    border-bottom: 1px solid var(--border);
+  }
+  .header-inner {
+    display: grid; grid-template-columns: auto 1fr auto;
+    gap: 1.5rem; align-items: center;
+    padding: 1rem 1rem;
+    max-width: var(--container); margin: 0 auto;
+  }
+  .logo {
+    display: flex; align-items: center; gap: 0.85rem;
+    font-family: var(--font-en-display);
+    font-size: 1.5rem; font-weight: 900; letter-spacing: -0.04em;
+  }
+  .logo .mark { width: 38px; height: 38px; }
+  .logo .mark img { width: 100%; height: 100%; border-radius: 8px; display: block; }
+  nav.primary ul {
+    display: flex; gap: 1.5rem; list-style: none; padding: 0; margin: 0;
+    justify-content: center; font-weight: 700; font-size: 0.9rem;
+  }
+  nav.primary a { color: var(--text-muted); padding: 0.5rem 0; transition: color 200ms; }
+  nav.primary a:hover, nav.primary a.active { color: var(--text); }
+  nav.primary a.active { position: relative; }
+  nav.primary a.active::after {
+    content: ""; position: absolute; bottom: -1.05rem; left: 0; right: 0;
+    height: 2px; background: var(--red);
+  }
+
+  /* === Page hero === */
+  .page-hero {
+    background: linear-gradient(180deg, #131313 0%, #0a0a0a 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 2.5rem 1rem 2rem;
+  }
+  .page-hero-inner {
+    max-width: var(--container); margin: 0 auto;
+  }
+  .page-hero h1 {
+    margin: 0 0 0.5rem;
+    font-size: clamp(1.75rem, 1.2rem + 1.5vw, 2.5rem);
+    font-weight: 900; letter-spacing: -0.02em;
+  }
+  .page-hero p { margin: 0; color: var(--text-muted); font-size: 1rem; }
+  .breadcrumb {
+    color: var(--text-dim); font-size: 0.78rem; margin-bottom: 0.85rem;
+  }
+  .breadcrumb a { color: var(--red); }
+  .breadcrumb span { margin: 0 0.4rem; opacity: 0.5; }
+
+  /* === Category filters === */
+  .cat-filters {
+    display: flex; gap: 0.4rem; flex-wrap: wrap;
+    margin-top: 1.5rem;
+  }
+  .cat-filter {
+    padding: 0.45rem 0.95rem;
+    background: transparent; border: 1px solid var(--border-strong);
+    color: var(--text-muted); border-radius: 999px;
+    font-size: 0.82rem; font-weight: 700;
+    transition: all 200ms;
+  }
+  .cat-filter:hover { color: var(--text); border-color: var(--red); }
+  .cat-filter.active { background: var(--red); color: #fff; border-color: var(--red); }
+
+  /* === News list === */
+  main { max-width: var(--container); margin: 0 auto; padding: 2rem 1rem; }
+  .news-meta-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 1.5rem;
+    color: var(--text-muted); font-size: 0.85rem;
+  }
+  .news-meta-bar strong { color: var(--text); font-weight: 800; }
+
+  .news-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+  }
+  .news-item {
+    background: var(--bg-elev-1);
+    border: 1px solid var(--border);
+    transition: all 220ms var(--ease-out);
+    display: flex; flex-direction: column;
+    cursor: pointer;
+  }
+  .news-item:hover {
+    transform: translateY(-3px);
+    border-color: var(--red);
+  }
+  .news-thumb-cat {
+    aspect-ratio: 16/9;
+    display: grid; place-items: center;
+    position: relative; overflow: hidden;
+    border-bottom: 1px solid var(--border);
+  }
+  .news-thumb-cat svg {
+    width: 60px; height: 60px;
+    color: rgba(255,255,255,0.55);
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
+  }
+  .news-thumb-cat::after {
+    content: ""; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.45) 100%);
+  }
+  .cat-politics  { background: linear-gradient(135deg, #1e3a8a 0%, #312e81 50%, #0f172a 100%); }
+  .cat-economy   { background: linear-gradient(135deg, #92400e 0%, #f59e0b 50%, #78350f 100%); }
+  .cat-sports    { background: linear-gradient(135deg, #064e3b 0%, #10b981 50%, #052e16 100%); }
+  .cat-tech      { background: linear-gradient(135deg, #4c1d95 0%, #8b5cf6 50%, #1e1b4b 100%); }
+  .cat-health    { background: linear-gradient(135deg, #7f1d1d 0%, #ef4444 50%, #450a0a 100%); }
+  .cat-culture   { background: linear-gradient(135deg, #7c2d12 0%, #f97316 50%, #431407 100%); }
+  .cat-world     { background: linear-gradient(135deg, #134e4a 0%, #0d9488 50%, #042f2e 100%); }
+
+  .news-body { padding: 1rem 1.1rem 1.1rem; flex: 1; display: flex; flex-direction: column; }
+  .news-tag {
+    display: inline-block;
+    background: var(--red); color: #fff;
+    font-size: 0.62rem; font-weight: 800;
+    letter-spacing: 0.05em; padding: 0.18rem 0.5rem;
+    margin-bottom: 0.75rem; align-self: flex-start;
+  }
+  .news-tag.outline { background: transparent; color: var(--text-muted); border: 1px solid var(--border-strong); }
+  .news-item h3 {
+    margin: 0 0 0.5rem; font-size: 1rem; font-weight: 800;
+    line-height: 1.45; letter-spacing: -0.01em;
+    flex: 1;
+  }
+  .news-item p { margin: 0 0 0.85rem; color: var(--text-muted); font-size: 0.85rem; line-height: 1.55; }
+  .news-item .meta {
+    margin-top: auto; padding-top: 0.85rem;
+    border-top: 1px dashed var(--border);
+    display: flex; justify-content: space-between;
+    font-size: 0.72rem; color: var(--text-dim);
+  }
+  .news-item .meta .verified { color: #34d399; }
+  .news-item .meta .verified::before { content: "✓ "; }
+
+  .empty-state {
+    text-align: center; padding: 4rem 1rem;
+    color: var(--text-muted);
+  }
+
+  /* === Footer === */
+  footer.site {
+    border-top: 1px solid var(--border);
+    margin-top: 3rem; padding: 2rem 1rem 1.25rem;
+    background: #050505;
+    text-align: center;
+    color: var(--text-dim); font-size: 0.78rem;
+  }
+  footer.site a { color: var(--red); }
+
+  @media (max-width: 768px) {
+    nav.primary { display: none; }
+    .news-list { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="site">
+  <div class="header-inner">
+    <a href="index.html" class="logo">
+      <span class="mark"><img src="logo.jpg" alt="NCS" /></span>
+      <span>NCS<span style="color:var(--red)">.</span></span>
+    </a>
+    <nav class="primary">
+      <ul>
+        <li><a href="index.html">الرئيسية</a></li>
+        <li><a href="news.html?cat=politics">سياسة</a></li>
+        <li><a href="news.html?cat=economy">اقتصاد</a></li>
+        <li><a href="news.html?cat=sports">رياضة</a></li>
+        <li><a href="index.html#live">مباشر</a></li>
+        <li><a href="index.html#center">المركز</a></li>
+      </ul>
+    </nav>
+    <div></div>
+  </div>
+</header>
+
+<!-- Page hero -->
+<section class="page-hero">
+  <div class="page-hero-inner">
+    <div class="breadcrumb">
+      <a href="index.html">الرئيسية</a>
+      <span>/</span>
+      <span id="bc-cat">أخبار</span>
+    </div>
+    <h1 id="page-title">آخر الأخبار</h1>
+    <p id="page-sub">جميع الأخبار من المصادر العالمية والمحلية، مع تحقّق متعدّد المصادر قبل النشر.</p>
+    <div class="cat-filters">
+      <a href="news.html" class="cat-filter" data-cat="all">الكل</a>
+      <a href="news.html?cat=politics" class="cat-filter" data-cat="politics">سياسة</a>
+      <a href="news.html?cat=economy" class="cat-filter" data-cat="economy">اقتصاد</a>
+      <a href="news.html?cat=sports" class="cat-filter" data-cat="sports">رياضة</a>
+      <a href="news.html?cat=tech" class="cat-filter" data-cat="tech">تكنولوجيا</a>
+      <a href="news.html?cat=health" class="cat-filter" data-cat="health">صحة</a>
+      <a href="news.html?cat=culture" class="cat-filter" data-cat="culture">ثقافة</a>
+      <a href="news.html?cat=world" class="cat-filter" data-cat="world">دولي</a>
+    </div>
+  </div>
+</section>
+
+<main>
+  <div class="news-meta-bar">
+    <span>عرض <strong id="count">0</strong> خبر</span>
+    <span>التحقّق: <strong>متعدد المصادر</strong></span>
+  </div>
+  <div class="news-list" id="news-list"></div>
+  <div class="empty-state" id="empty-state" style="display:none;">
+    لا توجد أخبار في هذا القسم حالياً
+  </div>
+</main>
+
+<footer class="site">
+  <div>© 2026 NCS — المركز الوطني للدراسات · National Center for Studies</div>
+  <div style="margin-top:0.5rem;">
+    <a href="https://www.facebook.com/search/top?q=%D8%A7%D9%84%D9%85%D8%B1%D9%83%D8%B2%20%D8%A7%D9%84%D9%88%D8%B7%D9%86%D9%8A%20%D9%84%D9%84%D8%AF%D8%B1%D8%A7%D8%B3%D8%A7%D8%AA%20-%20national%20center%20for%20studies" target="_blank" rel="noopener">صفحة الفيسبوك</a>
+    ·
+    <a href="index.html">عودة للرئيسية</a>
+  </div>
+</footer>
+
+<script>
+  // ============================================================
+  // NCS News Listing — reads ?cat= and renders matching articles
+  // ============================================================
+  const ICONS = {
+    politics: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 6V4h-4v2H5v2h2v11h2v-7h6v7h2V8h2V6zm-3 0h-1V4.5h1zm-2 4V8h6v2z"/></svg>',
+    economy:  '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm6.93 6h-2.95a15.65 15.65 0 0 0-1.38-3.56A8.03 8.03 0 0 1 18.92 8zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2 0 .68.06 1.34.14 2H4.26z"/></svg>',
+    sports:   '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/></svg>',
+    tech:     '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 2v2h6V2zM4 6v2h16V6zM4 10v10h16V10zm6 6v-2h4v2z"/></svg>',
+    health:   '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 8h-2V3H7v5H5c-1.1 0-2 .9-2 2v9h18v-9c0-1.1-.9-2-2-2zM9 5h6v3H9zm4 12h-2v-3H8v-2h3V9h2v3h3v2h-3z"/></svg>',
+    culture:  '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4z"/></svg>',
+    world:    '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>',
+  };
+
+  const CAT_LABELS = {
+    politics: 'سياسة', economy: 'اقتصاد', sports: 'رياضة',
+    tech: 'تكنولوجيا', health: 'صحة', culture: 'ثقافة', world: 'دولي', live: 'مباشر',
+  };
+
+  // Mock news pool (in production: fetched from backend)
+  const NEWS = [
+    // POLITICS
+    { cat: 'politics', tag: 'عاجل · سياسة دولية',
+      title: 'تصاعد التوتر بين واشنطن وطهران بعد إعلان عقوبات نووية جديدة',
+      summary: 'البيت الأبيض أعلن عن حزمة عقوبات تستهدف كيانات إيرانية مرتبطة ببرنامج التخصيب، وطهران ردّت بتعليق التفتيش المؤقت.',
+      time: 'منذ ٢٠ دقيقة', sources: 4,
+      url: 'https://www.reuters.com/world/middle-east/' },
+    { cat: 'politics', tag: 'سياسة',
+      title: 'الكونغرس يقرّ ميزانية دفاعية بقيمة ٨٨٠ مليار دولار',
+      summary: 'التصويت تم بأغلبية ٣١٢ صوتاً مقابل ١٢٠، مع زيادة ٣٪ في الإنفاق العسكري.',
+      time: 'منذ ٤٥ دقيقة', sources: 3,
+      url: 'https://www.aljazeera.net/news/category/usa' },
+    { cat: 'politics', tag: 'سياسة',
+      title: 'طهران: لن نتراجع عن التخصيب وسنردّ على أي عقوبات جديدة',
+      summary: 'المرشد الأعلى وصف العقوبات الأمريكية بـ"العدائية" وأكّد استمرار البرنامج النووي السلمي.',
+      time: 'منذ ساعة', sources: 4,
+      url: 'https://www.aljazeera.net/news/category/iran' },
+    { cat: 'politics', tag: 'سياسة',
+      title: 'غارات إسرائيلية على جنوب لبنان رداً على ٢٠ صاروخاً سقطت في الجليل',
+      summary: 'الجيش الإسرائيلي أعلن استهداف ٤٠ موقعاً لحزب الله، فيما لوّح الأخير بردّ وشيك.',
+      time: 'منذ ٢٠ دقيقة', sources: 5,
+      url: 'https://www.aljazeera.net/news/category/israel' },
+    { cat: 'politics', tag: 'سياسة',
+      title: 'مجلس الأمن يعقد جلسة طارئة لمناقشة التصعيد في الشرق الأوسط',
+      summary: 'رئاسة المجلس دعت لجلسة استشارية مغلقة بناءً على طلب فرنسا والمملكة المتحدة.',
+      time: 'منذ ساعتين', sources: 3,
+      url: 'https://news.un.org/ar/' },
+
+    // ECONOMY
+    { cat: 'economy', tag: 'اقتصاد',
+      title: 'البنك المركزي المصري يثبّت أسعار الفائدة في اجتماع اليوم',
+      summary: 'القرار جاء متماشياً مع توقعات المحلّلين بعد تراجع التضخم للشهر الثالث على التوالي.',
+      time: 'منذ ساعة', sources: 3,
+      url: 'https://www.cbe.org.eg/ar/' },
+    { cat: 'economy', tag: 'اقتصاد',
+      title: 'ارتفاع جديد في سعر الذهب: عيار ٢١ يتجاوز ٤٦٠٠ جنيه للجرام',
+      summary: 'السعر المحلي يواصل صعوده بالتوازي مع سعر الأونصة عالمياً.',
+      time: 'منذ ٣ ساعات', sources: 2,
+      url: 'https://www.almasryalyoum.com/' },
+    { cat: 'economy', tag: 'اقتصاد',
+      title: 'قمة استثمارية مرتقبة بين القاهرة والرياض الأسبوع المقبل',
+      summary: 'مذكّرات تفاهم بقيمة ١٢ مليار دولار في قطاعات الطاقة والعقارات والصناعة.',
+      time: 'منذ ساعتين', sources: 3,
+      url: 'https://www.almasryalyoum.com/' },
+    { cat: 'economy', tag: 'اقتصاد',
+      title: 'البنك الدولي يخفّض توقعات نمو مصر إلى ٤٫١٪',
+      summary: 'التقرير ربط ذلك بتباطؤ التجارة العالمية وتأثير أزمة البحر الأحمر على إيرادات قناة السويس.',
+      time: 'منذ ٤ ساعات', sources: 2,
+      url: 'https://www.worldbank.org/ar/country/egypt' },
+
+    // SPORTS
+    { cat: 'sports', tag: 'رياضة',
+      title: 'الأهلي يحسم القمة المصرية بثلاثية نظيفة على الزمالك',
+      summary: 'أحمد عبد القادر، إمام عاشور، ومحمد شريف سجّلوا أهداف الفوز في القمة ١٢٤.',
+      time: 'منذ ساعة', sources: 4,
+      url: 'https://www.yallakora.com/match-center/' },
+    { cat: 'sports', tag: 'رياضة',
+      title: 'محمد صلاح يقود ليفربول لتأهل دراماتيكي في دوري الأبطال',
+      summary: 'هدفان للنجم المصري في الدقيقتين ٨٤ و٩٠+٢ يحسمان المواجهة.',
+      time: 'منذ ٣٥ دقيقة', sources: 2,
+      url: 'https://www.filgoal.com/' },
+    { cat: 'sports', tag: 'رياضة',
+      title: 'بنزيما يعود لتدريبات الاتحاد بعد إصابة دامت ٣ أسابيع',
+      summary: 'الفرنسي يستعد للقاء النصر في دربي السعودية الكبير الجمعة المقبلة.',
+      time: 'منذ ٣ ساعات', sources: 2,
+      url: 'https://www.kooora.com/' },
+    { cat: 'sports', tag: 'رياضة',
+      title: 'ريال مدريد يحسم القمة الإسبانية أمام برشلونة بثلاثية',
+      summary: 'تألق فينيسيوس وبيلينغهام في الكلاسيكو الذي شهد طرد لاعبين من برشلونة.',
+      time: 'منذ ٤ ساعات', sources: 5,
+      url: 'https://www.goal.com/' },
+
+    // TECH
+    { cat: 'tech', tag: 'تكنولوجيا',
+      title: 'إطلاق Gemini 3.0 من جوجل بقدرات تفوق GPT-5 في الاختبارات',
+      summary: 'النموذج الجديد حقّق ٩٢٪ في اختبار MMLU متفوّقاً على المنافسين.',
+      time: 'منذ ٣ ساعات', sources: 2,
+      url: 'https://blog.google/technology/ai/' },
+    { cat: 'tech', tag: 'تكنولوجيا',
+      title: 'تسريبات: آبل تختبر شاشة قابلة للطي في iPhone 19',
+      summary: 'مصادر داخلية أكّدت أن النموذج الأولي وصل لمرحلة EVT في تايوان.',
+      time: 'منذ ٥ ساعات', sources: 4,
+      url: 'https://www.apple.com/' },
+
+    // HEALTH
+    { cat: 'health', tag: 'صحة',
+      title: 'دواء جديد للسكري يتجاوز نتائج Ozempic بـ ٣٠٪ في تجربة سريرية',
+      summary: 'الدراسة التي شملت ٣ آلاف مريض أظهرت تحسّناً ملحوظاً في مستويات السكر التراكمي.',
+      time: 'منذ ٤ ساعات', sources: 4,
+      url: 'https://www.who.int/ar/' },
+    { cat: 'health', tag: 'صحة',
+      title: 'منظمة الصحة العالمية تحذّر من سلالة إنفلونزا جديدة',
+      summary: 'السلالة H5N1.7 ظهرت في جنوب شرق آسيا مع قابلية انتقال أعلى من الموسمية.',
+      time: 'منذ ٦ ساعات', sources: 5,
+      url: 'https://www.who.int/ar/' },
+
+    // CULTURE
+    { cat: 'culture', tag: 'ثقافة',
+      title: 'مهرجان القاهرة السينمائي يفتح باب التسجيل لـ ٢٠٢٦',
+      summary: 'الدورة الـ٤٧ ستركّز على السينما المستقلة وأفلام شمال أفريقيا.',
+      time: 'منذ ٥ ساعات', sources: 2,
+      url: 'https://www.cairofilmfestival.org/' },
+    { cat: 'culture', tag: 'ثقافة',
+      title: 'افتتاح متحف الحضارات الجديد في الفسطاط بمشاركة دولية',
+      summary: 'يضم المتحف ٥٠ ألف قطعة أثرية من ٧ عصور.',
+      time: 'منذ يومين', sources: 3,
+      url: 'https://www.almasryalyoum.com/' },
+
+    // WORLD
+    { cat: 'world', tag: 'دولي',
+      title: 'انفجار قرب السفارة الأمريكية في بغداد دون إصابات',
+      summary: 'جهات أمنية عراقية بدأت تحقيقاً في حادثة الانفجار التي وقعت فجر اليوم.',
+      time: 'منذ ساعة', sources: 3,
+      url: 'https://www.reuters.com/world/middle-east/' },
+    { cat: 'world', tag: 'دولي',
+      title: 'تقرير: ١٢٤ ناقلة بترول في طريقها إلى البحر الأحمر',
+      summary: 'بيانات AIS تكشف عن تكدّس غير مسبوق في طوابير الانتظار قرب باب المندب.',
+      time: 'منذ ساعتين', sources: 4,
+      url: 'https://www.reuters.com/markets/commodities/' },
+  ];
+
+  // Get cat from URL
+  const params = new URLSearchParams(window.location.search);
+  const cat = params.get('cat') || 'all';
+
+  // Update title + breadcrumb
+  const titles = {
+    all: 'آخر الأخبار',
+    politics: 'الأخبار السياسية', economy: 'الأخبار الاقتصادية',
+    sports: 'الأخبار الرياضية', tech: 'أخبار التكنولوجيا',
+    health: 'أخبار الصحة', culture: 'أخبار الثقافة', world: 'الأخبار الدولية',
+    live: 'البث المباشر',
+  };
+  document.getElementById('page-title').textContent = titles[cat] || 'آخر الأخبار';
+  document.getElementById('bc-cat').textContent = titles[cat] || 'أخبار';
+  document.title = (titles[cat] || 'أخبار') + ' · NCS';
+
+  // Mark active filter
+  document.querySelectorAll('.cat-filter').forEach(a => {
+    if (a.dataset.cat === cat) a.classList.add('active');
+  });
+
+  // Filter & render
+  const filtered = (cat === 'all') ? NEWS : NEWS.filter(n => n.cat === cat);
+  const list = document.getElementById('news-list');
+  const empty = document.getElementById('empty-state');
+
+  if (filtered.length === 0) {
+    empty.style.display = 'block';
+    list.style.display = 'none';
+  } else {
+    list.innerHTML = filtered.map(n => `
+      <a href="${n.url}" target="_blank" rel="noopener" class="news-item">
+        <div class="news-thumb-cat cat-${n.cat}">${ICONS[n.cat] || ICONS.world}</div>
+        <div class="news-body">
+          <span class="news-tag">${n.tag}</span>
+          <h3>${n.title}</h3>
+          <p>${n.summary}</p>
+          <div class="meta">
+            <span>${n.time}</span>
+            <span class="verified">${n.sources} مصادر</span>
+          </div>
+        </div>
+      </a>
+    `).join('');
+  }
+  document.getElementById('count').textContent = filtered.length.toLocaleString('ar-EG');
+</script>
+
+</body>
+</html>
