@@ -278,127 +278,79 @@
     tech: 'تكنولوجيا', health: 'صحة', culture: 'ثقافة', world: 'دولي', live: 'مباشر',
   };
 
-  // Mock news pool (in production: fetched from backend)
-  const NEWS = [
-    // POLITICS
-    { cat: 'politics', tag: 'عاجل · سياسة دولية',
-      title: 'تصاعد التوتر بين واشنطن وطهران بعد إعلان عقوبات نووية جديدة',
-      summary: 'البيت الأبيض أعلن عن حزمة عقوبات تستهدف كيانات إيرانية مرتبطة ببرنامج التخصيب، وطهران ردّت بتعليق التفتيش المؤقت.',
-      time: 'منذ ٢٠ دقيقة', sources: 4,
-      url: 'https://www.reuters.com/world/middle-east/' },
-    { cat: 'politics', tag: 'سياسة',
-      title: 'الكونغرس يقرّ ميزانية دفاعية بقيمة ٨٨٠ مليار دولار',
-      summary: 'التصويت تم بأغلبية ٣١٢ صوتاً مقابل ١٢٠، مع زيادة ٣٪ في الإنفاق العسكري.',
-      time: 'منذ ٤٥ دقيقة', sources: 3,
-      url: 'https://www.aljazeera.net/news/category/usa' },
-    { cat: 'politics', tag: 'سياسة',
-      title: 'طهران: لن نتراجع عن التخصيب وسنردّ على أي عقوبات جديدة',
-      summary: 'المرشد الأعلى وصف العقوبات الأمريكية بـ"العدائية" وأكّد استمرار البرنامج النووي السلمي.',
-      time: 'منذ ساعة', sources: 4,
-      url: 'https://www.aljazeera.net/news/category/iran' },
-    { cat: 'politics', tag: 'سياسة',
-      title: 'غارات إسرائيلية على جنوب لبنان رداً على ٢٠ صاروخاً سقطت في الجليل',
-      summary: 'الجيش الإسرائيلي أعلن استهداف ٤٠ موقعاً لحزب الله، فيما لوّح الأخير بردّ وشيك.',
-      time: 'منذ ٢٠ دقيقة', sources: 5,
-      url: 'https://www.aljazeera.net/news/category/israel' },
-    { cat: 'politics', tag: 'سياسة',
-      title: 'مجلس الأمن يعقد جلسة طارئة لمناقشة التصعيد في الشرق الأوسط',
-      summary: 'رئاسة المجلس دعت لجلسة استشارية مغلقة بناءً على طلب فرنسا والمملكة المتحدة.',
-      time: 'منذ ساعتين', sources: 3,
-      url: 'https://news.un.org/ar/' },
+  // Live news fetched from NewsAPI (cached 30 min)
+  const NEWSAPI_KEY = 'c345e2b01b2843feb66095becc480996';
+  const CACHE_PREFIX = 'ncs.news.v1.';
+  const TTL = 30 * 60 * 1000;
 
-    // ECONOMY
-    { cat: 'economy', tag: 'اقتصاد',
-      title: 'البنك المركزي المصري يثبّت أسعار الفائدة في اجتماع اليوم',
-      summary: 'القرار جاء متماشياً مع توقعات المحلّلين بعد تراجع التضخم للشهر الثالث على التوالي.',
-      time: 'منذ ساعة', sources: 3,
-      url: 'https://www.cbe.org.eg/ar/' },
-    { cat: 'economy', tag: 'اقتصاد',
-      title: 'ارتفاع جديد في سعر الذهب: عيار ٢١ يتجاوز ٤٦٠٠ جنيه للجرام',
-      summary: 'السعر المحلي يواصل صعوده بالتوازي مع سعر الأونصة عالمياً.',
-      time: 'منذ ٣ ساعات', sources: 2,
-      url: 'https://www.almasryalyoum.com/' },
-    { cat: 'economy', tag: 'اقتصاد',
-      title: 'قمة استثمارية مرتقبة بين القاهرة والرياض الأسبوع المقبل',
-      summary: 'مذكّرات تفاهم بقيمة ١٢ مليار دولار في قطاعات الطاقة والعقارات والصناعة.',
-      time: 'منذ ساعتين', sources: 3,
-      url: 'https://www.almasryalyoum.com/' },
-    { cat: 'economy', tag: 'اقتصاد',
-      title: 'البنك الدولي يخفّض توقعات نمو مصر إلى ٤٫١٪',
-      summary: 'التقرير ربط ذلك بتباطؤ التجارة العالمية وتأثير أزمة البحر الأحمر على إيرادات قناة السويس.',
-      time: 'منذ ٤ ساعات', sources: 2,
-      url: 'https://www.worldbank.org/ar/country/egypt' },
+  async function fetchNewsAPI(endpoint, params) {
+    const u = new URL('https://newsapi.org/v2/' + endpoint);
+    for (const [k, v] of Object.entries(params)) {
+      if (v !== undefined && v !== '') u.searchParams.set(k, v);
+    }
+    u.searchParams.set('apiKey', NEWSAPI_KEY);
+    const cacheKey = CACHE_PREFIX + u.search;
+    try {
+      const raw = localStorage.getItem(cacheKey);
+      if (raw) {
+        const c = JSON.parse(raw);
+        if (c && (Date.now() - c.t) < TTL) return c.d;
+      }
+    } catch (e) {}
+    try {
+      const r = await fetch(u, { cache: 'no-store' });
+      const d = await r.json();
+      if (d.status !== 'ok') throw new Error(d.message);
+      const arts = d.articles || [];
+      try { localStorage.setItem(cacheKey, JSON.stringify({ t: Date.now(), d: arts })); } catch (e) {}
+      return arts;
+    } catch (e) {
+      console.warn('[NCS] NewsAPI failed:', e.message);
+      try { return JSON.parse(localStorage.getItem(cacheKey) || '{}').d || []; } catch (e2) { return []; }
+    }
+  }
 
-    // SPORTS
-    { cat: 'sports', tag: 'رياضة',
-      title: 'الأهلي يحسم القمة المصرية بثلاثية نظيفة على الزمالك',
-      summary: 'أحمد عبد القادر، إمام عاشور، ومحمد شريف سجّلوا أهداف الفوز في القمة ١٢٤.',
-      time: 'منذ ساعة', sources: 4,
-      url: 'https://www.yallakora.com/match-center/' },
-    { cat: 'sports', tag: 'رياضة',
-      title: 'محمد صلاح يقود ليفربول لتأهل دراماتيكي في دوري الأبطال',
-      summary: 'هدفان للنجم المصري في الدقيقتين ٨٤ و٩٠+٢ يحسمان المواجهة.',
-      time: 'منذ ٣٥ دقيقة', sources: 2,
-      url: 'https://www.filgoal.com/' },
-    { cat: 'sports', tag: 'رياضة',
-      title: 'بنزيما يعود لتدريبات الاتحاد بعد إصابة دامت ٣ أسابيع',
-      summary: 'الفرنسي يستعد للقاء النصر في دربي السعودية الكبير الجمعة المقبلة.',
-      time: 'منذ ٣ ساعات', sources: 2,
-      url: 'https://www.kooora.com/' },
-    { cat: 'sports', tag: 'رياضة',
-      title: 'ريال مدريد يحسم القمة الإسبانية أمام برشلونة بثلاثية',
-      summary: 'تألق فينيسيوس وبيلينغهام في الكلاسيكو الذي شهد طرد لاعبين من برشلونة.',
-      time: 'منذ ٤ ساعات', sources: 5,
-      url: 'https://www.goal.com/' },
+  const CAT_QUERY = {
+    all:      { type: 'top', cat: '' },
+    politics: { type: 'search', q: 'politics OR government OR election OR president' },
+    economy:  { type: 'top', cat: 'business' },
+    sports:   { type: 'top', cat: 'sports' },
+    tech:     { type: 'top', cat: 'technology' },
+    health:   { type: 'top', cat: 'health' },
+    culture:  { type: 'top', cat: 'entertainment' },
+    world:    { type: 'search', q: 'middle east OR china OR russia OR europe' },
+    live:     { type: 'top', cat: '' },
+  };
 
-    // TECH
-    { cat: 'tech', tag: 'تكنولوجيا',
-      title: 'إطلاق Gemini 3.0 من جوجل بقدرات تفوق GPT-5 في الاختبارات',
-      summary: 'النموذج الجديد حقّق ٩٢٪ في اختبار MMLU متفوّقاً على المنافسين.',
-      time: 'منذ ٣ ساعات', sources: 2,
-      url: 'https://blog.google/technology/ai/' },
-    { cat: 'tech', tag: 'تكنولوجيا',
-      title: 'تسريبات: آبل تختبر شاشة قابلة للطي في iPhone 19',
-      summary: 'مصادر داخلية أكّدت أن النموذج الأولي وصل لمرحلة EVT في تايوان.',
-      time: 'منذ ٥ ساعات', sources: 4,
-      url: 'https://www.apple.com/' },
+  function catTagLabel(c) {
+    return ({ politics:'سياسة', economy:'اقتصاد', sports:'رياضة',
+      tech:'تكنولوجيا', health:'صحة', culture:'ثقافة', world:'دولي', live:'مباشر' })[c] || 'دولي';
+  }
+  function timeAgo(iso) {
+    if (!iso) return 'الآن';
+    const d = new Date(iso);
+    const m = Math.floor((Date.now() - d.getTime()) / 60000);
+    if (m < 1) return 'الآن';
+    if (m < 60) return `قبل ${m.toLocaleString('ar-EG')} د`;
+    const h = Math.floor(m / 60);
+    if (h < 24) return `قبل ${h.toLocaleString('ar-EG')} ساعة`;
+    return `قبل ${Math.floor(h/24).toLocaleString('ar-EG')} يوم`;
+  }
+  function articleToItem(a, cat) {
+    const cleanTitle = (a.title || '').replace(/\\s*-\\s*[^-]*$/, '').trim();
+    return {
+      cat,
+      tag: catTagLabel(cat),
+      title: cleanTitle,
+      summary: a.description || '',
+      time: timeAgo(a.publishedAt),
+      sources: (a.source && a.source.name) || 'NewsAPI',
+      url: a.url || '#',
+    };
+  }
 
-    // HEALTH
-    { cat: 'health', tag: 'صحة',
-      title: 'دواء جديد للسكري يتجاوز نتائج Ozempic بـ ٣٠٪ في تجربة سريرية',
-      summary: 'الدراسة التي شملت ٣ آلاف مريض أظهرت تحسّناً ملحوظاً في مستويات السكر التراكمي.',
-      time: 'منذ ٤ ساعات', sources: 4,
-      url: 'https://www.who.int/ar/' },
-    { cat: 'health', tag: 'صحة',
-      title: 'منظمة الصحة العالمية تحذّر من سلالة إنفلونزا جديدة',
-      summary: 'السلالة H5N1.7 ظهرت في جنوب شرق آسيا مع قابلية انتقال أعلى من الموسمية.',
-      time: 'منذ ٦ ساعات', sources: 5,
-      url: 'https://www.who.int/ar/' },
-
-    // CULTURE
-    { cat: 'culture', tag: 'ثقافة',
-      title: 'مهرجان القاهرة السينمائي يفتح باب التسجيل لـ ٢٠٢٦',
-      summary: 'الدورة الـ٤٧ ستركّز على السينما المستقلة وأفلام شمال أفريقيا.',
-      time: 'منذ ٥ ساعات', sources: 2,
-      url: 'https://www.cairofilmfestival.org/' },
-    { cat: 'culture', tag: 'ثقافة',
-      title: 'افتتاح متحف الحضارات الجديد في الفسطاط بمشاركة دولية',
-      summary: 'يضم المتحف ٥٠ ألف قطعة أثرية من ٧ عصور.',
-      time: 'منذ يومين', sources: 3,
-      url: 'https://www.almasryalyoum.com/' },
-
-    // WORLD
-    { cat: 'world', tag: 'دولي',
-      title: 'انفجار قرب السفارة الأمريكية في بغداد دون إصابات',
-      summary: 'جهات أمنية عراقية بدأت تحقيقاً في حادثة الانفجار التي وقعت فجر اليوم.',
-      time: 'منذ ساعة', sources: 3,
-      url: 'https://www.reuters.com/world/middle-east/' },
-    { cat: 'world', tag: 'دولي',
-      title: 'تقرير: ١٢٤ ناقلة بترول في طريقها إلى البحر الأحمر',
-      summary: 'بيانات AIS تكشف عن تكدّس غير مسبوق في طوابير الانتظار قرب باب المندب.',
-      time: 'منذ ساعتين', sources: 4,
-      url: 'https://www.reuters.com/markets/commodities/' },
-  ];
+  // Old static NEWS array kept as fallback below; live fetch overrides it
+  const NEWS = []; // live-filled by fetchAndRender
 
   // Get cat from URL
   const params = new URLSearchParams(window.location.search);
@@ -421,31 +373,47 @@
     if (a.dataset.cat === cat) a.classList.add('active');
   });
 
-  // Filter & render
-  const filtered = (cat === 'all') ? NEWS : NEWS.filter(n => n.cat === cat);
-  const list = document.getElementById('news-list');
-  const empty = document.getElementById('empty-state');
+  // Fetch from NewsAPI based on category
+  async function fetchAndRender() {
+    const list = document.getElementById('news-list');
+    const empty = document.getElementById('empty-state');
+    list.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: var(--text-muted);">جاري التحميل من NewsAPI…</div>';
 
-  if (filtered.length === 0) {
-    empty.style.display = 'block';
-    list.style.display = 'none';
-  } else {
-    list.innerHTML = filtered.map(n => `
-      <a href="${n.url}" target="_blank" rel="noopener" class="news-item">
-        <div class="news-thumb-cat cat-${n.cat}">${ICONS[n.cat] || ICONS.world}</div>
+    const conf = CAT_QUERY[cat] || CAT_QUERY.all;
+    let articles = [];
+    if (conf.type === 'top') {
+      articles = await fetchNewsAPI('top-headlines', { country: 'us', category: conf.cat, pageSize: 20 });
+    } else {
+      articles = await fetchNewsAPI('everything', { q: conf.q, pageSize: 20, sortBy: 'publishedAt', language: 'en' });
+    }
+
+    const filtered = articles.map(a => articleToItem(a, cat === 'all' ? 'world' : cat));
+
+    if (filtered.length === 0) {
+      empty.style.display = 'block';
+      list.style.display = 'none';
+      document.getElementById('count').textContent = '0';
+      return;
+    }
+    empty.style.display = 'none';
+    list.style.display = '';
+    list.innerHTML = filtered.map(item => `
+      <a href="${item.url}" target="_blank" rel="noopener" class="news-item">
+        <div class="news-thumb-cat cat-${item.cat}">${ICONS[item.cat] || ICONS.world}</div>
         <div class="news-body">
-          <span class="news-tag">${n.tag}</span>
-          <h3>${n.title}</h3>
-          <p>${n.summary}</p>
+          <span class="news-tag">${item.tag}</span>
+          <h3>${item.title}</h3>
+          <p>${item.summary}</p>
           <div class="meta">
-            <span>${n.time}</span>
-            <span class="verified">${n.sources} مصادر</span>
+            <span>${item.time}</span>
+            <span class="verified">${item.sources}</span>
           </div>
         </div>
       </a>
     `).join('');
+    document.getElementById('count').textContent = filtered.length.toLocaleString('ar-EG');
   }
-  document.getElementById('count').textContent = filtered.length.toLocaleString('ar-EG');
+  fetchAndRender();
 </script>
 
 </body>
