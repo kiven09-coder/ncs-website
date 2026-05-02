@@ -2948,13 +2948,259 @@
   setInterval(refreshIndexNewsGrid, 30 * 60_000);
 
 
+
+
+  // ============================================================
+  // v3.7: Additional free APIs
+  // ============================================================
+
+  const NCS_CACHE = {
+    get(key, ttl) {
+      try {
+        const raw = localStorage.getItem(key);
+        if (!raw) return null;
+        const c = JSON.parse(raw);
+        if (Date.now() - c.t > ttl) return null;
+        return c.d;
+      } catch (e) { return null; }
+    },
+    set(key, data) {
+      try { localStorage.setItem(key, JSON.stringify({ t: Date.now(), d: data })); } catch (e) {}
+    }
+  };
+
+  // ----- 1) TheSportsDB: Egyptian Premier League (id=4829) -----
+  async function fetchSports() {
+    const cacheKey = 'ncs.sports.epl';
+    const cached = NCS_CACHE.get(cacheKey, 10 * 60_000); // 10 min
+    if (cached) return cached;
+    try {
+      const r = await fetch('https://www.thesportsdb.com/api/v1/json/3/eventspastleague.php?id=4829', { cache: 'no-store' });
+      const d = await r.json();
+      const events = (d.events || []).slice(0, 5);
+      NCS_CACHE.set(cacheKey, events);
+      return events;
+    } catch (e) {
+      console.warn('[NCS] TheSportsDB failed:', e.message);
+      return cached || [];
+    }
+  }
+
+  async function applySportsData() {
+    const events = await fetchSports();
+    if (!events.length) return;
+    const top = events[0];
+    if (!top) return;
+
+    // Update the live match widget with the latest real result
+    const home = top.strHomeTeam || 'Home';
+    const away = top.strAwayTeam || 'Away';
+    const hs = top.intHomeScore;
+    const as_ = top.intAwayScore;
+    if (hs == null || as_ == null) return;
+
+    const homeEl = document.getElementById('score-home');
+    const awayEl = document.getElementById('score-away');
+    if (homeEl) homeEl.textContent = hs;
+    if (awayEl) awayEl.textContent = as_;
+
+    // Update team names on the match panel
+    const teams = document.querySelectorAll('.match .team-name');
+    if (teams.length >= 2) {
+      teams[0].textContent = home;
+      teams[1].textContent = away;
+    }
+    const logos = document.querySelectorAll('.match .team-logo');
+    if (logos.length >= 2) {
+      logos[0].textContent = (home || '').slice(0, 3).toUpperCase();
+      logos[1].textContent = (away || '').slice(0, 3).toUpperCase();
+    }
+
+    // Update the secondary results rows below the main match
+    const otherEvents = events.slice(1, 4);
+    const secondaryRows = document.querySelectorAll('.match + div .metric-row');
+    otherEvents.forEach((ev, i) => {
+      if (i >= secondaryRows.length) return;
+      const row = secondaryRows[i];
+      const label = row.querySelector('.metric-label');
+      const value = row.querySelector('.metric-value');
+      const change = row.querySelector('.metric-change');
+      if (label) label.innerHTML = `${ev.strHomeTeam} <small>vs</small> ${ev.strAwayTeam}`;
+      if (value) value.textContent = `${ev.intHomeScore} − ${ev.intAwayScore}`;
+      if (change) {
+        change.textContent = 'انتهت';
+        change.style.color = 'var(--text-dim)';
+      }
+    });
+
+    // Update meta line (status, round)
+    const matchStatus = document.querySelector('.match-status');
+    if (matchStatus) {
+      matchStatus.innerHTML = '<span class="live-dot" style="background:#10b981;"></span> ' + (top.strStatus === 'Match Finished' ? 'انتهت المباراة' : (top.strStatus || 'انتهت'));
+    }
+  }
+  applySportsData();
+  setInterval(applySportsData, 10 * 60_000);
+
+  // ----- 2) CoinGecko: real gold spot + crypto -----
+  async function fetchMarketPrices() {
+    const cacheKey = 'ncs.market.cg';
+    const cached = NCS_CACHE.get(cacheKey, 5 * 60_000);
+    if (cached) return cached;
+    try {
+      const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,pax-gold,tether-gold&vs_currencies=usd&include_24hr_change=true', { cache: 'no-store' });
+      const d = await r.json();
+      NCS_CACHE.set(cacheKey, d);
+      return d;
+    } catch (e) {
+      console.warn('[NCS] CoinGecko failed:', e.message);
+      return cached;
+    }
+  }
+
+  async function applyMarketData() {
+    const m = await fetchMarketPrices();
+    if (!m) return;
+
+    // Real gold: PAX Gold tracks spot gold (1 token = 1 fine troy oz)
+    const goldUsdPerOz = (m['pax-gold'] && m['pax-gold'].usd) || (m['tether-gold'] && m['tether-gold'].usd);
+    if (goldUsdPerOz) {
+      // Get current EGP/USD from FX cache or default
+      let egpUsd = 47.92;
+      const fxEl = document.querySelector('[data-fx="usd"]');
+      if (fxEl) {
+        const txt = fxEl.textContent.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[٫,]/g, '.');
+        const parsed = parseFloat(txt);
+        if (parsed > 0) egpUsd = parsed;
+      }
+      const goldEgpPerGram24k = (goldUsdPerOz * egpUsd) / 31.1035;
+      const targets = {
+        '24': 1.0, '21': 0.875, '18': 0.75,
+      };
+      for (const [k, mult] of Object.entries(targets)) {
+        const bourse = Math.round(goldEgpPerGram24k * mult);
+        const saagha = bourse + ({ '24': 120, '21': 125, '18': 100 }[k] || 110);
+        const bEl = document.getElementById('gold-' + k);
+        const sEl = document.getElementById('saagha-' + k);
+        if (bEl) bEl.textContent = bourse.toLocaleString('ar-EG');
+        if (sEl) sEl.textContent = saagha.toLocaleString('ar-EG');
+      }
+      // الجنيه الذهب = 8 جم × عيار 21
+      const pound21 = Math.round(goldEgpPerGram24k * 0.875 * 8);
+      const pbEl = document.getElementById('gold-pound');
+      const psEl = document.getElementById('saagha-pound');
+      if (pbEl) pbEl.textContent = pound21.toLocaleString('ar-EG');
+      if (psEl) psEl.textContent = (pound21 + 1000).toLocaleString('ar-EG');
+
+      const upd = document.getElementById('gold-updated');
+      if (upd) upd.textContent = 'CoinGecko · ' + new Date().toLocaleTimeString('ar-EG');
+    }
+
+    // Build/refresh crypto ticker tile
+    let tile = document.getElementById('crypto-tile');
+    if (!tile) {
+      const fxPanel = document.querySelector('#refresh-fx')?.closest('.panel');
+      if (fxPanel) {
+        const wrap = document.createElement('div');
+        wrap.id = 'crypto-tile';
+        wrap.style.cssText = 'border-top:1px solid var(--border);padding:0.85rem 1.25rem;background:rgba(225,29,43,0.03);';
+        wrap.innerHTML = `
+          <div style="font-size:0.7rem;color:var(--text-muted);font-weight:800;letter-spacing:0.05em;margin-bottom:0.6rem;">
+            عملات رقمية · CoinGecko
+          </div>
+          <div id="crypto-rows" style="display:flex;flex-direction:column;gap:0.4rem;font-size:0.78rem;"></div>
+        `;
+        fxPanel.appendChild(wrap);
+      }
+    }
+    const rows = document.getElementById('crypto-rows');
+    if (rows) {
+      const items = [
+        { key: 'bitcoin', name: 'Bitcoin', sym: 'BTC' },
+        { key: 'ethereum', name: 'Ethereum', sym: 'ETH' },
+        { key: 'pax-gold', name: 'PAX Gold', sym: 'PAXG · أونصة' },
+      ];
+      rows.innerHTML = items.map(it => {
+        const data = m[it.key];
+        if (!data) return '';
+        const usd = data.usd.toLocaleString('en-US', { maximumFractionDigits: 2 });
+        const ch = data.usd_24h_change || 0;
+        const sign = ch >= 0 ? 'up' : 'down';
+        return `<div style="display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-weight:700;">${it.name}<small style="color:var(--text-dim);font-size:0.65rem;display:block;">${it.sym}</small></span>
+          <span style="font-family:var(--font-en-body);font-weight:800;">$${usd}</span>
+          <span class="metric-change ${sign}" style="min-width:60px;text-align:end;">${Math.abs(ch).toFixed(2)}٪</span>
+        </div>`;
+      }).join('');
+    }
+  }
+  applyMarketData();
+  setInterval(applyMarketData, 5 * 60_000);
+
+  // ----- 3) GDELT 2.0: world political/conflict news (mixed into ticker) -----
+  // Strict rate-limit: 1 req per 15 minutes (their guideline = 1 per 5s, we cache 15 min)
+  async function fetchGdelt(query) {
+    const cacheKey = 'ncs.gdelt.' + query;
+    const cached = NCS_CACHE.get(cacheKey, 15 * 60_000);
+    if (cached) return cached;
+    try {
+      const u = `https://api.gdeltproject.org/api/v2/doc/doc?query=${encodeURIComponent(query)}&mode=artlist&format=json&maxrecords=10&sort=datedesc`;
+      const r = await fetch(u, { cache: 'no-store' });
+      // GDELT sometimes returns a plain text 'rate limit' message instead of JSON
+      const text = await r.text();
+      let d;
+      try { d = JSON.parse(text); } catch (_e) {
+        console.info('[NCS] GDELT rate-limited or non-JSON:', text.slice(0, 80));
+        return cached || [];
+      }
+      const arts = (d.articles || []).map(a => ({
+        title: a.title || '',
+        url: a.url || '#',
+        domain: a.domain || '',
+        seendate: a.seendate || '',
+      }));
+      NCS_CACHE.set(cacheKey, arts);
+      return arts;
+    } catch (e) {
+      console.warn('[NCS] GDELT failed:', e.message);
+      return cached || [];
+    }
+  }
+
+  async function blendGdeltIntoTicker() {
+    const arts = await fetchGdelt('Iran OR Israel OR Russia OR Ukraine OR sanctions');
+    if (!arts.length) return;
+    const ticker = document.querySelector('.ticker-content');
+    if (!ticker) return;
+    const existingItems = Array.from(ticker.children);
+    // Append GDELT items only if they don't already exist
+    for (const a of arts.slice(0, 4)) {
+      const exists = existingItems.some(el => el.textContent === a.title);
+      if (exists) continue;
+      const link = document.createElement('a');
+      link.href = a.url;
+      link.target = '_blank';
+      link.rel = 'noopener';
+      link.className = 'ticker-item';
+      link.textContent = a.title.slice(0, 140);
+      ticker.appendChild(link);
+    }
+  }
+  // Wait 30s for NewsAPI to populate first, then blend GDELT in
+  setTimeout(blendGdeltIntoTicker, 30_000);
+  setInterval(blendGdeltIntoTicker, 15 * 60_000);
+
   // ============================================================
   // v3.6: Settings modal — data source registry + status check
   // ============================================================
   const NCS_SOURCES = [
     { name: 'OpenSky Network',   key: 'opensky',   url: 'https://opensky-network.org/api/states/all', desc: 'طيران لحظي عالمي', test: 'https://opensky-network.org/api/states/all' },
     { name: 'NewsAPI',           key: 'newsapi',   url: 'https://newsapi.org/v2/top-headlines', desc: 'أخبار عالمية', test: 'https://newsapi.org/v2/top-headlines?country=us&apiKey=c345e2b01b2843feb66095becc480996&pageSize=1' },
+    { name: 'TheSportsDB',       key: 'sports',    url: 'https://www.thesportsdb.com/api/v1/json/3/eventspastleague.php?id=4829', desc: 'الدوري المصري — مباريات حقيقية', test: 'https://www.thesportsdb.com/api/v1/json/3/eventspastleague.php?id=4829' },
+    { name: 'CoinGecko',         key: 'coingecko', url: 'https://api.coingecko.com/api/v3/simple/price', desc: 'سعر الذهب الفعلي + عملات رقمية', test: 'https://api.coingecko.com/api/v3/simple/price?ids=pax-gold&vs_currencies=usd' },
+    { name: 'GDELT 2.0',         key: 'gdelt',     url: 'https://api.gdeltproject.org/api/v2/doc/doc', desc: 'أخبار سياسية وعسكرية عالمية', test: 'https://api.gdeltproject.org/api/v2/doc/doc?query=conflict&mode=artlist&format=json&maxrecords=1' },
     { name: 'Currency API',      key: 'fx',        url: 'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api', desc: 'أسعار العملات', test: 'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/egp.json' },
+    { name: 'Frankfurter',       key: 'frank',     url: 'https://api.frankfurter.dev/v1/latest', desc: 'مصدر FX احتياطي (ECB)', test: 'https://api.frankfurter.dev/v1/latest?base=USD' },
     { name: 'OpenStreetMap',     key: 'osm',       url: 'https://tile.openstreetmap.org', desc: 'بلاطات الخريطة', test: 'https://a.tile.openstreetmap.org/0/0/0.png' },
     { name: 'Carto Dark',        key: 'carto',     url: 'https://basemaps.cartocdn.com', desc: 'بلاطات الخريطة الداكنة', test: 'https://a.basemaps.cartocdn.com/dark_all/0/0/0.png' },
     { name: 'WorldMonitor',      key: 'wm',        url: 'https://finance.worldmonitor.app/?lat=5.0000&lon=20.0000&zoom=1.66&view=africa&timeRange=48h&layers=sanctions%2Ceconomic%2Coutages%2Cnatural&country=AE', desc: 'مرجع — مراقبة عالمية', test: '', external: true },
