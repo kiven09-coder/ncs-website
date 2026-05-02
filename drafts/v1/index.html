@@ -2168,12 +2168,13 @@
           <span class="meta" id="hero-side1-meta">منذ ساعة · مؤكّد من ٣ مصادر</span>
         </div>
       </a>
-      <a href="https://www.filgoal.com/" target="_blank" rel="noopener" class="card hero-link" style="background: linear-gradient(135deg, #064e3b 0%, #10b981 35%, #052e16 100%); position:relative;">
-        <div style="position:absolute; inset:0; background:linear-gradient(0deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 60%, rgba(0,0,0,0.2) 100%);"></div>
-        <div style="position:relative; z-index:2; display:flex; flex-direction:column; justify-content:flex-end; height:100%; min-height:170px;">
-          <span class="tag">رياضة</span>
-          <h3>محمد صلاح يقود ليفربول لتأهل دراماتيكي في دوري الأبطال</h3>
-          <span class="meta">منذ ٣٥ دقيقة · مؤكّد من مصدرين</span>
+      <a id="hero-side2-a" href="https://www.filgoal.com/" target="_blank" rel="noopener" class="card hero-link hero-side-card" style="background-color:#0a0a0a; position:relative; display:block;">
+        <img id="hero-side2-img" alt="" class="hero-bg-img" />
+        <div class="hero-side-overlay"></div>
+        <div class="hero-side-content">
+          <span class="tag" id="hero-side2-tag">رياضة</span>
+          <h3 id="hero-side2-title">محمد صلاح يقود ليفربول لتأهل دراماتيكي في دوري الأبطال</h3>
+          <span class="meta" id="hero-side2-meta">منذ ٣٥ دقيقة · مؤكّد من مصدرين</span>
         </div>
       </a>
     </aside>
@@ -3666,7 +3667,8 @@
 
   async function applyMarketData() {
     const m = await fetchMarketPrices();
-    if (!m) return;
+    if (!m) { console.warn('[NCS gold] CoinGecko returned no data'); return; }
+    console.info('[NCS gold] CoinGecko data:', m);
 
     // Real gold: PAX Gold tracks spot gold (1 token = 1 fine troy oz)
     const goldUsdPerOz = (m['pax-gold'] && m['pax-gold'].usd) || (m['tether-gold'] && m['tether-gold'].usd);
@@ -4170,7 +4172,7 @@
 
 
   // ============================================================
-  // v3.17: Hero cards populated from NewsAPI with real images
+  // v3.18: Hero cards populated from NewsAPI — hardened with proxy-first
   // ============================================================
   function detectVideo(article) {
     const u = (article.url || '').toLowerCase();
@@ -4180,33 +4182,44 @@
     return false;
   }
 
-  function imgProxy(url) {
+  function imgProxy(url, w, h) {
     if (!url) return '';
-    return `https://images.weserv.nl/?url=${encodeURIComponent(url.replace(/^https?:\/\//, ''))}&w=1200&h=700&fit=cover`;
+    return `https://images.weserv.nl/?url=${encodeURIComponent(url.replace(/^https?:\/\//, ''))}&w=${w||1200}&h=${h||700}&fit=cover`;
   }
 
-  function setHeroImg(imgEl, url) {
+  function setHeroImg(imgEl, url, w, h) {
     if (!imgEl || !url) return;
+    // PROXY FIRST (more reliable than direct given mixed-content + CORS issues)
     imgEl.onerror = () => {
-      // First fallback: weserv proxy
+      // If proxy fails, try direct as last resort
       if (imgEl.dataset.stage !== '2') {
         imgEl.dataset.stage = '2';
-        imgEl.src = imgProxy(url);
+        imgEl.src = url;
       } else {
         imgEl.style.display = 'none';
       }
     };
+    imgEl.onload = () => { imgEl.style.display = 'block'; };
     imgEl.dataset.stage = '1';
-    imgEl.src = url;
+    imgEl.src = imgProxy(url, w, h);
   }
 
+  let _heroAttempts = 0;
   async function populateHero() {
-    if (typeof NCS_NEWS === 'undefined') return;
+    _heroAttempts++;
+    if (typeof NCS_NEWS === 'undefined') {
+      console.warn('[NCS hero] NCS_NEWS not yet defined, attempt', _heroAttempts);
+      if (_heroAttempts < 5) setTimeout(populateHero, 1500);
+      return;
+    }
     try {
       const articles = await NCS_NEWS.topHeadlines('general');
-      if (!articles || articles.length < 3) return;
+      console.info('[NCS hero] received', articles ? articles.length : 0, 'articles');
+      if (!articles || articles.length < 3) {
+        if (_heroAttempts < 4) setTimeout(populateHero, 3000);
+        return;
+      }
 
-      // Helpers to set text safely
       const setT = (id, val) => { const e = document.getElementById(id); if (e) e.textContent = val; };
       const setH = (id, val) => { const e = document.getElementById(id); if (e) e.href = val; };
 
@@ -4215,32 +4228,33 @@
       const s2 = articles[2];
 
       // Main hero
-      setHeroImg(document.getElementById('hero-main-img'), main.urlToImage);
+      setHeroImg(document.getElementById('hero-main-img'), main.urlToImage, 1400, 800);
       setH('hero-main-a', main.url || '#');
       setT('hero-main-tag', `عاجل · ${(main.source && main.source.name) || ''}`);
       setT('hero-main-title', (main.title || '').replace(/\s*-\s*[^-]*$/, '').trim());
       setT('hero-main-desc', main.description || '');
       setT('hero-main-time', timeAgo(main.publishedAt));
       setT('hero-main-source', `مؤكّد · ${(main.source && main.source.name) || 'NewsAPI'}`);
-      setT('hero-main-domain', main.url ? new URL(main.url).hostname.replace(/^www\./, '') : '');
+      try { setT('hero-main-domain', main.url ? new URL(main.url).hostname.replace(/^www\./, '') : ''); } catch (e) {}
       const videoCta = document.getElementById('hero-main-video');
       if (videoCta) videoCta.hidden = !detectVideo(main);
 
       // Side 1
-      setHeroImg(document.getElementById('hero-side1-img'), s1.urlToImage);
+      setHeroImg(document.getElementById('hero-side1-img'), s1.urlToImage, 600, 400);
       setH('hero-side1-a', s1.url || '#');
       setT('hero-side1-tag', (s1.source && s1.source.name) || 'دولي');
       setT('hero-side1-title', (s1.title || '').replace(/\s*-\s*[^-]*$/, '').trim());
       setT('hero-side1-meta', `${timeAgo(s1.publishedAt)} · ${(s1.source && s1.source.name) || ''}`);
 
       // Side 2
-      setHeroImg(document.getElementById('hero-side2-img'), s2.urlToImage);
+      setHeroImg(document.getElementById('hero-side2-img'), s2.urlToImage, 600, 400);
       setH('hero-side2-a', s2.url || '#');
       setT('hero-side2-tag', (s2.source && s2.source.name) || 'دولي');
       setT('hero-side2-title', (s2.title || '').replace(/\s*-\s*[^-]*$/, '').trim());
       setT('hero-side2-meta', `${timeAgo(s2.publishedAt)} · ${(s2.source && s2.source.name) || ''}`);
     } catch (e) {
-      console.warn('[NCS] populateHero failed:', e);
+      console.warn('[NCS hero] populateHero failed:', e);
+      if (_heroAttempts < 4) setTimeout(populateHero, 3000);
     }
   }
   populateHero();
