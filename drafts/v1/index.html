@@ -806,13 +806,14 @@
   }
   .map-view-toggle button:not(.active):hover { color: var(--text); background: rgba(255,255,255,0.05); }
   /* 3D mode: tilt the entire map for a flight-deck perspective */
-  .ncs-map > .leaflet-container {
-    transition: transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
+  .ncs-map {
+    transition: transform 700ms cubic-bezier(0.16, 1, 0.3, 1), perspective 700ms;
     transform-origin: center 75%;
     will-change: transform;
   }
-  .ncs-map.map-fake-3d > .leaflet-container {
-    transform: perspective(1200px) rotateX(50deg) scale(1.15);
+  .ncs-map.map-fake-3d {
+    transform: perspective(1200px) rotateX(45deg) scale(1.1);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.6), 0 0 80px rgba(225,29,43,0.1);
   }
   /* Match aside heights to map for balanced layout */
   .globe-layout .globe-pane {
@@ -1856,6 +1857,160 @@
   }
   .flash-cell { animation: cell-flash 800ms ease-out; }
 
+  /* === v3.18: Enhanced map section design === */
+  .below-map-grid {
+    gap: 0.65rem;
+    margin-top: 0.85rem;
+  }
+  .below-map-cell {
+    background: rgba(10, 10, 10, 0.92);
+    border: 1px solid var(--border-strong);
+    border-radius: 4px;
+    backdrop-filter: blur(8px);
+    transition: border-color 300ms, box-shadow 300ms;
+    overflow: hidden;
+  }
+  .below-map-cell:hover {
+    border-color: rgba(225, 29, 43, 0.4);
+    box-shadow: 0 0 20px rgba(225, 29, 43, 0.08), inset 0 0 0 1px rgba(225, 29, 43, 0.1);
+  }
+  .below-map-cell .pane-section {
+    padding: 0.85rem 1rem;
+  }
+  .below-map-cell .pane-title {
+    font-size: 0.72rem;
+    margin-bottom: 0.7rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    letter-spacing: 0.06em;
+  }
+
+  /* Map container subtle glow */
+  .globe-fullmap .ncs-map {
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    box-shadow: 0 0 40px rgba(225, 29, 43, 0.06), 0 8px 32px rgba(0,0,0,0.4);
+  }
+
+  /* === v3.18: Improved news card image display === */
+  .news-thumb-wrap {
+    aspect-ratio: 4/3;
+    overflow: hidden;
+    margin-bottom: 0.85rem;
+    background: #0f0f0f;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+  }
+  .news-thumb-wrap .news-thumb-img-tag {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 350ms var(--ease-out), opacity 300ms;
+    opacity: 1;
+  }
+  .news-card:hover .news-thumb-wrap .news-thumb-img-tag {
+    transform: scale(1.06);
+  }
+
+  /* === v3.18: Panel auto-refresh subtle indicator === */
+  .panel[data-refreshing="true"] {
+    border-color: rgba(52, 211, 153, 0.3);
+  }
+  .panel[data-refreshing="true"]::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #10b981, transparent);
+    animation: refresh-sweep 1s ease-in-out;
+  }
+  @keyframes refresh-sweep {
+    0% { transform: translateX(-100%); opacity: 1; }
+    100% { transform: translateX(100%); opacity: 0; }
+  }
+
+  /* === v3.18: Globe section title refinement === */
+  .globe-title {
+    background: linear-gradient(90deg, var(--text) 0%, rgba(225,29,43,0.9) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* === v3.19: Bigger Arabic numbers for readability === */
+  .metric-value {
+    font-size: 1.15rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.01em;
+  }
+  .saagha-buy, .saagha-sell {
+    font-size: 1.15rem !important;
+    font-weight: 900 !important;
+  }
+  .score span {
+    font-size: 2.6rem !important;
+    font-weight: 900;
+  }
+  .choke-stat {
+    font-size: 0.82rem !important;
+    font-weight: 800 !important;
+  }
+  .stat-num {
+    font-size: 1.4rem !important;
+  }
+  /* Counter in live pill */
+  #article-count {
+    font-size: 0.82rem;
+    font-weight: 800;
+  }
+  /* Topbar date & clock */
+  #topbar-date, #clock {
+    font-size: 0.82rem;
+    font-weight: 700;
+  }
+
+  /* === v3.19: Politics card with image support === */
+  .country-card {
+    position: relative;
+    overflow: hidden;
+  }
+  .country-card-img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 3px;
+    margin-bottom: 0.75rem;
+    opacity: 0.85;
+    transition: opacity 300ms, transform 400ms;
+  }
+  .country-card:hover .country-card-img {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+
+  /* === v3.19: LTR layout adjustments for English mode === */
+  html[dir="ltr"] .topbar-inner,
+  html[dir="ltr"] .section-head,
+  html[dir="ltr"] .footer-grid {
+    direction: ltr;
+    text-align: left;
+  }
+  html[dir="ltr"] .ticker-content {
+    animation-direction: reverse;
+  }
+  html[dir="ltr"] .more {
+    margin-right: auto;
+    margin-left: 0;
+  }
+
+  /* === v3.19: Channels grid wrap for more channels === */
+  .channels {
+    flex-wrap: wrap;
+  }
+
 </style>
 </head>
 <body id="top">
@@ -1865,7 +2020,7 @@
   <div class="topbar-inner">
     <div class="meta">
       <span><span class="live-dot"></span> <span data-i18n="ui.live">بث مباشر</span></span>
-      <span>الجمعة، ١ مايو ٢٠٢٦</span>
+      <span id="topbar-date">—</span>
       <span id="clock">—</span>
       <span>القاهرة ٣٠°</span>
     </div>
@@ -2011,7 +2166,9 @@
   </div>
 
   <div class="globe-fullmap">
-    <div id="map" class="ncs-map">
+    <div id="map" class="ncs-map"></div>
+    <div id="globeViz" class="ncs-map" style="display:none; overflow:hidden;"></div>
+    <div class="ncs-map-ui">
       <!-- 2D / 3D toggle (bottom-right) -->
       <div class="map-view-toggle">
         <button data-view="2d" class="active">2D</button>
@@ -2057,6 +2214,14 @@
       <div class="map-source-pill" id="data-source"><span class="live-dot"></span> جاري الاتصال…</div>
     </div>
   </div>
+
+  <style>
+    .globe-fullmap { position: relative; }
+    .ncs-map-ui {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1000;
+    }
+    .ncs-map-ui > * { pointer-events: auto; }
+  </style>
 
   <!-- Below-map: 4-column grid of remaining panels -->
   <div class="below-map-grid">
@@ -2121,7 +2286,11 @@
       </div>
     
       </div>
-    <div class="below-map-cell"></div>
+    <div class="below-map-cell"><div class="pane-section">
+        <h4 class="pane-title"><span class="live-dot" style="width:7px;height:7px;border-radius:50%;background:var(--red);box-shadow:0 0 0 0 var(--red-glow);animation:pulse 1.6s infinite;"></span> أصول مرصودة الآن</h4>
+        <div class="assets-feed" id="assets-feed"></div>
+      </div>
+    </div>
     <div class="below-map-cell"><div class="pane-section">
         <h4 class="pane-title" data-i18n="globe.chokepoints">المضائق الاستراتيجية</h4>
         <div class="choke-row"><span>مضيق هرمز</span><span class="choke-stat danger" id="ck-hormuz">١٤ سفينة</span></div>
@@ -2238,6 +2407,69 @@
       <div class="live-badge"><span class="live-dot"></span> مباشر</div>
       <div class="viewers">1.8K</div>
       <div class="channel-name">Sky News</div>
+      <div class="channel-play">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M8 5v14l11-7z"/></svg>
+      </div>
+    </button>
+    <button class="channel channel-trigger" data-embed-path="live_stream?channel=UCbnMTu35EiqawyQhGYv3HBQ" data-watch-path="@BBCArabic/live" data-channel-name="BBC عربي">
+      <div class="channel-thumb" style="background-image:linear-gradient(135deg,#7f1d1d,#450a0a);"></div>
+      <div class="live-badge"><span class="live-dot"></span> مباشر</div>
+      <div class="viewers">6.2K</div>
+      <div class="channel-name">BBC عربي</div>
+      <div class="channel-play">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M8 5v14l11-7z"/></svg>
+      </div>
+    </button>
+    <button class="channel channel-trigger" data-embed-path="live_stream?channel=UCupvZG-5ko_eiXAupbDfxWw" data-watch-path="@CNN/live" data-channel-name="CNN International">
+      <div class="channel-thumb" style="background-image:linear-gradient(135deg,#991b1b,#450a0a);"></div>
+      <div class="live-badge"><span class="live-dot"></span> مباشر</div>
+      <div class="viewers">9.1K</div>
+      <div class="channel-name">CNN International</div>
+      <div class="channel-play">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M8 5v14l11-7z"/></svg>
+      </div>
+    </button>
+    <button class="channel channel-trigger" data-embed-path="live_stream?channel=UC1yGcBvs4I1Nk5sgCb02YCg" data-watch-path="@taborworld/live" data-channel-name="TRT World">
+      <div class="channel-thumb" style="background-image:linear-gradient(135deg,#064e3b,#022c22);"></div>
+      <div class="live-badge"><span class="live-dot"></span> مباشر</div>
+      <div class="viewers">3.4K</div>
+      <div class="channel-name">TRT World</div>
+      <div class="channel-play">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M8 5v14l11-7z"/></svg>
+      </div>
+    </button>
+    <button class="channel channel-trigger" data-embed-path="live_stream?channel=UCGsrHriMGcG8GlEADigPGkA" data-watch-path="@AlArabiya/live" data-channel-name="العربية">
+      <div class="channel-thumb" style="background-image:linear-gradient(135deg,#1e3a5f,#0c1f33);"></div>
+      <div class="live-badge"><span class="live-dot"></span> مباشر</div>
+      <div class="viewers">7.5K</div>
+      <div class="channel-name">العربية</div>
+      <div class="channel-play">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M8 5v14l11-7z"/></svg>
+      </div>
+    </button>
+    <button class="channel channel-trigger" data-embed-path="live_stream?channel=UCNye-wNBqNL5ZzHSJj3l8Bg" data-watch-path="@aborabia/live" data-channel-name="العربية الحدث">
+      <div class="channel-thumb" style="background-image:linear-gradient(135deg,#312e81,#1e1b4b);"></div>
+      <div class="live-badge"><span class="live-dot"></span> مباشر</div>
+      <div class="viewers">4.8K</div>
+      <div class="channel-name">العربية الحدث</div>
+      <div class="channel-play">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M8 5v14l11-7z"/></svg>
+      </div>
+    </button>
+    <button class="channel channel-trigger" data-embed-path="live_stream?channel=UCcj1n7-I32PmvFh2aM1hBVA" data-watch-path="@CNBCarabiaTv/live" data-channel-name="CNBC عربية">
+      <div class="channel-thumb" style="background-image:linear-gradient(135deg,#0284c7,#0369a1);"></div>
+      <div class="live-badge"><span class="live-dot"></span> مباشر</div>
+      <div class="viewers">1.2K</div>
+      <div class="channel-name">CNBC عربية</div>
+      <div class="channel-play">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M8 5v14l11-7z"/></svg>
+      </div>
+    </button>
+    <button class="channel channel-trigger" data-embed-path="live_stream?channel=UCsP3SGopAW03s-8nN-9nE6g" data-watch-path="@RTarabic/live" data-channel-name="RT Arabic">
+      <div class="channel-thumb" style="background-image:linear-gradient(135deg,#166534,#14532d);"></div>
+      <div class="live-badge"><span class="live-dot"></span> مباشر</div>
+      <div class="viewers">5.9K</div>
+      <div class="channel-name">RT Arabic</div>
       <div class="channel-play">
         <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M8 5v14l11-7z"/></svg>
       </div>
@@ -2537,6 +2769,7 @@
 <!-- ================= GLOBE.GL ================= -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script src="https://unpkg.com/@joergdietrich/leaflet.terminator@1.1.0/L.Terminator.js"></script>
+<script src="https://unpkg.com/globe.gl"></script>
 <script>
   // ============================================================
   // Helpers
@@ -2562,6 +2795,21 @@
   }
   updateClock();
   setInterval(updateClock, 1000);
+
+  // Dynamic date in topbar
+  function updateTopbarDate() {
+    const d = new Date();
+    const days = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+    const months = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+    const dayName = days[d.getDay()];
+    const dayNum = d.getDate().toLocaleString('ar-EG');
+    const month = months[d.getMonth()];
+    const year = d.getFullYear().toLocaleString('ar-EG').replace(/٬/g, '');
+    const el = document.getElementById('topbar-date');
+    if (el) el.textContent = `${dayName}، ${dayNum} ${month} ${year}`;
+  }
+  updateTopbarDate();
+  setInterval(updateTopbarDate, 60000);
 
   // ============================================================
   // Manual refresh button — visual feedback + simulate fresh data
@@ -3061,11 +3309,14 @@
 
   const feed = document.getElementById('assets-feed');
   // Initial fill: 7 random
-  const shuffled = [...callsignPool].sort(() => Math.random() - 0.5);
-  for (let i = 0; i < 7; i++) feed.appendChild(renderAsset(shuffled[i]));
+  if (feed) {
+    const shuffled = [...callsignPool].sort(() => Math.random() - 0.5);
+    for (let i = 0; i < 7; i++) feed.appendChild(renderAsset(shuffled[i]));
+  }
 
   // Push fresh asset every 6s
   setInterval(() => {
+    if (!feed) return;
     const item = callsignPool[Math.floor(Math.random() * callsignPool.length)];
     feed.insertBefore(renderAsset(item, true), feed.firstChild);
     while (feed.children.length > 8) feed.removeChild(feed.lastChild);
@@ -3334,6 +3585,156 @@
     document.querySelectorAll('.lang-toggle button').forEach(b => {
       b.classList.toggle('active', b.dataset.lang === lang);
     });
+
+    // === v3.19: Translate ALL remaining static content ===
+    const isEN = (lang === 'en');
+
+    // Gold panel labels
+    const goldLabels = { 'عيار ٢٤': '24K', 'عيار ٢١': '21K', 'عيار ١٨': '18K', 'الجنيه الذهب': 'Gold Pound' };
+    const goldLabelsAR = { '24K': 'عيار ٢٤', '21K': 'عيار ٢١', '18K': 'عيار ١٨', 'Gold Pound': 'الجنيه الذهب' };
+    document.querySelectorAll('.saagha-row .saagha-label').forEach(el => {
+      const t = el.textContent.trim();
+      if (isEN && goldLabels[t]) el.textContent = goldLabels[t];
+      else if (!isEN && goldLabelsAR[t]) el.textContent = goldLabelsAR[t];
+    });
+    // Saagha header
+    const saaghaHead = document.querySelector('.saagha-head');
+    if (saaghaHead) {
+      const spans = saaghaHead.querySelectorAll('span');
+      if (spans.length >= 3) {
+        spans[0].textContent = isEN ? 'Karat' : 'العيار';
+        spans[1].textContent = isEN ? 'BUY' : 'شراء';
+        spans[2].textContent = isEN ? 'SELL' : 'بيع';
+      }
+    }
+    // Buy/Sell labels
+    document.querySelectorAll('.saagha-buy small').forEach(el => el.textContent = isEN ? 'BUY' : 'شراء');
+    document.querySelectorAll('.saagha-sell small').forEach(el => el.textContent = isEN ? 'SELL' : 'بيع');
+
+    // FX labels
+    const fxLabels = {
+      'دولار أمريكي': 'US Dollar', 'يورو': 'Euro', 'جنيه إسترليني': 'British Pound',
+      'ريال سعودي': 'Saudi Riyal', 'درهم إماراتي': 'UAE Dirham'
+    };
+    const fxLabelsAR = {
+      'US Dollar': 'دولار أمريكي', 'Euro': 'يورو', 'British Pound': 'جنيه إسترليني',
+      'Saudi Riyal': 'ريال سعودي', 'UAE Dirham': 'درهم إماراتي'
+    };
+    document.querySelectorAll('.metric-label').forEach(el => {
+      const small = el.querySelector('small');
+      const t = el.childNodes[0]?.textContent?.trim();
+      if (isEN && fxLabels[t]) el.childNodes[0].textContent = fxLabels[t];
+      else if (!isEN && fxLabelsAR[t]) el.childNodes[0].textContent = fxLabelsAR[t];
+    });
+
+    // Footer text
+    const footerDesc = document.querySelector('.footer-grid p');
+    if (footerDesc) {
+      footerDesc.textContent = isEN
+        ? 'NCS — A news platform that aggregates and verifies global and local news in real-time from 30+ sources.'
+        : 'المركز الدراسات المصري — منصّة إخبارية تجمع وتحقّق الأخبار العالمية والمحلية لحظياً من أكثر من ٣٠ مصدراً.';
+    }
+    // Footer sections
+    const footerTitles = document.querySelectorAll('.footer-grid h5');
+    const ftEN = ['Sections', 'Center', 'Follow Us'];
+    const ftAR = ['الأقسام', 'المركز', 'تابعنا'];
+    footerTitles.forEach((el, i) => {
+      if (isEN && ftEN[i]) el.textContent = ftEN[i];
+      else if (!isEN && ftAR[i]) el.textContent = ftAR[i];
+    });
+    // Footer links
+    const sectionLinks = ['سياسة|Politics', 'اقتصاد|Economy', 'رياضة|Sports', 'تكنولوجيا|Technology', 'ثقافة|Culture'];
+    const centerLinks = ['عن المركز|About NCS', 'الأبحاث|Research', 'الباحثون|Researchers', 'اتصل بنا|Contact Us'];
+    [sectionLinks, centerLinks].forEach((arr, gi) => {
+      const ul = document.querySelectorAll('.footer-grid ul')[gi];
+      if (!ul) return;
+      ul.querySelectorAll('a').forEach((a, i) => {
+        if (arr[i]) { const [ar, en] = arr[i].split('|'); a.textContent = isEN ? en : ar; }
+      });
+    });
+
+    // Live badge text
+    document.querySelectorAll('.live-badge').forEach(el => {
+      const dot = el.querySelector('.live-dot');
+      el.innerHTML = '';
+      if (dot) el.appendChild(dot);
+      el.append(isEN ? ' LIVE' : ' مباشر');
+    });
+
+    // Channel modal wiring for new channels
+    document.querySelectorAll('.channel-trigger').forEach(btn => {
+      if (btn._ncsWired) return;
+      btn._ncsWired = true;
+      btn.addEventListener('click', () => {
+        const channelModal = document.getElementById('channel-modal');
+        const channelIframe = document.getElementById('channel-iframe');
+        const channelTitle = document.getElementById('channel-title');
+        if (!channelModal || !channelIframe) return;
+        const embedPath = btn.dataset.embedPath || ('live_stream?channel=' + (btn.dataset.channelId || ''));
+        const watchPath = btn.dataset.watchPath || (btn.dataset.channelId || '');
+        const name = btn.dataset.channelName;
+        channelTitle.textContent = name + (isEN ? ' — Live Stream' : ' — البث المباشر');
+        const sep = embedPath.includes('?') ? '&' : '?';
+        channelIframe.src = `https://www.youtube.com/embed/${embedPath}${sep}autoplay=1&mute=1&modestbranding=1&rel=0`;
+        const yt = document.getElementById('channel-yt-link');
+        if (yt) yt.href = `https://www.youtube.com/${watchPath}`;
+        channelModal.hidden = false;
+      });
+    });
+
+    // Channel modal wiring for new channels
+    document.querySelectorAll('.channel-trigger').forEach(btn => {
+      if (btn._ncsWired) return;
+      btn._ncsWired = true;
+      btn.addEventListener('click', () => {
+        const channelModal = document.getElementById('channel-modal');
+        const channelIframe = document.getElementById('channel-iframe');
+        const channelTitle = document.getElementById('channel-title');
+        if (!channelModal || !channelIframe) return;
+        const embedPath = btn.dataset.embedPath || ('live_stream?channel=' + (btn.dataset.channelId || ''));
+        const watchPath = btn.dataset.watchPath || (btn.dataset.channelId || '');
+        const name = btn.dataset.channelName;
+        channelTitle.textContent = name + (isEN ? ' — Live Stream' : ' — البث المباشر');
+        const sep = embedPath.includes('?') ? '&' : '?';
+        channelIframe.src = `https://www.youtube.com/embed/${embedPath}${sep}autoplay=1&mute=1&modestbranding=1&rel=0`;
+        const yt = document.getElementById('channel-yt-link');
+        if (yt) yt.href = `https://www.youtube.com/${watchPath}`;
+        channelModal.hidden = false;
+      });
+    });
+
+    // === v3.19: Convert numerals between EN (123) and AR (١٢٣) ===
+    const arDigits = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+    const toEnDigits = str => str.replace(/[٠-٩]/g, d => arDigits.indexOf(d));
+    const toArDigits = str => str.replace(/\d/g, d => arDigits[d]);
+    const numEls = document.querySelectorAll('.metric-value, .saagha-buy, .saagha-sell, .score span, .choke-stat, .stat-num, #article-count, #topbar-date, #clock');
+    numEls.forEach(el => {
+      // Temporarily stash the text node content to convert only numbers
+      for (const node of el.childNodes) {
+        if (node.nodeType === 3) {
+          node.nodeValue = isEN ? toEnDigits(node.nodeValue) : toArDigits(node.nodeValue);
+        }
+      }
+    });
+
+    // Map features labels
+    const mapLabels = {
+      'مضيق هرمز': 'Strait of Hormuz', 'باب المندب': 'Bab-el-Mandeb',
+      'قناة السويس': 'Suez Canal', 'مضيق ملقا': 'Strait of Malacca'
+    };
+    const mapLabelsAR = {
+      'Strait of Hormuz': 'مضيق هرمز', 'Bab-el-Mandeb': 'باب المندب',
+      'Suez Canal': 'قناة السويس', 'Strait of Malacca': 'مضيق ملقا'
+    };
+    document.querySelectorAll('.choke-row span:first-child').forEach(el => {
+      const t = el.textContent.trim();
+      if (isEN && mapLabels[t]) el.textContent = mapLabels[t];
+      else if (!isEN && mapLabelsAR[t]) el.textContent = mapLabelsAR[t];
+    });
+
+    // Update topbar date in correct language
+    if (typeof updateTopbarDate === 'function') updateTopbarDate();
+
     try { localStorage.setItem('ncs.lang', lang); } catch (e) {}
   }
   document.querySelectorAll('.lang-toggle button[data-lang]').forEach(btn => {
@@ -3500,17 +3901,20 @@
     if (!articles.length) return;
     const grid = document.querySelector('.news-grid');
     if (!grid) return;
-    const html = articles.slice(0, 4).map(a => {
+    // Use up to 8 articles, prefer ones with images
+    const withImg = articles.filter(a => a.urlToImage);
+    const noImg = articles.filter(a => !a.urlToImage);
+    const sorted = [...withImg, ...noImg].slice(0, 8);
+    const html = sorted.slice(0, 4).map(a => {
       const cat = catFromArticle(a);
       const title = (a.title || '').replace(/\s*-\s*[^-]*$/, '').trim();
       const sources = (a.source && a.source.name) || 'NewsAPI';
-      // Progressive image fallback: direct → weserv proxy → themed gradient
       const rawUrl = a.urlToImage || '';
       const proxyUrl = rawUrl ? `https://images.weserv.nl/?url=${encodeURIComponent(rawUrl.replace(/^https?:\/\//, ''))}&w=600&h=400&fit=cover` : '';
       const fallbackHtml = `<div class="news-thumb-cat cat-${cat}">${ICONS_INDEX[cat] || ICONS_INDEX.world}</div>`;
-      // Stage 1 attempts direct, on error swaps to weserv proxy, on second error swaps to gradient
+      // Always try proxy first (more reliable), then direct, then fallback
       const thumb = rawUrl
-        ? `<div class="news-thumb-wrap"><img src="${rawUrl}" alt="" class="news-thumb-img-tag" loading="lazy" referrerpolicy="no-referrer" data-stage="1" data-proxy="${proxyUrl}" data-fb="${fallbackHtml.replace(/"/g, '&quot;')}" onerror="if(this.dataset.stage==='1'){this.dataset.stage='2';this.src=this.dataset.proxy;}else{this.parentElement.outerHTML=this.dataset.fb;}"/></div>`
+        ? `<div class="news-thumb-wrap"><img src="${proxyUrl || rawUrl}" alt="" class="news-thumb-img-tag" loading="lazy" referrerpolicy="no-referrer" data-stage="1" data-direct="${rawUrl}" data-fb="${fallbackHtml.replace(/"/g, '&quot;')}" onerror="if(this.dataset.stage==='1'){this.dataset.stage='2';this.src=this.dataset.direct;}else{this.parentElement.outerHTML=this.dataset.fb;}"/></div>`
         : fallbackHtml;
       return `<button class="news-card news-card-btn" data-article='${JSON.stringify(a).replace(/'/g, "&apos;")}' style="display:flex;flex-direction:column;background:transparent;border:0;padding:0;text-align:start;color:inherit;cursor:pointer;width:100%;">
         ${thumb}
@@ -3522,7 +3926,7 @@
     grid.innerHTML = html;
   }
   refreshIndexNewsGrid();
-  setInterval(refreshIndexNewsGrid, 30 * 60_000);
+  setInterval(refreshIndexNewsGrid, 5 * 60_000);
 
 
 
@@ -3748,7 +4152,12 @@
     }
   }
   applyMarketData();
-  setInterval(applyMarketData, 60_000);  // v3.17: every 60s for visible refresh
+  setInterval(applyMarketData, 45_000);  // v3.18: every 45s for visible live refresh
+
+  // v3.18: Auto-refresh FX every 2 minutes for live feel
+  setInterval(() => {
+    if (typeof fetchRealFX === 'function') fetchRealFX();
+  }, 120_000);
 
   // ----- 3) GDELT 2.0: world political/conflict news (mixed into ticker) -----
   // Strict rate-limit: 1 req per 15 minutes (their guideline = 1 per 5s, we cache 15 min)
@@ -3803,6 +4212,63 @@
   setTimeout(blendGdeltIntoTicker, 30_000);
   setInterval(blendGdeltIntoTicker, 15 * 60_000);
 
+  // === v3.19: Populate Politics cards dynamically with real images ===
+  async function refreshPoliticsCards() {
+    if (typeof NCS_NEWS === 'undefined') return;
+    const q = 'USA OR Iran OR Israel OR Russia OR China';
+    const arts = await NCS_NEWS.search(q);
+    if (!arts || !arts.length) return;
+    
+    // Group by topic to distribute to the 3 cards (USA, Iran, Israel)
+    const usaArts = arts.filter(a => /(usa|us|biden|washington|congress|america)/i.test(a.title + a.description));
+    const iranArts = arts.filter(a => /(iran|tehran|khamenei|nuclear|irgc)/i.test(a.title + a.description));
+    const israelArts = arts.filter(a => /(israel|gaza|idf|netanyahu|jerusalem|lebanon)/i.test(a.title + a.description));
+
+    const grid = document.querySelector('.politics-grid');
+    if (!grid) return;
+
+    // Use best available or fallback to top general news if topic not found
+    const c1 = usaArts[0] || arts[0];
+    const c2 = iranArts[0] || arts[1];
+    const c3 = israelArts[0] || arts[2];
+
+    const cardsData = [
+      { a: c1, color: '#3b82f6', flag: 'USA · الولايات المتحدة', defTitle: 'أخبار أمريكية' },
+      { a: c2, color: '#10b981', flag: 'IRAN · إيران', defTitle: 'أخبار إيرانية' },
+      { a: c3, color: '#e11d2b', flag: 'ISRAEL · إسرائيل', defTitle: 'أخبار إسرائيلية' }
+    ];
+
+    const html = cardsData.map(data => {
+      const a = data.a;
+      if (!a) return '';
+      const title = (a.title || data.defTitle).replace(/\s*-\s*[^-]*$/, '').trim();
+      const desc = (a.description || '').slice(0, 100) + '...';
+      const rawUrl = a.urlToImage || '';
+      const proxyUrl = rawUrl ? `https://images.weserv.nl/?url=${encodeURIComponent(rawUrl.replace(/^https?:\/\//, ''))}&w=600&h=400&fit=cover` : '';
+      
+      const fallbackSvg = `<div class="country-card-img" style="display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg, ${data.color}22, #000);border:1px solid ${data.color}44;"><svg viewBox="0 0 24 24" fill="${data.color}" width="48" height="48" opacity="0.5"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg></div>`.replace(/"/g, '&quot;');
+
+      const imgHtml = rawUrl 
+        ? `<img src="${proxyUrl || rawUrl}" class="country-card-img" alt="" loading="lazy" referrerpolicy="no-referrer" data-stage="1" data-direct="${rawUrl}" data-fb="${fallbackSvg}" onerror="if(this.dataset.stage==='1'){this.dataset.stage='2';this.src=this.dataset.direct;}else{this.outerHTML=this.dataset.fb;}"/>`
+        : fallbackSvg.replace(/&quot;/g, '"');
+
+      return `<button class="country-card news-card-btn" data-article='${JSON.stringify(a).replace(/'/g, "&apos;")}' style="--country-color:${data.color}; display:flex; flex-direction:column; background:transparent; border:0; padding:0; text-align:start; color:inherit; cursor:pointer; width:100%;">
+        ${imgHtml}
+        <div class="country-flag">${data.flag}</div>
+        <h4>${title}</h4>
+        <p>${desc}</p>
+        <div class="meta" style="margin-top:auto; padding-top:1rem;">
+          <span>${timeAgo(a.publishedAt)}</span>
+          <span class="verified">مؤكّد · ${(a.source && a.source.name) || 'NewsAPI'}</span>
+        </div>
+      </button>`;
+    }).join('');
+    
+    grid.innerHTML = html;
+  }
+  setTimeout(refreshPoliticsCards, 3500);
+  setInterval(refreshPoliticsCards, 15 * 60_000);
+
 
 
   // ============================================================
@@ -3850,20 +4316,76 @@
 
 
   // ============================================================
-  // v3.9: 2D/3D map view toggle
+  // v3.19: True 3D Globe toggle using Globe.gl
   // ============================================================
+  let ncsGlobe = null;
   document.querySelectorAll('.map-view-toggle button').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.map-view-toggle button').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       const view = btn.dataset.view;
       const mapEl = document.getElementById('map');
+      const globeEl = document.getElementById('globeViz');
+      
       if (view === '3d') {
-        mapEl.classList.add('map-fake-3d');
+        mapEl.style.display = 'none';
+        globeEl.style.display = 'block';
+        
+        // Initialize Globe if not already created
+        if (!ncsGlobe && window.Globe) {
+          ncsGlobe = Globe()(globeEl)
+            .globeImageUrl('//unpkg.com/three-globe/example/img/earth-dark.jpg')
+            .bumpImageUrl('//unpkg.com/three-globe/example/img/earth-topology.png')
+            .backgroundColor('rgba(0,0,0,0)')
+            .showAtmosphere(true)
+            .atmosphereColor('#e11d2b')
+            .atmosphereAltitude(0.15)
+            .pointOfView({ lat: 30, lng: 31, altitude: 1.5 });
+            
+          // Add random assets similar to the 2D map
+          const gData = [...Array(40).keys()].map(() => ({
+            lat: (Math.random() - 0.5) * 150,
+            lng: (Math.random() - 0.5) * 360,
+            size: Math.random() / 3,
+            color: ['#ef4444', '#10b981', '#f97316', '#06b6d4', '#fbbf24'][Math.floor(Math.random() * 5)]
+          }));
+          ncsGlobe.pointsData(gData)
+            .pointAltitude('size')
+            .pointColor('color')
+            .pointRadius(0.5);
+            
+          // Add some arcs (flights)
+          const arcsData = [...Array(15).keys()].map(() => ({
+            startLat: (Math.random() - 0.5) * 90,
+            startLng: (Math.random() - 0.5) * 360,
+            endLat: (Math.random() - 0.5) * 90,
+            endLng: (Math.random() - 0.5) * 360,
+            color: ['#ef4444', '#10b981', '#06b6d4'][Math.floor(Math.random() * 3)]
+          }));
+          ncsGlobe.arcsData(arcsData)
+            .arcColor('color')
+            .arcDashLength(0.4)
+            .arcDashGap(0.2)
+            .arcDashAnimateTime(1500)
+            .arcStroke(0.5);
+            
+          // Set container size
+          const setSize = () => {
+            const rect = globeEl.parentElement.getBoundingClientRect();
+            ncsGlobe.width(rect.width).height(rect.height);
+          };
+          window.addEventListener('resize', setSize);
+          setSize();
+          
+          // Optional: slight auto-rotate
+          ncsGlobe.controls().autoRotate = true;
+          ncsGlobe.controls().autoRotateSpeed = 0.5;
+        }
       } else {
-        mapEl.classList.remove('map-fake-3d');
+        mapEl.style.display = 'block';
+        globeEl.style.display = 'none';
+        setTimeout(() => map.invalidateSize(), 100);
       }
-      setTimeout(() => map.invalidateSize(), 600);
     });
   });
 

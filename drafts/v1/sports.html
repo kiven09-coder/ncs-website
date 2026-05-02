@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>NCS — الرياضة | مركز المباريات</title>
+<style>
+  :root {
+    --bg: #050505; --surface: #0f0f0f; --surface-hover: #1a1a1a;
+    --border: #222; --border-strong: #333;
+    --text: #ffffff; --text-dim: #9ca3af;
+    --red: #e11d2b; --red-glow: rgba(225, 29, 43, 0.4);
+    --blue: #3b82f6; --green: #10b981;
+    --font-ar-display: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-ar-body: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: var(--font-ar-body);
+    overflow-x: hidden;
+  }
+
+  /* TOPBAR & NAV (Simplified for brevity) */
+  header.topbar { background: var(--bg); border-bottom: 1px solid var(--border); padding: 0.5rem 1rem; display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-dim); }
+  nav.main-nav { background: var(--surface); padding: 1rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+  nav.main-nav .logo { font-size: 1.5rem; font-weight: 900; color: white; display: flex; align-items: center; gap: 0.5rem; text-decoration: none; }
+  nav.main-nav .logo span { color: var(--red); }
+  nav.main-nav ul { list-style: none; display: flex; gap: 1.5rem; }
+  nav.main-nav ul a { color: var(--text); text-decoration: none; font-weight: 600; opacity: 0.7; transition: opacity 0.2s; }
+  nav.main-nav ul a:hover, nav.main-nav ul a.active { opacity: 1; color: var(--red); }
+
+  /* MATCH CENTER LAYOUT */
+  .match-center {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    height: calc(100vh - 120px);
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+
+  /* PITCH */
+  .pitch-container {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .pitch-header {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(180deg, rgba(225,29,43,0.1), transparent);
+  }
+  .pitch-header h2 { font-size: 1.2rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem; }
+  .pitch-header h2::before { content:''; display:inline-block; width:8px; height:8px; background:var(--red); border-radius:50%; box-shadow:0 0 10px var(--red); animation: pulse 1.5s infinite; }
+  
+  .score-board { display: flex; align-items: center; gap: 1rem; font-size: 2rem; font-weight: 900; font-variant-numeric: tabular-nums; }
+  .team-score { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.5rem; border-radius: 4px; transition: background 0.2s; }
+  .team-score:hover { background: rgba(255,255,255,0.05); }
+  .team-score img { width: 32px; height: 32px; object-fit: contain; }
+
+  .pitch-field-wrapper {
+    flex: 1;
+    position: relative;
+    background: #0f2316;
+    background-image: 
+      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+
+  .pitch {
+    width: 100%;
+    max-width: 800px;
+    aspect-ratio: 1.5; /* Football pitch proportion */
+    border: 2px solid rgba(255,255,255,0.3);
+    position: relative;
+  }
+  /* Pitch lines */
+  .pitch::before { content:''; position:absolute; top:0; left:50%; width:2px; height:100%; background:rgba(255,255,255,0.3); transform:translateX(-50%); }
+  .pitch::after { content:''; position:absolute; top:50%; left:50%; width:15%; aspect-ratio:1; border:2px solid rgba(255,255,255,0.3); border-radius:50%; transform:translate(-50%, -50%); }
+  .penalty-area-l { position:absolute; top:20%; left:0; width:18%; height:60%; border:2px solid rgba(255,255,255,0.3); border-left:0; }
+  .penalty-area-r { position:absolute; top:20%; right:0; width:18%; height:60%; border:2px solid rgba(255,255,255,0.3); border-right:0; }
+  .goal-area-l { position:absolute; top:35%; left:0; width:6%; height:30%; border:2px solid rgba(255,255,255,0.3); border-left:0; }
+  .goal-area-r { position:absolute; top:35%; right:0; width:6%; height:30%; border:2px solid rgba(255,255,255,0.3); border-right:0; }
+
+  /* Players */
+  .player {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    transition: transform 0.2s, box-shadow 0.2s, z-index 0s;
+    z-index: 10;
+  }
+  .player.ahly { background: var(--red); border: 2px solid #fff; }
+  .player.zamalek { background: #fff; color: #111; border: 2px solid #eab308; }
+  
+  .player:hover { transform: translate(-50%, -50%) scale(1.3); z-index: 20; box-shadow: 0 0 15px currentColor; }
+  .player.active { transform: translate(-50%, -50%) scale(1.4); z-index: 30; box-shadow: 0 0 0 4px rgba(255,255,255,0.4); }
+
+  .player-name-tooltip {
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.8);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.6rem;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  .player:hover .player-name-tooltip, .player.active .player-name-tooltip { opacity: 1; }
+
+  /* Movement Lines Canvas */
+  #movement-canvas {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  /* SIDE PANEL */
+  .analysis-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .panel-header {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border);
+    background: rgba(255,255,255,0.03);
+  }
+  .panel-header h3 { font-size: 1.1rem; font-weight: 800; }
+  .panel-header .subtitle { font-size: 0.8rem; color: var(--text-dim); }
+  
+  .panel-body {
+    padding: 1rem;
+    flex: 1;
+    overflow-y: auto;
+  }
+  
+  .stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .stat-box {
+    background: rgba(255,255,255,0.05);
+    padding: 0.75rem;
+    border-radius: 4px;
+    text-align: center;
+  }
+  .stat-box .val { font-size: 1.4rem; font-weight: 900; color: var(--red); }
+  .stat-box .lbl { font-size: 0.7rem; color: var(--text-dim); }
+
+  .heatmap-mini {
+    width: 100%;
+    height: 100px;
+    background: #0f2316;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .analysis-text {
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: #cbd5e1;
+  }
+
+  /* MATCH BADGE */
+  .match-badge {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: linear-gradient(135deg, #1f2937, #111827);
+    border: 1px solid #374151;
+    border-radius: 8px;
+    text-align: center;
+  }
+  .match-badge h4 { color: #f59e0b; font-size: 1rem; margin-bottom: 0.5rem; font-weight: 900; }
+  .match-badge .mvp { font-size: 0.85rem; }
+  .match-badge .mvp strong { color: white; font-size: 1.1rem; }
+
+  @keyframes pulse { 0% { opacity:1; } 50% { opacity:0.4; } 100% { opacity:1; } }
+
+  /* Empty state */
+  .empty-state { text-align: center; color: var(--text-dim); margin-top: 3rem; }
+  .empty-state svg { width: 48px; height: 48px; opacity: 0.5; margin-bottom: 1rem; }
+
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div><span id="topbar-date">الأحد، ٣ مايو ٢٠٢٦</span></div>
+  <div>NCS Sports · Live Tracking System</div>
+</header>
+<nav class="main-nav">
+  <a href="index.html" class="logo">NCS <span>.</span></a>
+  <ul>
+    <li><a href="index.html">الرئيسية</a></li>
+    <li><a href="#">سياسة</a></li>
+    <li><a href="#">اقتصاد</a></li>
+    <li><a href="sports.html" class="active">رياضة</a></li>
+  </ul>
+</nav>
+
+<div class="match-center">
+  
+  <!-- PITCH SECTION -->
+  <div class="pitch-container">
+    <div class="pitch-header">
+      <h2>ديربي القاهرة — بث حي وتحليل تكتيكي</h2>
+      <div class="score-board">
+        <div class="team-score" onclick="showTeam('ahly')">
+          <img src="https://www.thesportsdb.com/images/media/team/badge/vwpvry1467465389.png/preview" alt="Ahly">
+          <span style="color:var(--red);">٢</span>
+        </div>
+        <span style="color:var(--text-dim);font-size:1.2rem;">—</span>
+        <div class="team-score" onclick="showTeam('zamalek')">
+          <span>١</span>
+          <img src="https://www.thesportsdb.com/images/media/team/badge/4v70e51591873155.png/preview" alt="Zamalek">
+        </div>
+      </div>
+    </div>
+    
+    <div class="pitch-field-wrapper">
+      <div class="pitch" id="pitch">
+        <div class="penalty-area-l"></div>
+        <div class="goal-area-l"></div>
+        <div class="penalty-area-r"></div>
+        <div class="goal-area-r"></div>
+        
+        <svg id="movement-canvas"></svg>
+
+        <!-- Players will be injected here via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ANALYSIS PANEL -->
+  <div class="analysis-panel" id="analysis-panel">
+    <div class="panel-header">
+      <h3 id="panel-title">تحليل المباراة</h3>
+      <div class="subtitle" id="panel-subtitle">اضغط على فريق أو لاعب لعرض التفاصيل</div>
+    </div>
+    <div class="panel-body" id="panel-content">
+      
+      <div class="empty-state">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+        <p>قم باختيار لاعب من الملعب أو اضغط على شعار الفريق لمعرفة تحركاتهم التكتيكية في المباراة.</p>
+      </div>
+
+      <!-- General Match Badge -->
+      <div class="match-badge">
+        <h4>NCS TACTICAL BADGE</h4>
+        <div class="mvp">رجل المباراة: <br><strong>إمام عاشور (الأهلي)</strong></div>
+        <p style="font-size:0.75rem; color:#9ca3af; margin-top:0.5rem; border-top:1px solid #374151; padding-top:0.5rem;">تحليل آلي معتمد على بيانات التتبع</p>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ============================================
+// MOCK DATA: AHLY vs ZAMALEK
+// ============================================
+
+// Ahly (Left side attacking right)
+const ahlyPlayers = [
+  { id: 'a1', num: 1, name: 'الشناوي', pos: { x: 5, y: 50 }, stats: { passes: 22, shots: 0, distance: '4.2 km' }, desc: 'تمركز ممتاز، أنقذ فرصتين محققتين وشارك في بناء اللعب من الخلف.' },
+  { id: 'a2', num: 21, name: 'معلول', pos: { x: 30, y: 15 }, stats: { passes: 45, shots: 1, distance: '10.5 km' }, desc: 'جبهة يسرى نارية، أرسل ٦ عرضيات خطيرة وصنع الهدف الأول.' },
+  { id: 'a3', num: 24, name: 'عبد المنعم', pos: { x: 25, y: 35 }, stats: { passes: 56, shots: 0, distance: '9.1 km' }, desc: 'صخرة الدفاع، ربح ٨ تدخلات هوائية وقطع مسار الكرة ٥ مرات.' },
+  { id: 'a4', num: 5, name: 'رامي ربيعة', pos: { x: 25, y: 65 }, stats: { passes: 50, shots: 0, distance: '9.0 km' }, desc: 'تغطية عكسية ممتازة وتعاون جيد مع الشناوي في بناء الهجمات.' },
+  { id: 'a5', num: 30, name: 'هاني', pos: { x: 30, y: 85 }, stats: { passes: 38, shots: 0, distance: '10.1 km' }, desc: 'التزام دفاعي قوي، أوقف خطورة الجناح الأيسر للخصم بالكامل.' },
+  { id: 'a6', num: 13, name: 'مروان عطية', pos: { x: 45, y: 50 }, stats: { passes: 72, shots: 1, distance: '11.8 km' }, desc: 'دينامو خط الوسط، دقة تمرير ٩٢٪ واستعاد الكرة ١٢ مرة.' },
+  { id: 'a7', num: 22, name: 'إمام عاشور', pos: { x: 60, y: 30 }, stats: { passes: 41, shots: 3, distance: '11.2 km' }, desc: 'رجل المباراة. سجل هدف الحسم بتسديدة صاروخية واخترق العمق ٤ مرات.' },
+  { id: 'a8', num: 8, name: 'أكرم توفيق', pos: { x: 55, y: 70 }, stats: { passes: 35, shots: 0, distance: '11.5 km' }, desc: 'ضغط شرس في منتصف الملعب، ارتكب ٣ أخطاء تكتيكية لمنع المرتدات.' },
+  { id: 'a9', num: 14, name: 'الشحات', pos: { x: 75, y: 20 }, stats: { passes: 28, shots: 2, distance: '9.8 km' }, desc: 'مهارة عالية في المراوغة، تسبب في ركلة جزاء وصنع ٣ فرص.' },
+  { id: 'a10', num: 10, name: 'بيرسي تاو', pos: { x: 75, y: 80 }, stats: { passes: 25, shots: 2, distance: '10.0 km' }, desc: 'تحركات مزعجة خلف المدافعين، سجل الهدف الأول من اختراق سريع.' },
+  { id: 'a11', num: 9, name: 'وسام أبو علي', pos: { x: 85, y: 50 }, stats: { passes: 15, shots: 4, distance: '9.5 km' }, desc: 'محطة هجومية قوية، سدد كرتين على المرمى وشغل قلبي الدفاع.' }
+];
+
+// Zamalek (Right side attacking left)
+const zamalekPlayers = [
+  { id: 'z1', num: 1, name: 'عواد', pos: { x: 95, y: 50 }, stats: { passes: 18, shots: 0, distance: '4.0 km' }, desc: 'تصديات حاسمة في الشوط الأول لكنه لم يتمكن من منع الهدف الثاني.' },
+  { id: 'z2', num: 5, name: 'عبد المجيد', pos: { x: 75, y: 35 }, stats: { passes: 40, shots: 0, distance: '9.2 km' }, desc: 'تمركز جيد في الكرات العرضية لكن عانى من سرعات مهاجمي الأهلي.' },
+  { id: 'z3', num: 2, name: 'المثلوثي', pos: { x: 75, y: 65 }, stats: { passes: 45, shots: 0, distance: '9.4 km' }, desc: 'أداء دفاعي صلب، أغلق جبهته في الشوط الثاني بالكامل.' },
+  { id: 'z4', num: 15, name: 'فطوح', pos: { x: 70, y: 15 }, stats: { passes: 52, shots: 1, distance: '10.8 km' }, desc: 'انطلاقات هجومية ممتازة وصنع فرصة خطيرة ارتطمت بالعارضة.' },
+  { id: 'z5', num: 4, name: 'جابر', pos: { x: 70, y: 85 }, stats: { passes: 38, shots: 0, distance: '10.2 km' }, desc: 'دور متوازن بين الدفاع والهجوم، أرسل ٤ عرضيات.' },
+  { id: 'z6', num: 8, name: 'دونجا', pos: { x: 55, y: 50 }, stats: { passes: 65, shots: 1, distance: '11.4 km' }, desc: 'قائد خط الوسط، كسر العديد من الهجمات بدقة تمرير ٨٨٪.' },
+  { id: 'z7', num: 12, name: 'روقا', pos: { x: 60, y: 70 }, stats: { passes: 48, shots: 0, distance: '10.9 km' }, desc: 'تغطية دفاعية جيدة لكنه فقد الكرة مرتين في مناطق خطرة.' },
+  { id: 'z8', num: 10, name: 'شيكابالا', pos: { x: 40, y: 80 }, stats: { passes: 25, shots: 2, distance: '8.5 km' }, desc: 'لمسات سحرية، صنع الهدف الوحيد بتمريرة بينية خادعة.' },
+  { id: 'z9', num: 14, name: 'زيزو', pos: { x: 40, y: 20 }, stats: { passes: 32, shots: 3, distance: '11.0 km' }, desc: 'أكثر لاعبي فريقه خطورة، سجل هدف الفريق من تسديدة متقنة.' },
+  { id: 'z10', num: 11, name: 'شلبي', pos: { x: 35, y: 50 }, stats: { passes: 20, shots: 1, distance: '9.8 km' }, desc: 'تحركات جيدة بين الخطوط لكنه افتقد للمسة الأخيرة.' },
+  { id: 'z11', num: 30, name: 'الجزيري', pos: { x: 15, y: 50 }, stats: { passes: 12, shots: 2, distance: '9.1 km' }, desc: 'مهاجم صريح، تعرض لرقابة لصيقة ولم يجد المساحات الكافية.' }
+];
+
+// Combine and render players
+const pitch = document.getElementById('pitch');
+const svgCanvas = document.getElementById('movement-canvas');
+
+function renderPlayers() {
+  ahlyPlayers.forEach(p => {
+    const el = document.createElement('div');
+    el.className = 'player ahly';
+    el.style.left = `${p.pos.x}%`;
+    el.style.top = `${p.pos.y}%`;
+    el.textContent = p.num;
+    el.innerHTML += `<div class="player-name-tooltip">${p.name}</div>`;
+    el.onclick = () => selectPlayer(p, 'ahly', el);
+    pitch.appendChild(el);
+  });
+  
+  zamalekPlayers.forEach(p => {
+    const el = document.createElement('div');
+    el.className = 'player zamalek';
+    el.style.left = `${p.pos.x}%`;
+    el.style.top = `${p.pos.y}%`;
+    el.textContent = p.num;
+    el.innerHTML += `<div class="player-name-tooltip">${p.name}</div>`;
+    el.onclick = () => selectPlayer(p, 'zamalek', el);
+    pitch.appendChild(el);
+  });
+}
+
+function drawHeatmapLines(player, team) {
+  svgCanvas.innerHTML = ''; // Clear old lines
+  
+  // Generate random movement path based on player's central position
+  const px = player.pos.x;
+  const py = player.pos.y;
+  
+  let pathD = `M ${px}% ${py}%`;
+  
+  // Generate 4-6 random control points around their position
+  const pts = Math.floor(Math.random() * 3) + 4;
+  for(let i=0; i<pts; i++) {
+    const rx = px + (Math.random() * 30 - 15);
+    const ry = py + (Math.random() * 40 - 20);
+    pathD += ` Q ${px + (Math.random()*10-5)}% ${py + (Math.random()*10-5)}%, ${rx}% ${ry}%`;
+  }
+  
+  const color = team === 'ahly' ? 'rgba(225,29,43,0.6)' : 'rgba(255,255,255,0.6)';
+  
+  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path.setAttribute('d', pathD);
+  path.setAttribute('fill', 'none');
+  path.setAttribute('stroke', color);
+  path.setAttribute('stroke-width', '3');
+  path.setAttribute('stroke-linecap', 'round');
+  path.setAttribute('stroke-dasharray', '5,5');
+  
+  svgCanvas.appendChild(path);
+}
+
+function selectPlayer(player, team, el) {
+  // Reset active classes
+  document.querySelectorAll('.player').forEach(p => p.classList.remove('active'));
+  if(el) el.classList.add('active');
+  
+  drawHeatmapLines(player, team);
+  
+  const teamName = team === 'ahly' ? 'الأهلي' : 'الزمالك';
+  const color = team === 'ahly' ? 'var(--red)' : '#fff';
+  
+  const content = document.getElementById('panel-content');
+  document.getElementById('panel-title').textContent = `${player.name} (${player.num})`;
+  document.getElementById('panel-subtitle').textContent = teamName;
+  
+  content.innerHTML = `
+    <div class="stat-grid">
+      <div class="stat-box">
+        <div class="val" style="color:${color}">${player.stats.distance}</div>
+        <div class="lbl">المسافة المقطوعة</div>
+      </div>
+      <div class="stat-box">
+        <div class="val" style="color:${color}">${player.stats.passes}</div>
+        <div class="lbl">التمريرات</div>
+      </div>
+      <div class="stat-box">
+        <div class="val" style="color:${color}">${player.stats.shots}</div>
+        <div class="lbl">التسديدات</div>
+      </div>
+      <div class="stat-box">
+        <div class="val" style="color:${color}">${Math.floor(Math.random()*20+75)}%</div>
+        <div class="lbl">دقة التمرير</div>
+      </div>
+    </div>
+    
+    <div style="margin-bottom: 0.5rem; font-size:0.8rem; color:var(--text-dim);">تحركات اللاعب:</div>
+    <div class="heatmap-mini">
+      <!-- Mini abstract visualization of the pitch area -->
+      <div style="position:absolute; top:0; left:0; width:100%; height:100%; background: radial-gradient(circle at ${player.pos.x}% ${player.pos.y}%, ${color} 0%, transparent 60%); opacity:0.3;"></div>
+      <div style="position:absolute; top:50%; left:50%; width:1px; height:100%; background:rgba(255,255,255,0.3); transform:translate(-50%,-50%);"></div>
+    </div>
+    
+    <div class="analysis-text">
+      <strong>تحليل الأداء:</strong><br>
+      ${player.desc}
+    </div>
+  `;
+}
+
+function showTeam(team) {
+  svgCanvas.innerHTML = '';
+  document.querySelectorAll('.player').forEach(p => p.classList.remove('active'));
+  
+  const teamName = team === 'ahly' ? 'الأهلي' : 'الزمالك';
+  const color = team === 'ahly' ? 'var(--red)' : '#fff';
+  const arr = team === 'ahly' ? ahlyPlayers : zamalekPlayers;
+  
+  const totalPasses = arr.reduce((sum, p) => sum + p.stats.passes, 0);
+  const totalShots = arr.reduce((sum, p) => sum + p.stats.shots, 0);
+  
+  const content = document.getElementById('panel-content');
+  document.getElementById('panel-title').textContent = `إحصائيات فريق ${teamName}`;
+  document.getElementById('panel-subtitle').textContent = 'تحليل جماعي';
+  
+  content.innerHTML = `
+    <div class="stat-grid">
+      <div class="stat-box">
+        <div class="val" style="color:${color}">${totalPasses}</div>
+        <div class="lbl">إجمالي التمريرات</div>
+      </div>
+      <div class="stat-box">
+        <div class="val" style="color:${color}">${totalShots}</div>
+        <div class="lbl">التسديدات</div>
+      </div>
+      <div class="stat-box">
+        <div class="val" style="color:${color}">${team==='ahly'? '٥٤٪' : '٤٦٪'}</div>
+        <div class="lbl">الاستحواذ</div>
+      </div>
+      <div class="stat-box">
+        <div class="val" style="color:${color}">${team==='ahly'? '٨' : '٥'}</div>
+        <div class="lbl">الركنيات</div>
+      </div>
+    </div>
+    
+    <div class="analysis-text" style="margin-top:1rem;">
+      <strong>الرسم التكتيكي:</strong>
+      <p style="margin-top:0.5rem;">لعب الفريق بتنظيم ٤-٣-٣ مع الاعتماد على الكرات الطولية والأطراف. التمركز الدفاعي كان متقدماً مما أجبر الخصم على الوقوع في التسلل عدة مرات.</p>
+    </div>
+    
+    <!-- Match Badge Generator -->
+    <div class="match-badge">
+      <h4>NCS TACTICAL BADGE</h4>
+      <div class="mvp">تقييم الفريق: <strong>${team==='ahly'? '٨.٥ / ١٠' : '٧.٠ / ١٠'}</strong></div>
+      <p style="font-size:0.75rem; color:#9ca3af; margin-top:0.5rem; border-top:1px solid #374151; padding-top:0.5rem;">تم استخراج التقييم من بيانات التتبع الحركي</p>
+    </div>
+  `;
+}
+
+// Init
+renderPlayers();
+
+</script>
+</body>
+</html>
