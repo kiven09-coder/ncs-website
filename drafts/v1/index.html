@@ -1744,6 +1744,37 @@
     nav.primary { display: none; }
     .topbar .meta { font-size: 0.7rem; gap: 0.85rem; }
   }
+
+  /* === v3.16: Force map fill the box (override any earlier conflicts) === */
+  .globe-fullmap {
+    width: 100%;
+    max-width: 100% !important;
+    padding: 0 1rem;
+    box-sizing: border-box;
+  }
+  .globe-fullmap .ncs-map {
+    width: 100% !important;
+    height: 720px !important;
+    position: relative;
+    background: #050505;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+  .globe-fullmap .ncs-map .leaflet-container {
+    width: 100% !important;
+    height: 100% !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+  }
+  /* Ensure overlays don't block clicks on the map underneath them */
+  .map-ovl-left { pointer-events: none; }
+  .map-ovl-left > * { pointer-events: auto; }
+  .map-view-toggle { pointer-events: auto; }
+  .map-source-pill { pointer-events: auto; }
+
 </style>
 </head>
 <body id="top">
@@ -1900,29 +1931,27 @@
 
   <div class="globe-fullmap">
     <div id="map" class="ncs-map">
-        <div class="map-view-toggle">
-          <button data-view="2d" class="active">2D</button>
-          <button data-view="3d">3D</button>
-        <div class="map-stats-overlay">
-          <div class="ovl-stat">
-            <div class="ovl-num" id="stat-civ-flights">١٢,٨٤٧
-      <!-- LAYERS overlay top-left -->
+      <!-- 2D / 3D toggle (bottom-right) -->
+      <div class="map-view-toggle">
+        <button data-view="2d" class="active">2D</button>
+        <button data-view="3d">3D</button>
+      </div>
+
+      <!-- LAYERS + stats overlay (top-left) -->
       <div class="map-ovl-left">
         <div class="map-ovl-section pane-layers">
-        <h4 class="pane-title" data-i18n="globe.layers">الطبقات · LAYERS</h4>
-        <div class="layers-list">
-          <button class="map-chip active" data-layer="all" data-i18n="chip.all">الكل</button>
-        <button class="map-chip" data-layer="civ" data-i18n="chip.civ">طيران مدني</button>
-        <button class="map-chip active" data-layer="mil" style="--chip-color:#ef4444;" data-i18n="chip.mil">طيران حربي</button>
-        <button class="map-chip" data-layer="cargo" style="--chip-color:#10b981;" data-i18n="chip.cargo">سفن شحن</button>
-        <button class="map-chip active" data-layer="tanker" style="--chip-color:#f97316;" data-i18n="chip.tanker">ناقلات بترول</button>
-        <button class="map-chip active" data-layer="naval" style="--chip-color:#06b6d4;" data-i18n="chip.naval">بحرية حربية</button>
-        <button class="map-chip" data-layer="choke" style="--chip-color:#fbbf24;" data-i18n="chip.choke">المضائق</button>
-        <button class="map-chip active" data-layer="daynight" style="--chip-color:#a3a3a3;" data-i18n="chip.daynight">ليل / نهار</button>
+          <h4 class="pane-title" data-i18n="globe.layers">الطبقات · LAYERS</h4>
+          <div class="layers-list">
+            <button class="map-chip active" data-layer="all" data-i18n="chip.all">الكل</button>
+            <button class="map-chip" data-layer="civ" data-i18n="chip.civ">طيران مدني</button>
+            <button class="map-chip active" data-layer="mil" style="--chip-color:#ef4444;" data-i18n="chip.mil">طيران حربي</button>
+            <button class="map-chip" data-layer="cargo" style="--chip-color:#10b981;" data-i18n="chip.cargo">سفن شحن</button>
+            <button class="map-chip active" data-layer="tanker" style="--chip-color:#f97316;" data-i18n="chip.tanker">ناقلات بترول</button>
+            <button class="map-chip active" data-layer="naval" style="--chip-color:#06b6d4;" data-i18n="chip.naval">بحرية حربية</button>
+            <button class="map-chip" data-layer="choke" style="--chip-color:#fbbf24;" data-i18n="chip.choke">المضائق</button>
+            <button class="map-chip active" data-layer="daynight" style="--chip-color:#a3a3a3;" data-i18n="chip.daynight">ليل / نهار</button>
+          </div>
         </div>
-      </div>
-      
-        <!-- Stats stacked vertically below LAYERS -->
         <div class="map-ovl-stats">
           <div class="ovl-stat-row">
             <span class="ovl-num" id="stat-civ-flights">١٢,٨٤٧</span>
@@ -1942,6 +1971,9 @@
           </div>
         </div>
       </div>
+
+      <!-- Data source indicator (bottom-left) -->
+      <div class="map-source-pill" id="data-source"><span class="live-dot"></span> جاري الاتصال…</div>
     </div>
   </div>
 
@@ -4030,6 +4062,19 @@
       if (typeof fetchRealFX === 'function') fetchRealFX();
     } catch (e) {}
   }, 5000);
+
+
+  // ============================================================
+  // v3.16: Force Leaflet to recalculate size after layout settles
+  // (Critical: layout changed in v3.15 but old map dims were cached)
+  // ============================================================
+  function forceMapResize() {
+    if (typeof map !== 'undefined' && map && typeof map.invalidateSize === 'function') {
+      try { map.invalidateSize(true); } catch (e) {}
+    }
+  }
+  // Multiple staggered invalidations to handle transitions / late CSS
+  [50, 200, 500, 1000, 2000, 4000].forEach(t => setTimeout(forceMapResize, t));
 
 </script>
 </body>
