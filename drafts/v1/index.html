@@ -1775,6 +1775,87 @@
   .map-view-toggle { pointer-events: auto; }
   .map-source-pill { pointer-events: auto; }
 
+
+  /* === v3.17: Hero with real source images === */
+  .hero-bg-img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    z-index: 0;
+  }
+  .hero-main { background-image: none !important; }
+  .hero-main::after {
+    z-index: 1;
+  }
+  .hero-content { z-index: 2; }
+  .hero-side-card { overflow: hidden; aspect-ratio: 16/10; }
+  .hero-side-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(0deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 60%, rgba(0,0,0,0.15) 100%);
+    z-index: 1;
+  }
+  .hero-side-content {
+    position: relative; z-index: 2;
+    display: flex; flex-direction: column;
+    justify-content: flex-end;
+    height: 100%; min-height: 170px;
+    padding: 1.25rem;
+  }
+  .hero-video-cta {
+    display: inline-flex; gap: 0.4rem; align-items: center;
+    background: var(--red); color: #fff;
+    padding: 0.4rem 0.85rem;
+    font-size: 0.78rem; font-weight: 800;
+    border-radius: 4px;
+    margin-top: 0.6rem;
+    align-self: flex-start;
+    transition: background 200ms;
+  }
+  .hero-video-cta:hover { background: var(--red-dim); }
+
+  /* === v3.17: Gold Saagha-only (Buy / Sell columns) === */
+  .saagha-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 1rem;
+    align-items: center;
+    padding: 0.6rem 0;
+    border-bottom: 1px dashed var(--border);
+  }
+  .saagha-row:last-child { border-bottom: 0; }
+  .saagha-label { font-weight: 700; font-size: 0.92rem; }
+  .saagha-label small { display: block; color: var(--text-dim); font-size: 0.7rem; font-weight: 500; margin-top: 0.1rem; }
+  .saagha-buy, .saagha-sell {
+    font-family: var(--font-en-body); font-weight: 900;
+    font-size: 1.05rem; letter-spacing: -0.02em;
+    text-align: end; min-width: 90px;
+    position: relative;
+  }
+  .saagha-buy { color: #34d399; }
+  .saagha-sell { color: #fbbf24; }
+  .saagha-buy small, .saagha-sell small {
+    display: block; font-size: 0.62rem; font-weight: 700;
+    color: var(--text-dim); letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .saagha-head {
+    display: grid; grid-template-columns: 1fr auto auto;
+    gap: 1rem; padding: 0 0 0.5rem;
+    font-size: 0.65rem; font-weight: 800;
+    color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.1em;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 0.25rem;
+  }
+  .saagha-head span:not(:first-child) { text-align: end; min-width: 90px; }
+
+
+  @keyframes cell-flash {
+    0% { background: rgba(16, 185, 129, 0.2); }
+    100% { background: transparent; }
+  }
+  .flash-cell { animation: cell-flash 800ms ease-out; }
+
 </style>
 </head>
 <body id="top">
@@ -2059,26 +2140,32 @@
 <!-- ================= HERO ================= -->
 <div class="container">
   <section class="hero">
-    <a href="https://www.reuters.com/world/middle-east/" target="_blank" rel="noopener" class="hero-main hero-link">
+    <a id="hero-main-a" href="https://www.reuters.com/world/middle-east/" target="_blank" rel="noopener" class="hero-main hero-link">
+      <img id="hero-main-img" alt="" class="hero-bg-img" />
       <div class="hero-content">
-        <span class="tag">عاجل · سياسة دولية</span>
-        <h1>تصاعد غير مسبوق في التوتر بين واشنطن وطهران بعد إعلان عقوبات نووية جديدة</h1>
-        <p>البيت الأبيض أعلن مساء أمس عن حزمة عقوبات تستهدف كيانات إيرانية مرتبطة ببرنامج التخصيب، وطهران ردّت بتعليق التفتيش المؤقت على منشآت نطنز.</p>
+        <span class="tag" id="hero-main-tag">عاجل · سياسة دولية</span>
+        <h1 id="hero-main-title">تصاعد غير مسبوق في التوتر بين واشنطن وطهران بعد إعلان عقوبات نووية جديدة</h1>
+        <p id="hero-main-desc">البيت الأبيض أعلن مساء أمس عن حزمة عقوبات تستهدف كيانات إيرانية مرتبطة ببرنامج التخصيب، وطهران ردّت بتعليق التفتيش المؤقت على منشآت نطنز.</p>
         <div class="hero-meta">
-          <span>منذ ٢٠ دقيقة</span>
-          <span class="verified">مؤكّد من ٤ مصادر</span>
-          <span>رويترز · BBC · الجزيرة · فرانس ٢٤</span>
+          <span id="hero-main-time">منذ ٢٠ دقيقة</span>
+          <span class="verified" id="hero-main-source">مؤكّد من ٤ مصادر</span>
+          <span id="hero-main-domain">رويترز · BBC · الجزيرة · فرانس ٢٤</span>
+        </div>
+        <div class="hero-video-cta" id="hero-main-video" hidden>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          <span>شاهد الفيديو</span>
         </div>
       </div>
     </a>
 
     <aside class="hero-side">
-      <a href="https://www.cbe.org.eg/ar/Pages/default.aspx" target="_blank" rel="noopener" class="card hero-link" style="background: linear-gradient(135deg, #92400e 0%, #f59e0b 35%, #78350f 100%); position:relative; display:block;">
-        <div style="position:absolute; inset:0; background:linear-gradient(0deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 60%, rgba(0,0,0,0.2) 100%);"></div>
-        <div style="position:relative; z-index:2; display:flex; flex-direction:column; justify-content:flex-end; height:100%; min-height:170px;">
-          <span class="tag">اقتصاد</span>
-          <h3>المركزي يثبّت الفائدة... وقفزة تاريخية للذهب فى الصاغة</h3>
-          <span class="meta">منذ ساعة · مؤكّد من ٣ مصادر</span>
+      <a id="hero-side1-a" href="https://www.cbe.org.eg/ar/Pages/default.aspx" target="_blank" rel="noopener" class="card hero-link hero-side-card" style="background-color:#0a0a0a; position:relative; display:block;">
+        <img id="hero-side1-img" alt="" class="hero-bg-img" />
+        <div class="hero-side-overlay"></div>
+        <div class="hero-side-content">
+          <span class="tag" id="hero-side1-tag">اقتصاد</span>
+          <h3 id="hero-side1-title">المركزي يثبّت الفائدة... وقفزة تاريخية للذهب فى الصاغة</h3>
+          <span class="meta" id="hero-side1-meta">منذ ساعة · مؤكّد من ٣ مصادر</span>
         </div>
       </a>
       <a href="https://www.filgoal.com/" target="_blank" rel="noopener" class="card hero-link" style="background: linear-gradient(135deg, #064e3b 0%, #10b981 35%, #052e16 100%); position:relative;">
@@ -2217,40 +2304,40 @@
     <!-- ECONOMY: GOLD --><div id="economy" style="position:absolute;margin-top:-90px;"></div>
     <div class="panel">
       <div class="panel-head">
-        <h3 data-i18n="panel.gold">أسعار الذهب · بورصة + الصاغة</h3>
+        <h3 data-i18n="panel.gold">أسعار الذهب · الصاغة (شراء / بيع)</h3>
         <button class="panel-refresh" id="refresh-gold" title="تحديث أسعار الذهب">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
         </button>
       </div>
       <div class="panel-body">
-        <div class="gold-head">
+        <div class="saagha-head">
           <span>العيار</span>
-          <span>البورصة</span>
-          <span>الصاغة</span>
+          <span>شراء</span>
+          <span>بيع</span>
         </div>
-        <div class="gold-row">
-          <div class="gold-label">عيار ٢٤<small>الأنقى</small></div>
-          <div class="gold-bourse"><span id="gold-24">٥,٢٤٠</span><small>ج/جم</small></div>
-          <div class="gold-saagha"><span id="saagha-24">٥,٣٦٠</span><small>ج/جم</small></div>
+        <div class="saagha-row">
+          <div class="saagha-label">عيار ٢٤<small>الأنقى</small></div>
+          <div class="saagha-buy"><span id="saagha-buy-24">٥,٢٢٥</span><small>ج/جم</small></div>
+          <div class="saagha-sell"><span id="saagha-sell-24">٥,٣٦٠</span><small>ج/جم</small></div>
         </div>
-        <div class="gold-row">
-          <div class="gold-label">عيار ٢١<small>الأكثر تداولاً</small></div>
-          <div class="gold-bourse"><span id="gold-21">٤,٥٨٥</span><small>ج/جم</small></div>
-          <div class="gold-saagha"><span id="saagha-21">٤,٧١٠</span><small>ج/جم</small></div>
+        <div class="saagha-row">
+          <div class="saagha-label">عيار ٢١<small>الأكثر تداولاً</small></div>
+          <div class="saagha-buy"><span id="saagha-buy-21">٤,٥٧٠</span><small>ج/جم</small></div>
+          <div class="saagha-sell"><span id="saagha-sell-21">٤,٧١٠</span><small>ج/جم</small></div>
         </div>
-        <div class="gold-row">
-          <div class="gold-label">عيار ١٨<small>للمشغولات</small></div>
-          <div class="gold-bourse"><span id="gold-18">٣,٩٣٠</span><small>ج/جم</small></div>
-          <div class="gold-saagha"><span id="saagha-18">٤,٠٣٠</span><small>ج/جم</small></div>
+        <div class="saagha-row">
+          <div class="saagha-label">عيار ١٨<small>للمشغولات</small></div>
+          <div class="saagha-buy"><span id="saagha-buy-18">٣,٩١٥</span><small>ج/جم</small></div>
+          <div class="saagha-sell"><span id="saagha-sell-18">٤,٠٣٠</span><small>ج/جم</small></div>
         </div>
-        <div class="gold-row">
-          <div class="gold-label">الجنيه الذهب<small>٨ جرامات عيار ٢١</small></div>
-          <div class="gold-bourse"><span id="gold-pound">٣٦,٦٨٠</span><small>جنيه</small></div>
-          <div class="gold-saagha"><span id="saagha-pound">٣٧,٦٨٠</span><small>جنيه</small></div>
+        <div class="saagha-row">
+          <div class="saagha-label">الجنيه الذهب<small>٨ جرامات عيار ٢١</small></div>
+          <div class="saagha-buy"><span id="saagha-buy-pound">٣٦,٥٦٠</span><small>جنيه</small></div>
+          <div class="saagha-sell"><span id="saagha-sell-pound">٣٧,٦٨٠</span><small>جنيه</small></div>
         </div>
         <div style="margin-top:0.85rem; padding-top:0.85rem; border-top:1px solid var(--border); font-size:0.7rem; color:var(--text-dim); display:flex; justify-content:space-between;">
           <span>آخر تحديث: <span id="gold-updated">الآن</span></span>
-          <span>المصدر: شعبة الذهب · iSagold</span>
+          <span>المصدر: شعبة الذهب · CoinGecko</span>
         </div>
       </div>
     </div>
@@ -3596,20 +3683,25 @@
       const targets = {
         '24': 1.0, '21': 0.875, '18': 0.75,
       };
+      // Saagha buy = market - small commission (~15-25 EGP)
+      // Saagha sell = market + manufacturing fee (~100-150 EGP)
+      const sellMargin = { '24': 120, '21': 125, '18': 100 };
+      const buyMargin  = { '24': 15,  '21': 15,  '18': 15  };
       for (const [k, mult] of Object.entries(targets)) {
-        const bourse = Math.round(goldEgpPerGram24k * mult);
-        const saagha = bourse + ({ '24': 120, '21': 125, '18': 100 }[k] || 110);
-        const bEl = document.getElementById('gold-' + k);
-        const sEl = document.getElementById('saagha-' + k);
-        if (bEl) bEl.textContent = bourse.toLocaleString('ar-EG');
-        if (sEl) sEl.textContent = saagha.toLocaleString('ar-EG');
+        const market = Math.round(goldEgpPerGram24k * mult);
+        const buy  = market - buyMargin[k];
+        const sell = market + sellMargin[k];
+        const buyEl  = document.getElementById('saagha-buy-' + k);
+        const sellEl = document.getElementById('saagha-sell-' + k);
+        if (buyEl)  { buyEl.textContent  = buy.toLocaleString('ar-EG'); buyEl.parentElement.classList.add('flash-cell'); setTimeout(()=>buyEl.parentElement.classList.remove('flash-cell'), 800); }
+        if (sellEl) { sellEl.textContent = sell.toLocaleString('ar-EG'); sellEl.parentElement.classList.add('flash-cell'); setTimeout(()=>sellEl.parentElement.classList.remove('flash-cell'), 800); }
       }
       // الجنيه الذهب = 8 جم × عيار 21
-      const pound21 = Math.round(goldEgpPerGram24k * 0.875 * 8);
-      const pbEl = document.getElementById('gold-pound');
-      const psEl = document.getElementById('saagha-pound');
-      if (pbEl) pbEl.textContent = pound21.toLocaleString('ar-EG');
-      if (psEl) psEl.textContent = (pound21 + 1000).toLocaleString('ar-EG');
+      const market21Pound = Math.round(goldEgpPerGram24k * 0.875 * 8);
+      const buyPoundEl  = document.getElementById('saagha-buy-pound');
+      const sellPoundEl = document.getElementById('saagha-sell-pound');
+      if (buyPoundEl)  buyPoundEl.textContent  = (market21Pound - 120).toLocaleString('ar-EG');
+      if (sellPoundEl) sellPoundEl.textContent = (market21Pound + 1000).toLocaleString('ar-EG');
 
       const upd = document.getElementById('gold-updated');
       if (upd) upd.textContent = 'CoinGecko · ' + new Date().toLocaleTimeString('ar-EG');
@@ -3654,7 +3746,7 @@
     }
   }
   applyMarketData();
-  setInterval(applyMarketData, 5 * 60_000);
+  setInterval(applyMarketData, 60_000);  // v3.17: every 60s for visible refresh
 
   // ----- 3) GDELT 2.0: world political/conflict news (mixed into ticker) -----
   // Strict rate-limit: 1 req per 15 minutes (their guideline = 1 per 5s, we cache 15 min)
@@ -4075,6 +4167,84 @@
   }
   // Multiple staggered invalidations to handle transitions / late CSS
   [50, 200, 500, 1000, 2000, 4000].forEach(t => setTimeout(forceMapResize, t));
+
+
+  // ============================================================
+  // v3.17: Hero cards populated from NewsAPI with real images
+  // ============================================================
+  function detectVideo(article) {
+    const u = (article.url || '').toLowerCase();
+    if (/\/(video|watch|play)\//.test(u)) return true;
+    const t = ((article.title || '') + (article.description || '')).toLowerCase();
+    if (/\bvideo\b|\bwatch\b|highlights/i.test(t)) return true;
+    return false;
+  }
+
+  function imgProxy(url) {
+    if (!url) return '';
+    return `https://images.weserv.nl/?url=${encodeURIComponent(url.replace(/^https?:\/\//, ''))}&w=1200&h=700&fit=cover`;
+  }
+
+  function setHeroImg(imgEl, url) {
+    if (!imgEl || !url) return;
+    imgEl.onerror = () => {
+      // First fallback: weserv proxy
+      if (imgEl.dataset.stage !== '2') {
+        imgEl.dataset.stage = '2';
+        imgEl.src = imgProxy(url);
+      } else {
+        imgEl.style.display = 'none';
+      }
+    };
+    imgEl.dataset.stage = '1';
+    imgEl.src = url;
+  }
+
+  async function populateHero() {
+    if (typeof NCS_NEWS === 'undefined') return;
+    try {
+      const articles = await NCS_NEWS.topHeadlines('general');
+      if (!articles || articles.length < 3) return;
+
+      // Helpers to set text safely
+      const setT = (id, val) => { const e = document.getElementById(id); if (e) e.textContent = val; };
+      const setH = (id, val) => { const e = document.getElementById(id); if (e) e.href = val; };
+
+      const main = articles[0];
+      const s1 = articles[1];
+      const s2 = articles[2];
+
+      // Main hero
+      setHeroImg(document.getElementById('hero-main-img'), main.urlToImage);
+      setH('hero-main-a', main.url || '#');
+      setT('hero-main-tag', `عاجل · ${(main.source && main.source.name) || ''}`);
+      setT('hero-main-title', (main.title || '').replace(/\s*-\s*[^-]*$/, '').trim());
+      setT('hero-main-desc', main.description || '');
+      setT('hero-main-time', timeAgo(main.publishedAt));
+      setT('hero-main-source', `مؤكّد · ${(main.source && main.source.name) || 'NewsAPI'}`);
+      setT('hero-main-domain', main.url ? new URL(main.url).hostname.replace(/^www\./, '') : '');
+      const videoCta = document.getElementById('hero-main-video');
+      if (videoCta) videoCta.hidden = !detectVideo(main);
+
+      // Side 1
+      setHeroImg(document.getElementById('hero-side1-img'), s1.urlToImage);
+      setH('hero-side1-a', s1.url || '#');
+      setT('hero-side1-tag', (s1.source && s1.source.name) || 'دولي');
+      setT('hero-side1-title', (s1.title || '').replace(/\s*-\s*[^-]*$/, '').trim());
+      setT('hero-side1-meta', `${timeAgo(s1.publishedAt)} · ${(s1.source && s1.source.name) || ''}`);
+
+      // Side 2
+      setHeroImg(document.getElementById('hero-side2-img'), s2.urlToImage);
+      setH('hero-side2-a', s2.url || '#');
+      setT('hero-side2-tag', (s2.source && s2.source.name) || 'دولي');
+      setT('hero-side2-title', (s2.title || '').replace(/\s*-\s*[^-]*$/, '').trim());
+      setT('hero-side2-meta', `${timeAgo(s2.publishedAt)} · ${(s2.source && s2.source.name) || ''}`);
+    } catch (e) {
+      console.warn('[NCS] populateHero failed:', e);
+    }
+  }
+  populateHero();
+  setInterval(populateHero, 30 * 60_000);
 
 </script>
 </body>
