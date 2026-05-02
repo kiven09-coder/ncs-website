@@ -684,12 +684,16 @@
 
   .globe-layout {
     display: grid;
-    grid-template-columns: 290px 1fr 290px;
+    grid-template-columns: 340px 1fr;
     gap: 1rem;
     max-width: var(--container);
     margin: 0 auto;
     padding: 0 1rem;
     align-items: stretch;
+  }
+  .globe-aside-left {
+    max-height: 800px;
+    overflow-y: auto;
   }
   .globe-pane {
     background: rgba(0,0,0,0.5);
@@ -1379,6 +1383,27 @@
 
 
 
+
+  /* === v3.14: Pro sidebar polish === */
+  .globe-aside-left .pane-section {
+    padding: 0.85rem 1rem;
+  }
+  .globe-aside-left .pane-section + .pane-section {
+    border-top: 1px solid var(--border);
+  }
+  .globe-aside-left .pane-title {
+    font-size: 0.74rem;
+    margin-bottom: 0.7rem;
+  }
+  .globe-aside-left::-webkit-scrollbar { width: 6px; }
+  .globe-aside-left::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); }
+  .globe-aside-left::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+  .globe-aside-left::-webkit-scrollbar-thumb:hover { background: var(--red); }
+
+  /* Make the map definitely larger now that it's the only right column */
+  .globe-center #map { height: 700px !important; }
+  .ncs-map { height: 700px !important; }
+
   /* === v3.12: Stats overlay on map (top-left) === */
   .map-stats-overlay {
     position: absolute;
@@ -1745,18 +1770,18 @@
   </div>
 
   <div class="globe-layout">
-    <aside class="globe-pane">
+    <aside class="globe-pane globe-aside-left">
       <div class="pane-section pane-layers">
         <h4 class="pane-title" data-i18n="globe.layers">الطبقات · LAYERS</h4>
         <div class="layers-list">
           <button class="map-chip active" data-layer="all" data-i18n="chip.all">الكل</button>
         <button class="map-chip" data-layer="civ" data-i18n="chip.civ">طيران مدني</button>
-        <button class="map-chip" data-layer="mil" style="--chip-color:#ef4444;" data-i18n="chip.mil">طيران حربي</button>
+        <button class="map-chip active" data-layer="mil" style="--chip-color:#ef4444;" data-i18n="chip.mil">طيران حربي</button>
         <button class="map-chip" data-layer="cargo" style="--chip-color:#10b981;" data-i18n="chip.cargo">سفن شحن</button>
-        <button class="map-chip" data-layer="tanker" style="--chip-color:#f97316;" data-i18n="chip.tanker">ناقلات بترول</button>
-        <button class="map-chip" data-layer="naval" style="--chip-color:#06b6d4;" data-i18n="chip.naval">بحرية حربية</button>
+        <button class="map-chip active" data-layer="tanker" style="--chip-color:#f97316;" data-i18n="chip.tanker">ناقلات بترول</button>
+        <button class="map-chip active" data-layer="naval" style="--chip-color:#06b6d4;" data-i18n="chip.naval">بحرية حربية</button>
         <button class="map-chip" data-layer="choke" style="--chip-color:#fbbf24;" data-i18n="chip.choke">المضائق</button>
-        <button class="map-chip" data-layer="daynight" style="--chip-color:#a3a3a3;" data-i18n="chip.daynight">ليل / نهار</button>
+        <button class="map-chip active" data-layer="daynight" style="--chip-color:#a3a3a3;" data-i18n="chip.daynight">ليل / نهار</button>
         </div>
       </div>
       <div class="pane-section">
@@ -1817,7 +1842,23 @@
         <div class="bd-row"><span class="bd-label">طائرات بدون طيار <em>Drone</em></span><span class="bd-num" id="bd-drone">٤٢</span></div>
         <div class="bd-row"><span class="bd-label">نقل عسكري <em>Transport</em></span><span class="bd-num" id="bd-transport">٤٩</span></div>
       </div>
-    </aside>
+    
+      <div class="pane-section">
+        <h4 class="pane-title"><span class="live-dot"></span> <span data-i18n="globe.assets_now">أصول مرصودة الآن</span></h4>
+        <div id="assets-feed" class="assets-feed"></div>
+      </div>
+      <div class="pane-section">
+        <h4 class="pane-title" data-i18n="globe.chokepoints">المضائق الاستراتيجية</h4>
+        <div class="choke-row"><span>مضيق هرمز</span><span class="choke-stat danger" id="ck-hormuz">١٤ سفينة</span></div>
+        <div class="choke-row"><span>قناة السويس</span><span class="choke-stat" id="ck-suez">٢٢ سفينة</span></div>
+        <div class="choke-row"><span>باب المندب</span><span class="choke-stat danger" id="ck-bab">١٨ سفينة</span></div>
+        <div class="choke-row"><span>مضيق ملقا</span><span class="choke-stat" id="ck-malacca">٣٤ سفينة</span></div>
+        <div class="choke-row"><span>مضيق تايوان</span><span class="choke-stat danger" id="ck-taiwan">١١ سفينة</span></div>
+        <div class="choke-row"><span>قناة بنما</span><span class="choke-stat" id="ck-panama">٩ سفن</span></div>
+        <div class="choke-row"><span>مضيق البوسفور</span><span class="choke-stat" id="ck-bosphorus">١٦ سفينة</span></div>
+        <div class="choke-row"><span>مضيق جبل طارق</span><span class="choke-stat" id="ck-gibraltar">٢٧ سفينة</span></div>
+      </div>
+      </aside>
 
     <div class="globe-center">
       <div id="map" class="ncs-map">
@@ -1870,24 +1911,6 @@
         <div><span class="swatch" style="background:#fff;outline:2px solid #e11d2b;outline-offset:1px;"></span> مضائق استراتيجية</div>
       </div>
     </div>
-
-    <aside class="globe-pane">
-      <div class="pane-section">
-        <h4 class="pane-title"><span class="live-dot"></span> <span data-i18n="globe.assets_now">أصول مرصودة الآن</span></h4>
-        <div id="assets-feed" class="assets-feed"></div>
-      </div>
-      <div class="pane-section">
-        <h4 class="pane-title" data-i18n="globe.chokepoints">المضائق الاستراتيجية</h4>
-        <div class="choke-row"><span>مضيق هرمز</span><span class="choke-stat danger" id="ck-hormuz">١٤ سفينة</span></div>
-        <div class="choke-row"><span>قناة السويس</span><span class="choke-stat" id="ck-suez">٢٢ سفينة</span></div>
-        <div class="choke-row"><span>باب المندب</span><span class="choke-stat danger" id="ck-bab">١٨ سفينة</span></div>
-        <div class="choke-row"><span>مضيق ملقا</span><span class="choke-stat" id="ck-malacca">٣٤ سفينة</span></div>
-        <div class="choke-row"><span>مضيق تايوان</span><span class="choke-stat danger" id="ck-taiwan">١١ سفينة</span></div>
-        <div class="choke-row"><span>قناة بنما</span><span class="choke-stat" id="ck-panama">٩ سفن</span></div>
-        <div class="choke-row"><span>مضيق البوسفور</span><span class="choke-stat" id="ck-bosphorus">١٦ سفينة</span></div>
-        <div class="choke-row"><span>مضيق جبل طارق</span><span class="choke-stat" id="ck-gibraltar">٢٧ سفينة</span></div>
-      </div>
-    </aside>
   </div>
 </section>
 
@@ -2743,8 +2766,19 @@
     });
   });
 
-  // Default state: NO layers active. Clear active classes.
-  filterButtons.forEach(b => b.classList.remove('active'));
+  // v3.14: Default-active layers — mil / tanker / naval / daynight
+  // The chip HTML already has 'active' class; we now add the corresponding layers to the map.
+  const DEFAULT_ACTIVE_LAYERS = ['mil', 'tanker', 'naval', 'daynight'];
+  // Defer until map is fully ready
+  setTimeout(async () => {
+    for (const key of DEFAULT_ACTIVE_LAYERS) {
+      activeLayers.add(key);
+      if ((key === 'civ' || key === 'mil') && !flightsLoaded) {
+        await ensureFlightsLoaded();
+      }
+      if (mapLayers[key]) map.addLayer(mapLayers[key]);
+    }
+  }, 800);
 
 // ============================================================
   // Live tracked assets feed (realistic military callsigns)
