@@ -125,6 +125,17 @@
     transform: translateY(-3px);
     border-color: var(--red);
   }
+  .news-thumb-wrap-l {
+    aspect-ratio: 16/9;
+    overflow: hidden;
+    background: #0a0a0a;
+    border-bottom: 1px solid var(--border);
+  }
+  .news-img-l {
+    width: 100%; height: 100%; object-fit: cover;
+    transition: transform 400ms;
+  }
+  .news-item:hover .news-img-l { transform: scale(1.05); }
   .news-thumb-cat {
     aspect-ratio: 16/9;
     display: grid; place-items: center;
@@ -346,6 +357,7 @@
       time: timeAgo(a.publishedAt),
       sources: (a.source && a.source.name) || 'NewsAPI',
       url: a.url || '#',
+      image: a.urlToImage || '',
     };
   }
 
@@ -399,7 +411,7 @@
     list.style.display = '';
     list.innerHTML = filtered.map(item => `
       <a href="${item.url}" target="_blank" rel="noopener" class="news-item">
-        <div class="news-thumb-cat cat-${item.cat}">${ICONS[item.cat] || ICONS.world}</div>
+        ${item.image ? `<div class="news-thumb-wrap-l"><img src="${item.image.replace(/"/g, '&quot;')}" alt="" loading="lazy" referrerpolicy="no-referrer" class="news-img-l" onerror="this.parentElement.outerHTML='<div class=\\'news-thumb-cat cat-${item.cat}\\'>${(ICONS[item.cat] || ICONS.world).replace(/'/g, '&apos;')}</div>'"/></div>` : `<div class="news-thumb-cat cat-${item.cat}">${ICONS[item.cat] || ICONS.world}</div>`}
         <div class="news-body">
           <span class="news-tag">${item.tag}</span>
           <h3>${item.title}</h3>

@@ -456,12 +456,14 @@
   }
   .team { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
   .team-logo {
-    width: 50px; height: 50px; border-radius: 50%;
-    background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
+    width: 64px; height: 64px; border-radius: 50%;
+    background: #fff;
     border: 1px solid var(--border-strong);
     display: grid; place-items: center;
-    font-weight: 900; font-size: 1.1rem;
+    overflow: hidden;
+    font-weight: 900; font-size: 1.05rem;
     font-family: var(--font-en-body);
+    color: #000;
   }
   .team:nth-child(1) .team-logo { background: linear-gradient(135deg, #c8102e, #6b0010); color: #fff; }
   .team:nth-child(3) .team-logo { background: linear-gradient(135deg, #ffffff, #d0d0d0); color: #000; }
@@ -758,9 +760,41 @@
     width: 100%;
     height: 720px;
     min-height: 540px;
-    border: 1px solid var(--border);
-    background: #050505;
+    background: #1a1a1a;
+    position: relative;
   }
+  /* Map dark-gray theme via CSS filter on OSM tiles */
+  .leaflet-tile.osm-dark-tiles {
+    filter: grayscale(1) brightness(0.55) contrast(1.05);
+  }
+  /* Map view mode toggle (2D / 3D) */
+  .map-view-toggle {
+    position: absolute;
+    top: 0.85rem; inset-inline-start: 0.85rem;
+    z-index: 500;
+    display: inline-flex;
+    background: rgba(0,0,0,0.85);
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    overflow: hidden;
+    font-size: 0.72rem; font-weight: 800;
+  }
+  .map-view-toggle button {
+    background: transparent; border: 0;
+    color: var(--text-muted); cursor: pointer;
+    padding: 0.35rem 0.85rem;
+    transition: all 200ms;
+  }
+  .map-view-toggle button.active {
+    background: #10b981; color: #000;
+  }
+  .map-view-toggle button:not(.active):hover { color: var(--text); }
+  .map-fake-3d .leaflet-map-pane {
+    transform: perspective(1500px) rotateX(35deg);
+    transform-origin: center center;
+    transition: transform 500ms ease;
+  }
+  .map-fake-3d .leaflet-control-container { transform: none; }
   /* Match aside heights to map for balanced layout */
   .globe-layout .globe-pane {
     max-height: 720px;
@@ -1102,7 +1136,8 @@
     max-height: 90vh; display: flex; flex-direction: column;
     box-shadow: 0 30px 80px rgba(0,0,0,0.7);
   }
-  .modal.modal-wide { max-width: 900px; }
+  .modal.modal-wide { max-width: 1100px; }
+  #channel-modal .modal { width: 95%; }
   .modal header {
     display: flex; justify-content: space-between; align-items: center;
     padding: 1rem 1.25rem; border-bottom: 1px solid var(--border);
@@ -1284,6 +1319,22 @@
   }
   .reader-cta:hover { background: var(--red-dim); transform: translateX(-3px); }
 
+
+  /* === v3.9: News card image with fallback === */
+  .news-thumb-wrap {
+    aspect-ratio: 4/3;
+    overflow: hidden;
+    margin-bottom: 0.85rem;
+    background: #0a0a0a;
+    border: 1px solid var(--border);
+  }
+  .news-thumb-img-tag {
+    width: 100%; height: 100%; object-fit: cover;
+    transition: transform 300ms;
+    display: block;
+  }
+  .news-card:hover .news-thumb-img-tag { transform: scale(1.04); }
+
   /* === v3.8: Real article images === */
   .news-thumb-img {
     aspect-ratio: 4/3;
@@ -1320,13 +1371,29 @@
   }
   .match-link-btn.primary:hover { background: #b91c1c; border-color: #b91c1c; }
 
-  /* === Panel flash on data update === */
+  /* === Panel flash on data update — VERY visible === */
   @keyframes panel-update-flash {
-    0%   { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
-    50%  { box-shadow: 0 0 0 4px rgba(16, 185, 129, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    0%   { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.95), inset 0 0 0 2px rgba(16, 185, 129, 0.6); border-color: #10b981; }
+    50%  { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0), inset 0 0 0 2px rgba(16, 185, 129, 0.3); border-color: #10b981; }
+    100% { box-shadow: 0 0 0 0 transparent, inset 0 0 0 0 transparent; }
   }
-  .panel.flash { animation: panel-update-flash 1100ms ease-out; }
+  .panel.flash { animation: panel-update-flash 1500ms ease-out; }
+  .panel.flash::before {
+    content: "✓ تم التحديث";
+    position: absolute; top: 0.5rem; inset-inline-start: 50%; transform: translateX(-50%);
+    background: #10b981; color: #000;
+    padding: 0.25rem 0.85rem; border-radius: 999px;
+    font-size: 0.7rem; font-weight: 900;
+    z-index: 10; pointer-events: none;
+    animation: flash-toast 1500ms ease-out forwards;
+  }
+  @keyframes flash-toast {
+    0%   { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+    20%  { opacity: 1; transform: translateX(-50%) translateY(0); }
+    80%  { opacity: 1; }
+    100% { opacity: 0; transform: translateX(-50%) translateY(-5px); }
+  }
+  .panel { position: relative; }
 
   /* ============================================================
      RESPONSIVE
@@ -1580,7 +1647,12 @@
     </aside>
 
     <div class="globe-center">
-      <div id="map" class="ncs-map"></div>
+      <div id="map" class="ncs-map">
+        <div class="map-view-toggle">
+          <button data-view="2d" class="active">2D</button>
+          <button data-view="3d">3D</button>
+        </div>
+      </div>
       <div class="globe-stats-bar">
         <div class="ovl-stat">
           <div class="ovl-num" id="stat-civ-flights">١٢,٨٤٧</div>
@@ -1675,41 +1747,41 @@
     <a href="news.html?cat=live" class="more" data-i18n="more.channels">كل القنوات ←</a>
   </div>
   <div class="channels">
-    <button class="channel channel-trigger" data-channel-id="UCfiwzLy-8yKzIbsmZTzxDgw" data-channel-name="الجزيرة مباشر">
+    <button class="channel channel-trigger" data-video-id="BNVrqyu4QSU" data-channel-name="الجزيرة مباشر">
       <div class="channel-thumb" style="background-image:linear-gradient(135deg,#1a3a52,#0a1f30);"></div>
       <div class="live-badge"><span class="live-dot"></span> مباشر</div>
       <div class="viewers">12.4K</div>
       <div class="channel-name">الجزيرة مباشر</div>
     </button>
-    <button class="channel channel-trigger" data-channel-id="UC2pTnwmvZc0iHWIDVVRGUpA" data-channel-name="BBC Arabic">
+    <button class="channel channel-trigger" data-video-id="gCNeDWCI0vo" data-channel-name="Al Jazeera English">
       <div class="channel-thumb" style="background-image:linear-gradient(135deg,#7c1d1d,#3f0a0a);"></div>
       <div class="live-badge"><span class="live-dot"></span> مباشر</div>
       <div class="viewers">8.7K</div>
-      <div class="channel-name">BBC Arabic</div>
+      <div class="channel-name">Al Jazeera English</div>
     </button>
-    <button class="channel channel-trigger" data-channel-id="UCD8tn26zL9_mUXsnoG0VYNg" data-channel-name="العربية الحدث">
-      <div class="channel-thumb" style="background-image:linear-gradient(135deg,#0c4a6e,#082f49);"></div>
-      <div class="live-badge"><span class="live-dot"></span> مباشر</div>
-      <div class="viewers">5.3K</div>
-      <div class="channel-name">العربية الحدث</div>
-    </button>
-    <button class="channel channel-trigger" data-channel-id="UCa4oLDdVtBSYBqKbdENH8XA" data-channel-name="Sky News عربية">
-      <div class="channel-thumb" style="background-image:linear-gradient(135deg,#1f2937,#0f172a);"></div>
-      <div class="live-badge"><span class="live-dot"></span> مباشر</div>
-      <div class="viewers">3.9K</div>
-      <div class="channel-name">Sky News عربية</div>
-    </button>
-    <button class="channel channel-trigger" data-channel-id="UCC8B3R6NItlIH5-JVRRYXTw" data-channel-name="France 24 عربية">
+    <button class="channel channel-trigger" data-video-id="h3MuIUNB9W0" data-channel-name="France 24 English">
       <div class="channel-thumb" style="background-image:linear-gradient(135deg,#581c87,#2e1065);"></div>
       <div class="live-badge"><span class="live-dot"></span> مباشر</div>
-      <div class="viewers">2.1K</div>
-      <div class="channel-name">France 24 عربية</div>
+      <div class="viewers">5.3K</div>
+      <div class="channel-name">France 24 English</div>
     </button>
-    <button class="channel channel-trigger" data-channel-id="UCm0LVuCUtbCypl0i2RJrZ-w" data-channel-name="DW عربية">
+    <button class="channel channel-trigger" data-video-id="tZTGSJ6_PeU" data-channel-name="DW News">
       <div class="channel-thumb" style="background-image:linear-gradient(135deg,#78350f,#451a03);"></div>
       <div class="live-badge"><span class="live-dot"></span> مباشر</div>
+      <div class="viewers">3.9K</div>
+      <div class="channel-name">DW News</div>
+    </button>
+    <button class="channel channel-trigger" data-video-id="YDvsBbKfLPA" data-channel-name="Sky News">
+      <div class="channel-thumb" style="background-image:linear-gradient(135deg,#1f2937,#0f172a);"></div>
+      <div class="live-badge"><span class="live-dot"></span> مباشر</div>
+      <div class="viewers">2.1K</div>
+      <div class="channel-name">Sky News</div>
+    </button>
+    <button class="channel channel-trigger" data-video-id="iEpJwprxDdk" data-channel-name="Bloomberg">
+      <div class="channel-thumb" style="background-image:linear-gradient(135deg,#0c4a6e,#082f49);"></div>
+      <div class="live-badge"><span class="live-dot"></span> مباشر</div>
       <div class="viewers">1.8K</div>
-      <div class="channel-name">DW عربية</div>
+      <div class="channel-name">Bloomberg</div>
     </button>
   </div>
 </div>
@@ -2988,10 +3060,11 @@
       const cat = catFromArticle(a);
       const title = (a.title || '').replace(/\s*-\s*[^-]*$/, '').trim();
       const sources = (a.source && a.source.name) || 'NewsAPI';
-      const img = a.urlToImage || '';
-      const thumb = img
-        ? `<div class="news-thumb-img" style="background-image:url('${img.replace(/'/g, "\\'")}');"></div>`
-        : `<div class="news-thumb-cat cat-${cat}">${ICONS_INDEX[cat] || ICONS_INDEX.world}</div>`;
+      const imgUrl = a.urlToImage || '';
+      const fallbackHtml = `<div class="news-thumb-cat cat-${cat}">${ICONS_INDEX[cat] || ICONS_INDEX.world}</div>`;
+      const thumb = imgUrl
+        ? `<div class="news-thumb-wrap"><img src="${imgUrl.replace(/"/g, '&quot;')}" alt="" class="news-thumb-img-tag" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.outerHTML=this.dataset.fallback;" data-fallback="${fallbackHtml.replace(/"/g, '&quot;')}"/></div>`
+        : fallbackHtml;
       return `<button class="news-card news-card-btn" data-article='${JSON.stringify(a).replace(/'/g, "&apos;")}' style="display:flex;flex-direction:column;background:transparent;border:0;padding:0;text-align:start;color:inherit;cursor:pointer;width:100%;">
         ${thumb}
         <span class="tag">${categoryLabel(cat)}</span>
@@ -3068,9 +3141,19 @@
       teams[1].textContent = away;
     }
     const logos = document.querySelectorAll('.match .team-logo');
+    const homeBadge = top.strHomeTeamBadge || '';
+    const awayBadge = top.strAwayTeamBadge || '';
     if (logos.length >= 2) {
-      logos[0].textContent = (home || '').slice(0, 3).toUpperCase();
-      logos[1].textContent = (away || '').slice(0, 3).toUpperCase();
+      if (homeBadge) {
+        logos[0].innerHTML = `<img src="${homeBadge}/preview" alt="${home}" onerror="this.outerHTML='<span>${(home||'').slice(0,3).toUpperCase()}</span>'" style="width:90%;height:90%;object-fit:contain;"/>`;
+      } else {
+        logos[0].textContent = (home || '').slice(0, 3).toUpperCase();
+      }
+      if (awayBadge) {
+        logos[1].innerHTML = `<img src="${awayBadge}/preview" alt="${away}" onerror="this.outerHTML='<span>${(away||'').slice(0,3).toUpperCase()}</span>'" style="width:90%;height:90%;object-fit:contain;"/>`;
+      } else {
+        logos[1].textContent = (away || '').slice(0, 3).toUpperCase();
+      }
     }
 
     // Update the secondary results rows below the main match
@@ -3292,6 +3375,60 @@
     }, null);
   }, 200);
 
+
+  // ============================================================
+  // v3.9: 2D/3D map view toggle
+  // ============================================================
+  document.querySelectorAll('.map-view-toggle button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.map-view-toggle button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const view = btn.dataset.view;
+      const mapEl = document.getElementById('map');
+      if (view === '3d') {
+        mapEl.classList.add('map-fake-3d');
+      } else {
+        mapEl.classList.remove('map-fake-3d');
+      }
+      setTimeout(() => map.invalidateSize(), 600);
+    });
+  });
+
+
+  // ============================================================
+  // v3.9: Mark sources OK if data is actively flowing
+  // ============================================================
+  function markSourceOk(key) {
+    const dot = document.querySelector(`.src-status[data-src="${key}"]`);
+    if (dot) {
+      dot.classList.remove('testing', 'fail');
+      dot.classList.add('ok');
+    }
+  }
+  function markSourceFail(key) {
+    const dot = document.querySelector(`.src-status[data-src="${key}"]`);
+    if (dot) {
+      dot.classList.remove('testing', 'ok');
+      dot.classList.add('fail');
+    }
+  }
+  // Hook into existing fetchers to auto-mark
+  const _origRefreshTicker = (typeof refreshBreakingTicker === 'function') ? refreshBreakingTicker : null;
+  if (_origRefreshTicker) {
+    window.refreshBreakingTicker = async function() {
+      try { await _origRefreshTicker(); markSourceOk('newsapi'); } catch (e) { markSourceFail('newsapi'); }
+    };
+  }
+  // OSM/Carto are auto-OK because tiles are loading
+  setTimeout(() => { markSourceOk('osm'); }, 2000);
+  // FX
+  const _origFx2 = (typeof fetchRealFX === 'function') ? fetchRealFX : null;
+  if (_origFx2) {
+    window.fetchRealFX = async function() {
+      try { await _origFx2(); markSourceOk('fx'); } catch (e) { markSourceFail('fx'); }
+    };
+  }
+
   // ============================================================
   // v3.6: Settings modal — data source registry + status check
   // ============================================================
@@ -3456,11 +3593,11 @@
   const channelTitle = document.getElementById('channel-title');
   document.querySelectorAll('.channel-trigger').forEach(btn => {
     btn.addEventListener('click', () => {
-      const id = btn.dataset.channelId;
+      const videoId = btn.dataset.videoId;
       const name = btn.dataset.channelName;
-      if (!id || !channelModal || !channelIframe) return;
+      if (!videoId || !channelModal || !channelIframe) return;
       channelTitle.textContent = name + ' — البث المباشر';
-      channelIframe.src = `https://www.youtube.com/embed/live_stream?channel=${id}&autoplay=1&mute=1`;
+      channelIframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&modestbranding=1`;
       channelModal.hidden = false;
     });
   });
