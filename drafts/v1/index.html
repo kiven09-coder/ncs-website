@@ -232,7 +232,7 @@
     position: relative;
     aspect-ratio: 16/10;
     border-radius: 4px; overflow: hidden;
-    background: #1a1a1a url("https://picsum.photos/seed/ncs-hero/1200/750") center/cover;
+    background: linear-gradient(135deg, #1e3a8a 0%, #312e81 50%, #0f172a 100%);
     cursor: pointer;
   }
   .hero-main::after {
@@ -406,10 +406,13 @@
      ============================================================ */
   .grid-3 {
     display: grid;
-    grid-template-columns: 1.1fr 1fr 1fr;
-    gap: 1.5rem;
-    align-items: start;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
+    align-items: stretch;
   }
+  .grid-3 > .panel { display: flex; flex-direction: column; }
+  .grid-3 > .panel .panel-body { flex: 1; }
+  .grid-3 > .panel .match { flex: 1; display: flex; flex-direction: column; justify-content: center; }
 
   .panel {
     background: var(--bg-elev-1);
@@ -507,6 +510,7 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 1.25rem;
+    align-items: stretch;
   }
   .country-card {
     background: var(--bg-elev-1);
@@ -515,6 +519,17 @@
     cursor: pointer;
     transition: all 250ms var(--ease-out);
     position: relative;
+    overflow: hidden;
+    min-height: 240px;
+    display: flex;
+    flex-direction: column;
+  }
+  .country-card .meta { margin-top: auto; }
+  .country-card p {
+    flex: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
     overflow: hidden;
   }
   .country-card::before {
@@ -549,10 +564,13 @@
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 1.25rem;
+    align-items: stretch;
   }
   .news-card {
     cursor: pointer; transition: transform 200ms;
+    display: flex; flex-direction: column; height: 100%;
   }
+  .news-card h4 { flex: 1; }
   .news-card:hover { transform: translateY(-3px); }
   .news-thumb {
     aspect-ratio: 4/3; background: #1a1a1a;
@@ -1042,6 +1060,32 @@
   @keyframes spin { to { transform: rotate(360deg); } }
   
 
+
+  /* === v3.3: Category-themed news thumbnails (no external images) === */
+  .news-thumb-cat {
+    aspect-ratio: 4/3;
+    display: grid; place-items: center;
+    position: relative; overflow: hidden;
+    margin-bottom: 0.85rem;
+    border: 1px solid var(--border);
+  }
+  .news-thumb-cat svg {
+    width: 56px; height: 56px;
+    color: rgba(255,255,255,0.55);
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
+  }
+  .news-thumb-cat::after {
+    content: ""; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.45) 100%);
+  }
+  .cat-politics  { background: linear-gradient(135deg, #1e3a8a 0%, #312e81 50%, #0f172a 100%); }
+  .cat-economy   { background: linear-gradient(135deg, #92400e 0%, #f59e0b 50%, #78350f 100%); }
+  .cat-sports    { background: linear-gradient(135deg, #064e3b 0%, #10b981 50%, #052e16 100%); }
+  .cat-tech      { background: linear-gradient(135deg, #4c1d95 0%, #8b5cf6 50%, #1e1b4b 100%); }
+  .cat-health    { background: linear-gradient(135deg, #7f1d1d 0%, #ef4444 50%, #450a0a 100%); }
+  .cat-culture   { background: linear-gradient(135deg, #7c2d12 0%, #f97316 50%, #431407 100%); }
+  .cat-world     { background: linear-gradient(135deg, #134e4a 0%, #0d9488 50%, #042f2e 100%); }
+
   /* === v3: Hover/focus on linked cards === */
   .hero-link, .country-card, .channel, .news-card, .fb-post {
     text-decoration: none; color: inherit; cursor: pointer;
@@ -1249,6 +1293,7 @@
         <button class="map-chip" data-layer="tanker" style="--chip-color:#f97316;" data-i18n="chip.tanker">ناقلات بترول</button>
         <button class="map-chip" data-layer="naval" style="--chip-color:#06b6d4;" data-i18n="chip.naval">بحرية حربية</button>
         <button class="map-chip" data-layer="choke" style="--chip-color:#fbbf24;" data-i18n="chip.choke">المضائق</button>
+        <button class="map-chip" data-layer="daynight" style="--chip-color:#a3a3a3;" data-i18n="chip.daynight">ليل / نهار</button>
       </div>
       <div id="map" class="ncs-map"></div>
       <div class="globe-stats-bar">
@@ -1318,7 +1363,7 @@
     </a>
 
     <aside class="hero-side">
-      <a href="https://www.cbe.org.eg/ar/Pages/default.aspx" target="_blank" rel="noopener" class="card hero-link" style="background-image:url('https://picsum.photos/seed/ncs-side1/600/360'); background-size:cover; background-position:center; position:relative; display:block;">
+      <a href="https://www.cbe.org.eg/ar/Pages/default.aspx" target="_blank" rel="noopener" class="card hero-link" style="background: linear-gradient(135deg, #92400e 0%, #f59e0b 35%, #78350f 100%); position:relative; display:block;">
         <div style="position:absolute; inset:0; background:linear-gradient(0deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 60%, rgba(0,0,0,0.2) 100%);"></div>
         <div style="position:relative; z-index:2; display:flex; flex-direction:column; justify-content:flex-end; height:100%; min-height:170px;">
           <span class="tag">اقتصاد</span>
@@ -1326,7 +1371,7 @@
           <span class="meta">منذ ساعة · مؤكّد من ٣ مصادر</span>
         </div>
       </a>
-      <a href="https://www.filgoal.com/" target="_blank" rel="noopener" class="card hero-link" style="background-image:url('https://picsum.photos/seed/ncs-side2/600/360'); background-size:cover; background-position:center; position:relative;">
+      <a href="https://www.filgoal.com/" target="_blank" rel="noopener" class="card hero-link" style="background: linear-gradient(135deg, #064e3b 0%, #10b981 35%, #052e16 100%); position:relative;">
         <div style="position:absolute; inset:0; background:linear-gradient(0deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 60%, rgba(0,0,0,0.2) 100%);"></div>
         <div style="position:relative; z-index:2; display:flex; flex-direction:column; justify-content:flex-end; height:100%; min-height:170px;">
           <span class="tag">رياضة</span>
@@ -1555,25 +1600,25 @@
 
   <div class="news-grid">
     <a href="https://www.almasryalyoum.com/" target="_blank" rel="noopener" class="news-card" style="display:block;color:inherit;text-decoration:none;">
-      <div class="news-thumb" style="background-image:url('https://picsum.photos/seed/news1/400/300');"></div>
+      <div class="news-thumb-cat cat-economy"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2v2.07A8.001 8.001 0 0 0 4.07 12H2v0h2.07A8.001 8.001 0 0 0 12 19.93V22h0v-2.07A8.001 8.001 0 0 0 19.93 12H22h-2.07A8.001 8.001 0 0 0 12 4.07V2zm0 4a6 6 0 1 1 0 12 6 6 0 0 1 0-12zm.5 2v.5h1V8h-1zM10 9v.5h1V9h-1zm4 0v.5h1V9h-1zm-3.5 1.5v3l-1 .5v.5h5v-.5l-1-.5v-3l-1-.5h-1z"/></svg></div>
       <span class="tag">اقتصاد</span>
       <h4>قمة استثمارية مرتقبة بين القاهرة والرياض الأسبوع المقبل</h4>
       <div class="meta"><span>منذ ساعتين</span><span>٣ مصادر</span></div>
     </a>
     <a href="https://blog.google/technology/ai/" target="_blank" rel="noopener" class="news-card" style="display:block;color:inherit;text-decoration:none;">
-      <div class="news-thumb" style="background-image:url('https://picsum.photos/seed/news2/400/300');"></div>
+      <div class="news-thumb-cat cat-tech"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 2v2h6V2zM4 6v2h16V6zM4 10v10h16V10zm6 6v-2h4v2z"/></svg></div>
       <span class="tag">تكنولوجيا</span>
       <h4>إطلاق Gemini 3.0 من جوجل بقدرات تفوق GPT-5 في الاختبارات</h4>
       <div class="meta"><span>منذ ٣ ساعات</span><span>٢ مصادر</span></div>
     </a>
     <a href="https://www.aljazeera.net/" target="_blank" rel="noopener" class="news-card" style="display:block;color:inherit;text-decoration:none;">
-      <div class="news-thumb" style="background-image:url('https://picsum.photos/seed/news3/400/300');"></div>
+      <div class="news-thumb-cat cat-health"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 8h-2V3H7v5H5c-1.1 0-2 .9-2 2v9h18v-9c0-1.1-.9-2-2-2zM9 5h6v3H9zm4 12h-2v-3H8v-2h3V9h2v3h3v2h-3z"/></svg></div>
       <span class="tag">صحة</span>
       <h4>دواء جديد للسكري يتجاوز نتائج Ozempic بـ ٣٠٪ في تجربة سريرية</h4>
       <div class="meta"><span>منذ ٤ ساعات</span><span>٤ مصادر</span></div>
     </a>
     <a href="https://www.cairofilmfestival.org/" target="_blank" rel="noopener" class="news-card" style="display:block;color:inherit;text-decoration:none;">
-      <div class="news-thumb" style="background-image:url('https://picsum.photos/seed/news4/400/300');"></div>
+      <div class="news-thumb-cat cat-culture"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4z"/></svg></div>
       <span class="tag">ثقافة</span>
       <h4>مهرجان القاهرة السينمائي يفتح باب التسجيل لـ ٢٠٢٦</h4>
       <div class="meta"><span>منذ ٥ ساعات</span><span>٢ مصادر</span></div>
@@ -1666,6 +1711,7 @@
 
 <!-- ================= GLOBE.GL ================= -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="https://unpkg.com/@joergdietrich/leaflet.terminator@1.1.0/L.Terminator.js"></script>
 <script>
   // ============================================================
   // Helpers
@@ -1825,7 +1871,7 @@
     const article = document.createElement('article');
     article.className = 'news-card new-flash';
     article.innerHTML = `
-      <div class="news-thumb" style="background-image:url('https://picsum.photos/seed/news${Date.now()}/400/300');"></div>
+      <div class="news-thumb-cat cat-${news.tag === 'سياسة' ? 'politics' : news.tag === 'اقتصاد' ? 'economy' : news.tag === 'رياضة' ? 'sports' : news.tag === 'تكنولوجيا' ? 'tech' : news.tag === 'صحة' ? 'health' : news.tag === 'دولي' ? 'world' : 'culture'}"><svg viewBox="0 0 24 24" fill="currentColor" width="48" height="48"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg></div>
       <span class="tag">${news.tag}</span>
       <h4>${news.title}</h4>
       <div class="meta"><span>الآن</span><span>مؤكّد من ${ar(news.sources)} مصادر</span></div>
@@ -1890,13 +1936,26 @@
 
   // ----- Layer groups (none added to map yet — empty by default) -----
   const mapLayers = {
-    civ:    L.layerGroup(),
-    mil:    L.layerGroup(),
-    cargo:  L.layerGroup(),
-    tanker: L.layerGroup(),
-    naval:  L.layerGroup(),
-    choke:  L.layerGroup(),
+    civ:      L.layerGroup(),
+    mil:      L.layerGroup(),
+    cargo:    L.layerGroup(),
+    tanker:   L.layerGroup(),
+    naval:    L.layerGroup(),
+    choke:    L.layerGroup(),
+    daynight: (typeof L.terminator === 'function') ? L.terminator({
+      fillOpacity: 0.32,
+      color: '#000',
+      fillColor: '#000',
+      weight: 0,
+      interactive: false,
+    }) : L.layerGroup(),
   };
+  // Auto-update terminator every 60 seconds (sun position drifts)
+  if (typeof L.terminator === 'function' && mapLayers.daynight.setTime) {
+    setInterval(() => {
+      try { mapLayers.daynight.setTime(new Date()); } catch (e) {}
+    }, 60_000);
+  }
   const activeLayers = new Set();
 
   // ----- Chokepoints (with rich popups) -----
@@ -2464,7 +2523,7 @@
       'panel.sports': 'آخر النتائج — الدوري المصري',
       'chip.all': 'الكل', 'chip.civ': 'طيران مدني', 'chip.mil': 'طيران حربي',
       'chip.cargo': 'سفن شحن', 'chip.tanker': 'ناقلات بترول',
-      'chip.naval': 'بحرية حربية', 'chip.choke': 'المضائق',
+      'chip.naval': 'بحرية حربية', 'chip.choke': 'المضائق', 'chip.daynight': 'ليل / نهار',
     },
     en: {
       'nav.home': 'Home', 'nav.politics': 'Politics', 'nav.economy': 'Economy',
@@ -2485,7 +2544,7 @@
       'panel.sports': 'Latest Results — Egyptian League',
       'chip.all': 'All', 'chip.civ': 'Civilian', 'chip.mil': 'Military',
       'chip.cargo': 'Cargo', 'chip.tanker': 'Tankers',
-      'chip.naval': 'Naval', 'chip.choke': 'Chokepoints',
+      'chip.naval': 'Naval', 'chip.choke': 'Chokepoints', 'chip.daynight': 'Day / Night',
     },
   };
 
