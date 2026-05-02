@@ -413,7 +413,8 @@
       <a href="${item.url}" target="_blank" rel="noopener" class="news-item">
         ${item.image ? (function(){
           const proxyUrl = `https://images.weserv.nl/?url=${encodeURIComponent(item.image.replace(/^https?:\\/\\//, ''))}&w=600&h=400&fit=cover`;
-          return `<div class="news-thumb-wrap-l"><img src="${proxyUrl}" alt="" loading="lazy" class="news-img-l" onerror="this.parentElement.outerHTML='<div class=\\'news-thumb-cat cat-${item.cat}\\'>${(ICONS[item.cat] || ICONS.world).replace(/'/g, '&apos;')}</div>'"/></div>`;
+          const fb = `<div class=\\'news-thumb-cat cat-${item.cat}\\'>${(ICONS[item.cat] || ICONS.world).replace(/'/g, '&apos;')}</div>`;
+          return `<div class="news-thumb-wrap-l"><img src="${item.image}" alt="" loading="lazy" referrerpolicy="no-referrer" class="news-img-l" data-stage="1" data-proxy="${proxyUrl}" onerror="if(this.dataset.stage==='1'){this.dataset.stage='2';this.src=this.dataset.proxy;}else{this.parentElement.outerHTML='${fb}';}"/></div>`;
         })() : `<div class="news-thumb-cat cat-${item.cat}">${ICONS[item.cat] || ICONS.world}</div>`}
         <div class="news-body">
           <span class="news-tag">${item.tag}</span>

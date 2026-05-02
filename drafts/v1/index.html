@@ -125,8 +125,8 @@
     font-size: 1.75rem; font-weight: 900; letter-spacing: -0.04em;
     color: var(--text);
   }
-  .logo .mark { width: 52px; height: 52px; flex-shrink: 0; transition: transform 250ms; }
-  .logo:hover .mark { transform: scale(1.05); }
+  .logo .mark { width: 78px; height: 78px; flex-shrink: 0; transition: transform 250ms; }
+  .logo:hover .mark { transform: scale(1.04); }
   .logo-img-only { display: inline-flex; }
   .logo-img-only > span:not(.mark) { display: none !important; }
   .logo .mark svg, .logo .mark img { width: 100%; height: 100%; display: block; border-radius: 10px; object-fit: cover; }
@@ -764,12 +764,12 @@
   .bd-label em { color: var(--text-dim); font-style: normal; font-family: var(--font-en-body); font-size: 0.7rem; margin-inline-start: 0.3rem; }
   .bd-num { font-family: var(--font-en-body); font-weight: 900; font-size: 1rem; color: var(--text); }
 
-  .globe-center { position: relative; min-height: 720px; display: flex; flex-direction: column; }
+  .globe-center { position: relative; min-height: 640px; display: flex; flex-direction: column; }
   .globe-center #map { flex: 1; }
   .ncs-map {
     width: 100%;
-    height: 720px;
-    min-height: 540px;
+    height: 640px;
+    min-height: 480px;
     background: #0a0a0a;
     position: relative;
   }
@@ -804,26 +804,18 @@
     background: var(--red); color: #fff;
   }
   .map-view-toggle button:not(.active):hover { color: var(--text); background: rgba(255,255,255,0.05); }
-  /* 3D mode: tilt the entire map container (tiles + markers together) */
-  .ncs-map.map-fake-3d {
-    perspective: 1400px;
+  /* 3D mode: tilt the entire map for a flight-deck perspective */
+  .ncs-map > .leaflet-container {
+    transition: transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
+    transform-origin: center 75%;
+    will-change: transform;
   }
   .ncs-map.map-fake-3d > .leaflet-container {
-    transform: rotateX(45deg) scale(0.95);
-    transform-origin: center 60%;
-    transition: transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  .ncs-map.map-fake-3d > .leaflet-container::after {
-    content: ""; position: absolute; inset: 0;
-    background: linear-gradient(to top, rgba(0,0,0,0.4), transparent 50%);
-    pointer-events: none;
-  }
-  .ncs-map > .leaflet-container {
-    transition: transform 500ms ease;
+    transform: perspective(1200px) rotateX(50deg) scale(1.15);
   }
   /* Match aside heights to map for balanced layout */
   .globe-layout .globe-pane {
-    max-height: 720px;
+    max-height: 640px;
     overflow-y: auto;
   }
   .globe-layout .globe-pane::-webkit-scrollbar { width: 6px; }
@@ -1606,7 +1598,7 @@
 <div class="topbar">
   <div class="topbar-inner">
     <div class="meta">
-      <span><span class="live-dot"></span> بث مباشر</span>
+      <span><span class="live-dot"></span> <span data-i18n="ui.live">بث مباشر</span></span>
       <span>الجمعة، ١ مايو ٢٠٢٦</span>
       <span id="clock">—</span>
       <span>القاهرة ٣٠°</span>
@@ -1656,7 +1648,7 @@
 <div class="modal-overlay" id="settings-modal" hidden>
   <div class="modal" role="dialog" aria-labelledby="settings-title">
     <header>
-      <h3 id="settings-title">إعدادات الموقع · مصادر البيانات</h3>
+      <h3 id="settings-title" data-i18n="settings.title">إعدادات الموقع · مصادر البيانات</h3>
       <button class="modal-close" data-close-modal>×</button>
     </header>
     <div class="modal-body">
@@ -1698,7 +1690,7 @@
         <p id="reader-desc" class="reader-desc">—</p>
         <p id="reader-content-text" class="reader-text">—</p>
         <a id="reader-source-link" href="#" target="_blank" rel="noopener" class="reader-cta">
-          اقرأ المصدر الكامل ↗
+          <span data-i18n="reader.cta">اقرأ المصدر الكامل ↗</span>
         </a>
       </div>
     </div>
@@ -1718,7 +1710,7 @@
       </div>
       <div style="padding: 0.85rem 1.25rem; background: var(--bg-elev-2); border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem;">
         <span style="color: var(--text-muted);">لو البث ما ظهرش، القناة بتمنع التضمين. افتحها على YouTube مباشرة:</span>
-        <a id="channel-yt-link" href="#" target="_blank" rel="noopener" style="background: var(--red); color: #fff; padding: 0.55rem 1.1rem; border-radius: 4px; font-weight: 800; display:inline-flex; align-items:center; gap:0.5rem; font-size:0.85rem;">▶ افتح على يوتيوب</a>
+        <a id="channel-yt-link" href="#" target="_blank" rel="noopener" style="background: var(--red); color: #fff; padding: 0.55rem 1.1rem; border-radius: 4px; font-weight: 800; display:inline-flex; align-items:center; gap:0.5rem; font-size:0.85rem;"><span data-i18n="channel.openyt">▶ افتح على يوتيوب</span></a>
       </div>
     </div>
   </div>
@@ -1749,7 +1741,7 @@
   <div class="globe-header-bar">
     <span class="tag" style="background:var(--red); margin-bottom:0.85rem;" data-i18n="globe.urgent">عاجل · مراقبة استراتيجية لحظية</span>
     <h2 class="globe-title"><span data-i18n="globe.title">الرادار العالمي</span><span style="color:var(--red);">.</span></h2>
-    <p class="globe-tagline">طيران مدني وعسكري · حركة الأساطيل · ناقلات البترول · مضائق العالم — تحديث كل ٥ ثوان</p>
+    <p class="globe-tagline" data-i18n="globe.tagline">طيران مدني وعسكري · حركة الأساطيل · ناقلات البترول · مضائق العالم — تحديث كل ٥ ثوان</p>
   </div>
 
   <div class="globe-layout">
@@ -1775,7 +1767,7 @@
             <div class="theater-name">CENTCOM <span class="tlabel">القيادة المركزية</span></div>
             <div class="theater-region">الخليج · البحر الأحمر · المتوسط الشرقي</div>
             <div class="theater-meta">
-              <span class="threat-pill high">تصعيد</span>
+              <span class="threat-pill high" data-i18n="threat.escalation">تصعيد</span>
               <span class="t-stat" id="t-centcom">٧٢ أصل</span>
             </div>
           </div>
@@ -1786,7 +1778,7 @@
             <div class="theater-name">INDO-PACIFIC <span class="tlabel">المحيط الهادئ</span></div>
             <div class="theater-region">تايوان · بحر الصين الجنوبي · شبه الجزيرة الكورية</div>
             <div class="theater-meta">
-              <span class="threat-pill high">عالي</span>
+              <span class="threat-pill high" data-i18n="threat.high">عالي</span>
               <span class="t-stat" id="t-indopac">٥٤ أصل</span>
             </div>
           </div>
@@ -1797,7 +1789,7 @@
             <div class="theater-name">EUCOM <span class="tlabel">القيادة الأوروبية</span></div>
             <div class="theater-region">البحر الأسود · بحر البلطيق · شرق أوروبا</div>
             <div class="theater-meta">
-              <span class="threat-pill medium">متوسط</span>
+              <span class="threat-pill medium" data-i18n="threat.medium">متوسط</span>
               <span class="t-stat" id="t-eucom">٤١ أصل</span>
             </div>
           </div>
@@ -1808,7 +1800,7 @@
             <div class="theater-name">ARCTIC <span class="tlabel">القطب الشمالي</span></div>
             <div class="theater-region">طرق الشحن الشمالية · القواعد الروسية</div>
             <div class="theater-meta">
-              <span class="threat-pill low">عادي</span>
+              <span class="threat-pill low" data-i18n="threat.low">عادي</span>
               <span class="t-stat" id="t-arctic">١٢ أصل</span>
             </div>
           </div>
@@ -1835,32 +1827,32 @@
         <div class="map-stats-overlay">
           <div class="ovl-stat">
             <div class="ovl-num" id="stat-civ-flights">١٢,٨٤٧</div>
-            <div class="ovl-lbl">مدني</div>
+            <div class="ovl-lbl" data-i18n="stat.civ">مدني</div>
           </div>
           <div class="ovl-stat danger">
             <div class="ovl-num" id="stat-mil-flights">٢٤٠</div>
-            <div class="ovl-lbl">حربي</div>
+            <div class="ovl-lbl" data-i18n="stat.mil">حربي</div>
           </div>
           <div class="ovl-stat">
             <div class="ovl-num" id="stat-cargo">٣,٢١٠</div>
-            <div class="ovl-lbl">سفن</div>
+            <div class="ovl-lbl" data-i18n="stat.cargo">سفن</div>
           </div>
           <div class="ovl-stat danger">
             <div class="ovl-num" id="stat-warships">١٧٥</div>
-            <div class="ovl-lbl">حربية</div>
+            <div class="ovl-lbl" data-i18n="stat.naval">حربية</div>
           </div>
         </div>
       </div>
       </div>
-          <div class="ovl-lbl">مدني</div>
+          <div class="ovl-lbl" data-i18n="stat.civ">مدني</div>
         </div>
         <div class="ovl-stat danger">
           <div class="ovl-num" id="stat-mil-flights">٢٤٠</div>
-          <div class="ovl-lbl">حربي</div>
+          <div class="ovl-lbl" data-i18n="stat.mil">حربي</div>
         </div>
         <div class="ovl-stat">
           <div class="ovl-num" id="stat-cargo">٣,٢١٠</div>
-          <div class="ovl-lbl">سفن</div>
+          <div class="ovl-lbl" data-i18n="stat.cargo">سفن</div>
         </div>
         <div class="ovl-stat danger">
           <div class="ovl-num" id="stat-warships">١٧٥</div>
@@ -2039,8 +2031,8 @@
           <strong>هدف ثالث!</strong> الأهلي يحسم القمة بثلاثية — أحمد عبد القادر (٨٧') · إمام عاشور (٦٢') · محمد شريف (١٨')
         </div>
         <div style="display:flex; gap:0.5rem; padding: 0 1.25rem 1rem;">
-          <a href="https://www.yallakora.com/match-center/" target="_blank" rel="noopener" class="match-link-btn primary">📋 تفاصيل المباراة</a>
-          <a href="https://www.youtube.com/@OnTimeSports/videos" target="_blank" rel="noopener" class="match-link-btn">🎬 شاهد الأهداف</a>
+          <a href="https://www.yallakora.com/match-center/" target="_blank" rel="noopener" class="match-link-btn primary"><span data-i18n="match.details">📋 تفاصيل المباراة</span></a>
+          <a href="https://www.youtube.com/@OnTimeSports/videos" target="_blank" rel="noopener" class="match-link-btn"><span data-i18n="match.highlights">🎬 شاهد الأهداف</span></a>
         </div>
       </div>
       <div style="padding:1rem 1.25rem; border-top:1px solid var(--border);">
@@ -2285,7 +2277,7 @@
 <!-- ================= LIVE STATUS PILL ================= -->
 <div class="live-pill" id="live-pill">
   <span class="dot"></span>
-  <span>متصل · مباشر</span>
+  <span data-i18n="ui.connected">متصل · مباشر</span>
   <span class="count" id="article-count">٢٤٧ خبر اليوم</span>
 </div>
 
@@ -2334,43 +2326,10 @@
     if (typeof bumpArticleCount === 'function') bumpArticleCount();
   });
 
-  // ============================================================
-  // Match minute counter — increments every 60s while live
-  // ============================================================
-  let matchMinute = 72;
-  const matchStatusEl = document.querySelector('.match-status');
-  setInterval(() => {
-    if (matchMinute < 90) {
-      matchMinute += 1;
-      matchStatusEl.innerHTML = `<span class="live-dot"></span> الشوط الثاني · ${matchMinute}'`;
-    }
-  }, 60_000);
+  // v3.13: matchMinute counter removed (match ended, real data only)
 
-  // ============================================================
-  // Goal events — random goal between 90s and 240s
-  // ============================================================
+  // v3.13: triggerGoal removed (was overwriting real TheSportsDB scores)
   const goalAlert = document.getElementById('goal-alert');
-  const goalScorers = [
-    { team: 'home', el: 'score-home', name: 'محمد شريف', minute: () => matchMinute },
-    { team: 'away', el: 'score-away', name: 'شيكو بانزا', minute: () => matchMinute },
-    { team: 'home', el: 'score-home', name: 'إمام عاشور', minute: () => matchMinute },
-  ];
-  function triggerGoal() {
-    const g = goalScorers[Math.floor(Math.random() * goalScorers.length)];
-    const scoreEl = document.getElementById(g.el);
-    scoreEl.textContent = parseInt(scoreEl.textContent, 10) + 1;
-    tick(scoreEl);
-    const teamName = g.team === 'home' ? 'الأهلي' : 'الزمالك';
-    goalAlert.innerHTML = `<strong>هدف!</strong> ${teamName} عبر ${g.name} — الدقيقة ${g.minute()}'`;
-    goalAlert.style.animation = 'none';
-    void goalAlert.offsetHeight;
-    goalAlert.style.animation = 'goal-flash 800ms 4 alternate';
-  }
-  function scheduleNextGoal() {
-    const delay = 90_000 + Math.random() * 150_000; // 1.5–4 min
-    setTimeout(() => { triggerGoal(); scheduleNextGoal(); }, delay);
-  }
-  scheduleNextGoal();
 
   // ============================================================
   // FX / Gold jitter — simulates live price feed
@@ -3038,9 +2997,11 @@
     ar: {
       'nav.home': 'الرئيسية', 'nav.politics': 'سياسة', 'nav.economy': 'اقتصاد',
       'nav.sports': 'رياضة', 'nav.live': 'مباشر', 'nav.center': 'المركز',
-      'ui.refresh': 'تحديث', 'ui.breaking': 'عاجل',
+      'ui.refresh': 'تحديث', 'ui.breaking': 'عاجل', 'ui.live': 'بث مباشر',
+      'ui.connected': 'متصل · مباشر',
       'globe.urgent': 'عاجل · مراقبة استراتيجية لحظية',
       'globe.title': 'الرادار العالمي',
+      'globe.tagline': 'طيران مدني وعسكري · حركة الأساطيل · ناقلات البترول · مضائق العالم — تحديث كل ٥ ثوان',
       'globe.layers': 'الطبقات · LAYERS',
       'globe.theaters': 'المسارح العسكرية',
       'globe.tracked_mil': 'طائرات حربية مرصودة',
@@ -3056,17 +3017,23 @@
       'panel.sports': 'آخر النتائج — الدوري المصري',
       'chip.all': 'الكل', 'chip.civ': 'طيران مدني', 'chip.mil': 'طيران حربي',
       'chip.cargo': 'سفن شحن', 'chip.tanker': 'ناقلات بترول',
-      'chip.naval': 'بحرية حربية', 'chip.choke': 'المضائق',
-      'chip.daynight': 'ليل / نهار',
-      'more.channels': 'كل القنوات ←', 'more.world': 'كل الأخبار الدولية ←',
-      'more.all': 'المزيد ←',
+      'chip.naval': 'بحرية حربية', 'chip.choke': 'المضائق', 'chip.daynight': 'ليل / نهار',
+      'more.channels': 'كل القنوات ←', 'more.world': 'كل الأخبار الدولية ←', 'more.all': 'المزيد ←',
+      'stat.civ': 'مدني', 'stat.mil': 'حربي', 'stat.cargo': 'سفن', 'stat.naval': 'حربية',
+      'threat.escalation': 'تصعيد', 'threat.high': 'عالي', 'threat.medium': 'متوسط', 'threat.low': 'عادي',
+      'match.details': '📋 تفاصيل المباراة', 'match.highlights': '🎬 شاهد الأهداف',
+      'settings.title': 'إعدادات الموقع · مصادر البيانات',
+      'reader.cta': 'اقرأ المصدر الكامل ↗',
+      'channel.openyt': '▶ افتح على يوتيوب',
     },
     en: {
       'nav.home': 'Home', 'nav.politics': 'Politics', 'nav.economy': 'Economy',
       'nav.sports': 'Sports', 'nav.live': 'Live', 'nav.center': 'NCS',
-      'ui.refresh': 'Refresh', 'ui.breaking': 'BREAKING',
+      'ui.refresh': 'Refresh', 'ui.breaking': 'BREAKING', 'ui.live': 'LIVE',
+      'ui.connected': 'Connected · Live',
       'globe.urgent': 'BREAKING · LIVE STRATEGIC MONITORING',
       'globe.title': 'Global Radar',
+      'globe.tagline': 'Civilian and military aviation · Fleet movements · Oil tankers · World chokepoints — updated every 5 sec',
       'globe.layers': 'LAYERS',
       'globe.theaters': 'Military Theaters',
       'globe.tracked_mil': 'Tracked Military Aircraft',
@@ -3082,10 +3049,14 @@
       'panel.sports': 'Latest Results — Egyptian League',
       'chip.all': 'All', 'chip.civ': 'Civilian', 'chip.mil': 'Military',
       'chip.cargo': 'Cargo', 'chip.tanker': 'Tankers',
-      'chip.naval': 'Naval', 'chip.choke': 'Chokepoints',
-      'chip.daynight': 'Day / Night',
-      'more.channels': 'All Channels →', 'more.world': 'All International →',
-      'more.all': 'More →',
+      'chip.naval': 'Naval', 'chip.choke': 'Chokepoints', 'chip.daynight': 'Day / Night',
+      'more.channels': 'All Channels →', 'more.world': 'All International →', 'more.all': 'More →',
+      'stat.civ': 'Civ', 'stat.mil': 'Mil', 'stat.cargo': 'Ships', 'stat.naval': 'Navy',
+      'threat.escalation': 'Escalating', 'threat.high': 'High', 'threat.medium': 'Medium', 'threat.low': 'Low',
+      'match.details': '📋 Match details', 'match.highlights': '🎬 Highlights',
+      'settings.title': 'Site Settings · Data Sources',
+      'reader.cta': 'Read full source ↗',
+      'channel.openyt': '▶ Open on YouTube',
     },
   };
 
@@ -3269,13 +3240,13 @@
       const cat = catFromArticle(a);
       const title = (a.title || '').replace(/\s*-\s*[^-]*$/, '').trim();
       const sources = (a.source && a.source.name) || 'NewsAPI';
-      // Route through weserv.nl image proxy: handles HTTP->HTTPS + CORS reliably
+      // Progressive image fallback: direct → weserv proxy → themed gradient
       const rawUrl = a.urlToImage || '';
       const proxyUrl = rawUrl ? `https://images.weserv.nl/?url=${encodeURIComponent(rawUrl.replace(/^https?:\/\//, ''))}&w=600&h=400&fit=cover` : '';
-      if (!rawUrl) console.info('[NCS] article without urlToImage:', a.title?.slice(0, 60));
       const fallbackHtml = `<div class="news-thumb-cat cat-${cat}">${ICONS_INDEX[cat] || ICONS_INDEX.world}</div>`;
-      const thumb = proxyUrl
-        ? `<div class="news-thumb-wrap"><img src="${proxyUrl}" alt="" class="news-thumb-img-tag" loading="lazy" onerror="this.parentElement.outerHTML=this.dataset.fb;" data-fb="${fallbackHtml.replace(/"/g, '&quot;')}"/></div>`
+      // Stage 1 attempts direct, on error swaps to weserv proxy, on second error swaps to gradient
+      const thumb = rawUrl
+        ? `<div class="news-thumb-wrap"><img src="${rawUrl}" alt="" class="news-thumb-img-tag" loading="lazy" referrerpolicy="no-referrer" data-stage="1" data-proxy="${proxyUrl}" data-fb="${fallbackHtml.replace(/"/g, '&quot;')}" onerror="if(this.dataset.stage==='1'){this.dataset.stage='2';this.src=this.dataset.proxy;}else{this.parentElement.outerHTML=this.dataset.fb;}"/></div>`
         : fallbackHtml;
       return `<button class="news-card news-card-btn" data-article='${JSON.stringify(a).replace(/'/g, "&apos;")}' style="display:flex;flex-direction:column;background:transparent;border:0;padding:0;text-align:start;color:inherit;cursor:pointer;width:100%;">
         ${thumb}
@@ -3341,30 +3312,40 @@
     const as_ = top.intAwayScore;
     if (hs == null || as_ == null) return;
 
-    const homeEl = document.getElementById('score-home');
-    const awayEl = document.getElementById('score-away');
-    if (homeEl) homeEl.textContent = hs;
-    if (awayEl) awayEl.textContent = as_;
+    // Always show Al Ahly on visual RIGHT (DOM index 0 in RTL grid)
+    // Identify which API team is Ahly to map scores correctly
+    const ahlyHome = (home || '').toLowerCase().includes('ahly');
+    const teamRight = ahlyHome ? home : away;
+    const teamLeft  = ahlyHome ? away : home;
+    const scoreRight = ahlyHome ? hs : as_;  // Al Ahly's score
+    const scoreLeft  = ahlyHome ? as_ : hs;  // opponent's score
+    const badgeRight = ahlyHome ? (top.strHomeTeamBadge || '') : (top.strAwayTeamBadge || '');
+    const badgeLeft  = ahlyHome ? (top.strAwayTeamBadge || '') : (top.strHomeTeamBadge || '');
 
-    // Update team names on the match panel
+    // In our DOM-swapped score: <span id=score-away>X</span> − <span id=score-home>Y</span>
+    // Numbers in RTL render LTR, so visual RIGHT shows score-away, visual LEFT shows score-home
+    const homeEl = document.getElementById('score-home');  // visual LEFT
+    const awayEl = document.getElementById('score-away');  // visual RIGHT
+    if (awayEl) awayEl.textContent = scoreRight; // Al Ahly's score on visual right
+    if (homeEl) homeEl.textContent = scoreLeft;  // opponent's score on visual left
+
+    // Team names — DOM[0] is visual RIGHT in RTL grid
     const teams = document.querySelectorAll('.match .team-name');
     if (teams.length >= 2) {
-      teams[0].textContent = home;
-      teams[1].textContent = away;
+      teams[0].textContent = teamRight; // visual RIGHT (Al Ahly)
+      teams[1].textContent = teamLeft;  // visual LEFT
     }
     const logos = document.querySelectorAll('.match .team-logo');
-    const homeBadge = top.strHomeTeamBadge || '';
-    const awayBadge = top.strAwayTeamBadge || '';
     if (logos.length >= 2) {
-      if (homeBadge) {
-        logos[0].innerHTML = `<img src="${homeBadge}/preview" alt="${home}" onerror="this.outerHTML='<span>${(home||'').slice(0,3).toUpperCase()}</span>'" style="width:90%;height:90%;object-fit:contain;"/>`;
+      if (badgeRight) {
+        logos[0].innerHTML = `<img src="${badgeRight}/preview" alt="${teamRight}" onerror="this.outerHTML='<span>'+'${(teamRight||'').slice(0,3).toUpperCase()}'+'</span>'" style="width:88%;height:88%;object-fit:contain;"/>`;
       } else {
-        logos[0].textContent = (home || '').slice(0, 3).toUpperCase();
+        logos[0].textContent = (teamRight || '').slice(0, 3).toUpperCase();
       }
-      if (awayBadge) {
-        logos[1].innerHTML = `<img src="${awayBadge}/preview" alt="${away}" onerror="this.outerHTML='<span>${(away||'').slice(0,3).toUpperCase()}</span>'" style="width:90%;height:90%;object-fit:contain;"/>`;
+      if (badgeLeft) {
+        logos[1].innerHTML = `<img src="${badgeLeft}/preview" alt="${teamLeft}" onerror="this.outerHTML='<span>'+'${(teamLeft||'').slice(0,3).toUpperCase()}'+'</span>'" style="width:88%;height:88%;object-fit:contain;"/>`;
       } else {
-        logos[1].textContent = (away || '').slice(0, 3).toUpperCase();
+        logos[1].textContent = (teamLeft || '').slice(0, 3).toUpperCase();
       }
     }
 
@@ -3385,10 +3366,20 @@
       }
     });
 
-    // Update meta line (status, round)
+    // Update meta line — match ended, show date
     const matchStatus = document.querySelector('.match-status');
     if (matchStatus) {
-      matchStatus.innerHTML = '<span class="live-dot" style="background:#10b981;"></span> ' + (top.strStatus === 'Match Finished' ? 'انتهت المباراة' : (top.strStatus || 'انتهت'));
+      const dateStr = top.dateEvent ? new Date(top.dateEvent).toLocaleDateString('ar-EG', { weekday: 'long', day: 'numeric', month: 'long' }) : '';
+      matchStatus.innerHTML = `<span class="live-dot" style="background:#10b981;"></span> انتهت · ${dateStr}`;
+    }
+    // Update goal alert with the actual scorer if any
+    const goalAlert = document.getElementById('goal-alert');
+    if (goalAlert && hs != null && as_ != null) {
+      const winner = hs > as_ ? home : (as_ > hs ? away : 'تعادل');
+      const ahlyHome = (home || '').toLowerCase().includes('ahly');
+      const ahlyScore = ahlyHome ? hs : as_;
+      const zamScore  = ahlyHome ? as_ : hs;
+      goalAlert.innerHTML = `<strong>نتيجة نهائية:</strong> الأهلي ${ahlyScore} – ${zamScore} الزمالك (${dateStr || 'الجولة 22'})`;
     }
   }
   applySportsData();
@@ -3877,6 +3868,24 @@
   }
   // Re-test failed sources every 60s in case they recover
   setInterval(autoTestAllSources, 60_000);
+
+
+  // ============================================================
+  // v3.13: Force initial data load (in case first call was rate-limited)
+  // ============================================================
+  setTimeout(() => {
+    try {
+      if (typeof applyMarketData === 'function') applyMarketData();
+      if (typeof fetchRealFX === 'function') fetchRealFX();
+      if (typeof applySportsData === 'function') applySportsData();
+    } catch (e) { console.warn('[NCS] init reload err:', e); }
+  }, 1500);
+  setTimeout(() => {
+    try {
+      if (typeof applyMarketData === 'function') applyMarketData();
+      if (typeof fetchRealFX === 'function') fetchRealFX();
+    } catch (e) {}
+  }, 5000);
 
 </script>
 </body>
