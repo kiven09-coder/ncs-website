@@ -183,9 +183,13 @@
     animation: scroll-rtl 50s linear infinite;
     white-space: nowrap;
   }
-  .ticker-content span::before {
+  .ticker-content span::before, .ticker-content a::before {
     content: "•"; margin-inline-end: 1rem; opacity: 0.6;
   }
+  .ticker-item {
+    color: #fff; text-decoration: none; transition: opacity 200ms;
+  }
+  .ticker-item:hover { text-decoration: underline; opacity: 0.9; }
   @keyframes scroll-rtl {
     from { transform: translateX(0); }
     to   { transform: translateX(100%); }
@@ -731,6 +735,10 @@
     border: 1px solid var(--border);
     background: #050505;
   }
+  /* OSM tiles → dark theme via CSS filter (works without external dark tile servers) */
+  .leaflet-tile.osm-dark-tiles, .leaflet-layer .osm-dark-tiles {
+    filter: brightness(0.6) invert(1) contrast(2.5) hue-rotate(200deg) saturate(0.4) brightness(0.78);
+  }
   /* Leaflet dark theming */
   .leaflet-container { background: #050505 !important; font-family: var(--font-ar-body); }
   .leaflet-control-attribution {
@@ -1145,18 +1153,18 @@
 <!-- ================= BREAKING TICKER ================= -->
 <div class="ticker">
   <div class="ticker-inner">
-    <div class="ticker-label"><span class="live-dot"></span> عاجل</div>
+    <div class="ticker-label"><span class="live-dot"></span> <span data-i18n="ui.breaking">عاجل</span></div>
     <div class="ticker-track">
       <div class="ticker-content">
-        <span>مجلس الأمن يعقد جلسة طارئة لمناقشة التصعيد بين واشنطن وطهران</span>
-        <span>ارتفاع جديد في سعر الذهب: عيار ٢١ يتجاوز ٤٦٠٠ جنيه للجرام</span>
-        <span>الأهلي يتقدم على الزمالك بهدف نظيف في الدقيقة ٤٢ من القمة</span>
-        <span>البنك المركزي المصري يثبت أسعار الفائدة في اجتماع اليوم</span>
-        <span>تقرير: ١٢٤ ناقلة بترول في طريقها إلى البحر الأحمر</span>
-        <span>إسرائيل ترد على هجوم صاروخي قادم من جنوب لبنان</span>
+        <a href="https://www.aljazeera.net/news/category/iran" target="_blank" rel="noopener" class="ticker-item">مجلس الأمن يعقد جلسة طارئة لمناقشة التصعيد بين واشنطن وطهران</a>
+        <a href="https://www.cbe.org.eg/ar/economic-research/" target="_blank" rel="noopener" class="ticker-item">ارتفاع جديد في سعر الذهب: عيار ٢١ يتجاوز ٤٦٠٠ جنيه للجرام</a>
+        <a href="https://www.yallakora.com/match-center/" target="_blank" rel="noopener" class="ticker-item">الأهلي يتقدم على الزمالك بهدف نظيف في الدقيقة ٤٢ من القمة</a>
+        <a href="https://www.cbe.org.eg/ar/" target="_blank" rel="noopener" class="ticker-item">البنك المركزي المصري يثبت أسعار الفائدة في اجتماع اليوم</a>
+        <a href="https://www.reuters.com/world/middle-east/" target="_blank" rel="noopener" class="ticker-item">تقرير: ١٢٤ ناقلة بترول في طريقها إلى البحر الأحمر</a>
+        <a href="https://www.aljazeera.net/news/category/israel" target="_blank" rel="noopener" class="ticker-item">إسرائيل ترد على هجوم صاروخي قادم من جنوب لبنان</a>
         <!-- duplicate for seamless loop -->
-        <span>مجلس الأمن يعقد جلسة طارئة لمناقشة التصعيد بين واشنطن وطهران</span>
-        <span>ارتفاع جديد في سعر الذهب: عيار ٢١ يتجاوز ٤٦٠٠ جنيه للجرام</span>
+        <a href="https://www.aljazeera.net/news/category/iran" target="_blank" rel="noopener" class="ticker-item">مجلس الأمن يعقد جلسة طارئة لمناقشة التصعيد بين واشنطن وطهران</a>
+        <a href="https://www.cbe.org.eg/ar/economic-research/" target="_blank" rel="noopener" class="ticker-item">ارتفاع جديد في سعر الذهب: عيار ٢١ يتجاوز ٤٦٠٠ جنيه للجرام</a>
       </div>
     </div>
   </div>
@@ -1165,15 +1173,15 @@
 <!-- ================= 3D GLOBE SECTION - Strategic Radar ================= -->
 <section class="globe-section">
   <div class="globe-header-bar">
-    <span class="tag" style="background:var(--red); margin-bottom:0.85rem;">عاجل · مراقبة استراتيجية لحظية</span>
-    <h2 class="globe-title">الرادار العالمي<span style="color:var(--red);">.</span></h2>
+    <span class="tag" style="background:var(--red); margin-bottom:0.85rem;" data-i18n="globe.urgent">عاجل · مراقبة استراتيجية لحظية</span>
+    <h2 class="globe-title"><span data-i18n="globe.title">الرادار العالمي</span><span style="color:var(--red);">.</span></h2>
     <p class="globe-tagline">طيران مدني وعسكري · حركة الأساطيل · ناقلات البترول · مضائق العالم — تحديث كل ٥ ثوان</p>
   </div>
 
   <div class="globe-layout">
     <aside class="globe-pane">
       <div class="pane-section">
-        <h4 class="pane-title">المسارح العسكرية</h4>
+        <h4 class="pane-title" data-i18n="globe.theaters">المسارح العسكرية</h4>
         <div class="theater" data-priority="high">
           <div class="theater-bar"></div>
           <div class="theater-body">
@@ -1221,7 +1229,7 @@
       </div>
 
       <div class="pane-section">
-        <h4 class="pane-title">طائرات حربية مرصودة</h4>
+        <h4 class="pane-title" data-i18n="globe.tracked_mil">طائرات حربية مرصودة</h4>
         <div class="bd-row"><span class="bd-label">مقاتلات <em>Fighter</em></span><span class="bd-num" id="bd-fighter">٦٨</span></div>
         <div class="bd-row"><span class="bd-label">قاذفات <em>Bomber</em></span><span class="bd-num" id="bd-bomber">١٢</span></div>
         <div class="bd-row"><span class="bd-label">تجسس <em>Reconnaissance</em></span><span class="bd-num" id="bd-recon">٢٤</span></div>
@@ -1234,13 +1242,13 @@
 
     <div class="globe-center">
       <div class="map-filter-bar" id="map-filter-bar">
-        <button class="map-chip active" data-layer="all">الكل</button>
-        <button class="map-chip" data-layer="civ">طيران مدني</button>
-        <button class="map-chip" data-layer="mil" style="--chip-color:#ef4444;">طيران حربي</button>
-        <button class="map-chip" data-layer="cargo" style="--chip-color:#10b981;">سفن شحن</button>
-        <button class="map-chip" data-layer="tanker" style="--chip-color:#f97316;">ناقلات بترول</button>
-        <button class="map-chip" data-layer="naval" style="--chip-color:#06b6d4;">بحرية حربية</button>
-        <button class="map-chip" data-layer="choke" style="--chip-color:#fbbf24;">المضائق</button>
+        <button class="map-chip active" data-layer="all" data-i18n="chip.all">الكل</button>
+        <button class="map-chip" data-layer="civ" data-i18n="chip.civ">طيران مدني</button>
+        <button class="map-chip" data-layer="mil" style="--chip-color:#ef4444;" data-i18n="chip.mil">طيران حربي</button>
+        <button class="map-chip" data-layer="cargo" style="--chip-color:#10b981;" data-i18n="chip.cargo">سفن شحن</button>
+        <button class="map-chip" data-layer="tanker" style="--chip-color:#f97316;" data-i18n="chip.tanker">ناقلات بترول</button>
+        <button class="map-chip" data-layer="naval" style="--chip-color:#06b6d4;" data-i18n="chip.naval">بحرية حربية</button>
+        <button class="map-chip" data-layer="choke" style="--chip-color:#fbbf24;" data-i18n="chip.choke">المضائق</button>
       </div>
       <div id="map" class="ncs-map"></div>
       <div class="globe-stats-bar">
@@ -1279,7 +1287,7 @@
         <div id="assets-feed" class="assets-feed"></div>
       </div>
       <div class="pane-section">
-        <h4 class="pane-title">المضائق الاستراتيجية</h4>
+        <h4 class="pane-title" data-i18n="globe.chokepoints">المضائق الاستراتيجية</h4>
         <div class="choke-row"><span>مضيق هرمز</span><span class="choke-stat danger" id="ck-hormuz">١٤ سفينة</span></div>
         <div class="choke-row"><span>قناة السويس</span><span class="choke-stat" id="ck-suez">٢٢ سفينة</span></div>
         <div class="choke-row"><span>باب المندب</span><span class="choke-stat danger" id="ck-bab">١٨ سفينة</span></div>
@@ -1333,7 +1341,7 @@
 <!-- ================= LIVE CHANNELS ================= -->
 <div class="container">
   <div class="section-head" id="live" style="scroll-margin-top:90px;">
-    <h2>قنوات مباشرة</h2>
+    <h2 data-i18n="section.live_channels">قنوات مباشرة</h2>
     <a href="#" class="more">كل القنوات ←</a>
   </div>
   <div class="channels">
@@ -1367,7 +1375,7 @@
 <!-- ================= 3-COLUMN GRID: SPORTS + ECONOMY + EXTRA ================= -->
 <div class="container">
   <div class="section-head" id="sports" style="scroll-margin-top:90px;">
-    <h2>متابعة لحظية — رياضة واقتصاد</h2>
+    <h2 data-i18n="section.live_tracking">متابعة لحظية — رياضة واقتصاد</h2>
     <a href="#" class="more">المزيد ←</a>
   </div>
 
@@ -1376,7 +1384,7 @@
     <!-- SPORTS LIVE WIDGET -->
     <div class="panel">
       <div class="panel-head">
-        <h3><span class="live-dot"></span> آخر النتائج — الدوري المصري</h3>
+        <h3><span class="live-dot"></span> <span data-i18n="panel.sports">آخر النتائج — الدوري المصري</span></h3>
         <button class="panel-refresh" id="refresh-sports" title="تحديث">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
         </button>
@@ -1404,7 +1412,7 @@
         </div>
         <div style="display:flex; gap:0.5rem; padding: 0 1.25rem 1rem;">
           <a href="https://www.yallakora.com/match-center/" target="_blank" rel="noopener" class="match-link-btn primary">📋 تفاصيل المباراة</a>
-          <a href="https://www.youtube.com/results?search_query=ahly+zamalek+highlights" target="_blank" rel="noopener" class="match-link-btn">🎬 شاهد الأهداف</a>
+          <a href="https://www.youtube.com/@OnTimeSports/videos" target="_blank" rel="noopener" class="match-link-btn">🎬 شاهد الأهداف</a>
         </div>
       </div>
       <div style="padding:1rem 1.25rem; border-top:1px solid var(--border);">
@@ -1424,7 +1432,7 @@
     <!-- ECONOMY: GOLD --><div id="economy" style="position:absolute;margin-top:-90px;"></div>
     <div class="panel">
       <div class="panel-head">
-        <h3>أسعار الذهب · بورصة + الصاغة</h3>
+        <h3 data-i18n="panel.gold">أسعار الذهب · بورصة + الصاغة</h3>
         <button class="panel-refresh" id="refresh-gold" title="تحديث أسعار الذهب">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
         </button>
@@ -1464,7 +1472,7 @@
     <!-- ECONOMY: FX -->
     <div class="panel">
       <div class="panel-head">
-        <h3>عملات مقابل الجنيه</h3>
+        <h3 data-i18n="panel.fx">عملات مقابل الجنيه</h3>
         <button class="panel-refresh" id="refresh-fx" title="تحديث أسعار العملات الآن">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
         </button>
@@ -1505,7 +1513,7 @@
 
   <!-- ================= POLITICS — USA / IRAN / ISRAEL ================= -->
   <div class="section-head" id="politics" style="scroll-margin-top:90px;">
-    <h2>أخبار العالم — ساحة الصراع</h2>
+    <h2 data-i18n="section.world_news">أخبار العالم — ساحة الصراع</h2>
     <a href="#" class="more">كل الأخبار الدولية ←</a>
   </div>
 
@@ -1541,7 +1549,7 @@
 
   <!-- ================= NEWS GRID ================= -->
   <div class="section-head">
-    <h2>آخر الأخبار</h2>
+    <h2 data-i18n="section.latest">آخر الأخبار</h2>
     <a href="#" class="more">المزيد ←</a>
   </div>
 
@@ -1577,7 +1585,7 @@
 <section class="ncs-section">
   <div class="container">
     <div class="section-head" id="center" style="margin-top:0; scroll-margin-top:90px;">
-      <h2>من المركز · فيسبوك NCS</h2>
+      <h2 data-i18n="section.ncs">من المركز · فيسبوك NCS</h2>
       <a href="https://www.facebook.com/search/top?q=%D8%A7%D9%84%D9%85%D8%B1%D9%83%D8%B2%20%D8%A7%D9%84%D9%88%D8%B7%D9%86%D9%8A%20%D9%84%D9%84%D8%AF%D8%B1%D8%A7%D8%B3%D8%A7%D8%AA%20-%20national%20center%20for%20studies" target="_blank" rel="noopener" class="more">صفحة المركز ←</a>
     </div>
     <div class="ncs-grid">
@@ -1691,10 +1699,13 @@
   refreshBtn.addEventListener('click', () => {
     refreshBtn.classList.add('spinning');
     setTimeout(() => refreshBtn.classList.remove('spinning'), 800);
-    // Trigger jitter on all live values
-    jitterFx();
-    jitterGold();
-    bumpArticleCount();
+    // Refresh all real data sources
+    if (typeof window.refreshGold === 'function') window.refreshGold();
+    else if (typeof refreshGold === 'function') refreshGold();
+    if (typeof window.fetchRealFX === 'function') window.fetchRealFX();
+    else if (typeof fetchRealFX === 'function') fetchRealFX();
+    if (typeof fetchFlights === 'function' && typeof flightsLoaded !== 'undefined' && flightsLoaded) fetchFlights();
+    if (typeof bumpArticleCount === 'function') bumpArticleCount();
   });
 
   // ============================================================
@@ -1856,26 +1867,14 @@
 
   L.control.zoom({ position: 'topright' }).addTo(map);
 
-  const cartoLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap &copy; CARTO',
-    subdomains: 'abcd',
+  // OpenStreetMap tiles (always works) + CSS filter to give it a dark look
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors',
+    subdomains: 'abc',
     maxZoom: 19,
     noWrap: true,
-  });
-  let _tileFallbackTriggered = false;
-  cartoLayer.on('tileerror', () => {
-    if (_tileFallbackTriggered) return;
-    _tileFallbackTriggered = true;
-    console.warn('[NCS] Carto tiles failed; falling back to OpenStreetMap');
-    map.removeLayer(cartoLayer);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors',
-      subdomains: 'abc',
-      maxZoom: 19,
-      noWrap: true,
-    }).addTo(map);
-  });
-  cartoLayer.addTo(map);
+    className: 'osm-dark-tiles',
+  }).addTo(map);
 
   // ----- Icon helpers -----
   function planeIcon(color, heading) {
@@ -2449,12 +2448,44 @@
     ar: {
       'nav.home': 'الرئيسية', 'nav.politics': 'سياسة', 'nav.economy': 'اقتصاد',
       'nav.sports': 'رياضة', 'nav.live': 'مباشر', 'nav.center': 'المركز',
-      'ui.refresh': 'تحديث',
+      'ui.refresh': 'تحديث', 'ui.breaking': 'عاجل',
+      'globe.urgent': 'عاجل · مراقبة استراتيجية لحظية',
+      'globe.title': 'الرادار العالمي',
+      'globe.theaters': 'المسارح العسكرية',
+      'globe.tracked_mil': 'طائرات حربية مرصودة',
+      'globe.chokepoints': 'المضائق الاستراتيجية',
+      'section.live_channels': 'قنوات مباشرة',
+      'section.live_tracking': 'متابعة لحظية — رياضة واقتصاد',
+      'section.world_news': 'أخبار العالم — ساحة الصراع',
+      'section.latest': 'آخر الأخبار',
+      'section.ncs': 'من المركز · فيسبوك NCS',
+      'panel.gold': 'أسعار الذهب · بورصة + الصاغة',
+      'panel.fx': 'عملات مقابل الجنيه',
+      'panel.sports': 'آخر النتائج — الدوري المصري',
+      'chip.all': 'الكل', 'chip.civ': 'طيران مدني', 'chip.mil': 'طيران حربي',
+      'chip.cargo': 'سفن شحن', 'chip.tanker': 'ناقلات بترول',
+      'chip.naval': 'بحرية حربية', 'chip.choke': 'المضائق',
     },
     en: {
       'nav.home': 'Home', 'nav.politics': 'Politics', 'nav.economy': 'Economy',
       'nav.sports': 'Sports', 'nav.live': 'Live', 'nav.center': 'NCS',
-      'ui.refresh': 'Refresh',
+      'ui.refresh': 'Refresh', 'ui.breaking': 'BREAKING',
+      'globe.urgent': 'BREAKING · LIVE STRATEGIC MONITORING',
+      'globe.title': 'Global Radar',
+      'globe.theaters': 'Military Theaters',
+      'globe.tracked_mil': 'Tracked Military Aircraft',
+      'globe.chokepoints': 'Strategic Chokepoints',
+      'section.live_channels': 'Live Channels',
+      'section.live_tracking': 'Live Tracking — Sports & Economy',
+      'section.world_news': 'World News — Conflict Zone',
+      'section.latest': 'Latest News',
+      'section.ncs': 'From NCS · Facebook',
+      'panel.gold': 'Gold Prices · Spot + Retail',
+      'panel.fx': 'Currencies vs EGP',
+      'panel.sports': 'Latest Results — Egyptian League',
+      'chip.all': 'All', 'chip.civ': 'Civilian', 'chip.mil': 'Military',
+      'chip.cargo': 'Cargo', 'chip.tanker': 'Tankers',
+      'chip.naval': 'Naval', 'chip.choke': 'Chokepoints',
     },
   };
 
