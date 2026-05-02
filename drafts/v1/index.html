@@ -128,14 +128,21 @@
   .logo .mark { width: 44px; height: 44px; flex-shrink: 0; }
   .logo .mark svg { width: 100%; height: 100%; display: block; }
   nav.primary ul {
-    display: flex; gap: 2rem; list-style: none; padding: 0; margin: 0;
+    display: flex; gap: 0; list-style: none; padding: 0; margin: 0;
     justify-content: center;
-    font-weight: 700; font-size: 0.95rem;
+    font-weight: 700; font-size: 0.92rem;
+  }
+  nav.primary li {
+    position: relative;
   }
   nav.primary a {
-    color: var(--text-muted); padding: 0.5rem 0;
-    position: relative; transition: color 200ms var(--ease-out);
+    display: inline-block;
+    color: var(--text-muted); padding: 0.55rem 1rem;
+    position: relative; transition: all 200ms var(--ease-out);
+    border-radius: 4px;
+    margin: 0 0.15rem;
   }
+  nav.primary a:hover { background: rgba(225, 29, 43, 0.08); color: var(--text); }
   nav.primary a:hover, nav.primary a.active { color: var(--text); }
   nav.primary a.active::after {
     content: ""; position: absolute; bottom: -1.05rem; left: 0; right: 0;
@@ -1320,6 +1327,56 @@
   .reader-cta:hover { background: var(--red-dim); transform: translateX(-3px); }
 
 
+
+  /* === v3.10: Design polish === */
+
+  /* Hero section: ensure side cards equal height */
+  .hero { align-items: stretch; }
+  .hero-side { display: flex; flex-direction: column; gap: 1.25rem; height: 100%; }
+  .hero-side > .card { flex: 1; min-height: 180px; display: flex; flex-direction: column; }
+
+  /* Channels: uniform aspect ratio + smaller, tighter spacing */
+  .channels { gap: 0.75rem; }
+
+  /* News grid uniform card heights */
+  .news-grid { align-items: stretch; }
+  .news-grid > * { display: flex; flex-direction: column; height: 100%; }
+  .news-grid .news-thumb-wrap, .news-grid .news-thumb-cat { flex: 0 0 auto; }
+  .news-grid h4 { flex: 1; }
+
+  /* Politics cards uniform */
+  .politics-grid { align-items: stretch; }
+  .country-card { display: flex; flex-direction: column; }
+
+  /* Section spacing — consistent rhythm */
+  .section-head { margin-block: clamp(2.25rem, 1.5rem + 2vw, 3.5rem) 1.25rem; }
+
+  /* Sticky stat overlays kept compact */
+  .globe-stats-bar {
+    margin-top: 0.5rem; padding: 0.5rem;
+    background: rgba(0,0,0,0.5); border: 1px solid var(--border);
+  }
+
+  /* Channel cards: clean bordering */
+  .channel { border-radius: 6px; }
+
+  /* Gold + FX panels: no jitter, calm presentation */
+  .panel { transition: border-color 250ms; }
+
+  /* Live channel modal: hint message if iframe fails */
+  .iframe-wrap {
+    position: relative;
+  }
+  .iframe-wrap::before {
+    content: "جاري تحميل البث المباشر...";
+    position: absolute; inset: 0;
+    display: grid; place-items: center;
+    color: var(--text-muted); font-size: 0.9rem;
+    background: #000;
+    z-index: 0;
+  }
+  .iframe-wrap iframe { z-index: 1; position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
   /* === v3.9: News card image with fallback === */
   .news-thumb-wrap {
     aspect-ratio: 4/3;
@@ -1537,7 +1594,11 @@
     </header>
     <div class="modal-body" style="padding: 0;">
       <div class="iframe-wrap">
-        <iframe id="channel-iframe" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        <iframe id="channel-iframe" src="" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+      </div>
+      <div style="padding: 0.85rem 1.25rem; background: var(--bg-elev-2); border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem;">
+        <span style="color: var(--text-muted);">لو البث ما ظهرش، القناة بتمنع التضمين. افتحها على YouTube مباشرة:</span>
+        <a id="channel-yt-link" href="#" target="_blank" rel="noopener" style="background: var(--red); color: #fff; padding: 0.4rem 0.85rem; border-radius: 4px; font-weight: 800;">▶ YouTube</a>
       </div>
     </div>
   </div>
@@ -2194,8 +2255,8 @@
     document.getElementById('gold-updated').textContent = 'الآن';
   }
 
-  setInterval(jitterFx, 7_000);
-  setInterval(jitterGold, 5_000);
+  // jitterFx interval removed in v3.10 — only manual refresh
+  // jitterGold interval removed in v3.10 — only manual refresh
 
   // ============================================================
   // "Just now" timestamps — rolling
@@ -2782,7 +2843,7 @@
     if (btn) setTimeout(() => btn.classList.remove('spinning'), 600);
   }
   refreshGold();
-  setInterval(refreshGold, 10_000);
+  // refreshGold interval removed in v3.10 — see applyMarketData (5 min)
   const refreshGoldBtn = document.getElementById('refresh-gold');
   if (refreshGoldBtn) refreshGoldBtn.addEventListener('click', refreshGold);
 
@@ -2943,9 +3004,7 @@
   // ============================================================
   // v3: Speed up gold visible refresh (3s instead of 10s)
   // ============================================================
-  if (typeof refreshGold === 'function') {
-    setInterval(() => { if (typeof window.refreshGold === 'function') window.refreshGold(); }, 6_000);
-  }
+  // v3.10: removed 6s refreshGold interval (was causing values to bounce)
 
   // ============================================================
   // v3.5: NewsAPI integration with localStorage caching (30 min TTL)
@@ -3597,7 +3656,9 @@
       const name = btn.dataset.channelName;
       if (!videoId || !channelModal || !channelIframe) return;
       channelTitle.textContent = name + ' — البث المباشر';
-      channelIframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&modestbranding=1`;
+      channelIframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&modestbranding=1&rel=0`;
+      const yt = document.getElementById('channel-yt-link');
+      if (yt) yt.href = `https://www.youtube.com/watch?v=${videoId}`;
       channelModal.hidden = false;
     });
   });
@@ -3644,6 +3705,22 @@
       openArticleReader(a);
     } catch (err) { console.warn('reader parse:', err); }
   });
+
+
+  // ============================================================
+  // v3.10: Settings — periodic auto-test of all sources
+  // ============================================================
+  function autoTestAllSources() {
+    if (!document.getElementById('src-list')) return;
+    const dots = document.querySelectorAll('.src-status[data-src]');
+    if (dots.length === 0) return;
+    NCS_SOURCES.filter(s => !s.external && s.test).forEach(src => {
+      const dot = document.querySelector(`.src-status[data-src="${src.key}"]`);
+      if (dot && !dot.classList.contains('ok')) testSource(src);
+    });
+  }
+  // Re-test failed sources every 60s in case they recover
+  setInterval(autoTestAllSources, 60_000);
 
 </script>
 </body>
