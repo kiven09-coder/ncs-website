@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>الرياضة · NCS</title>
+<meta name="description" content="مركز الرياضة — مباريات اليوم لحظياً، نتائج، أخبار رياضية." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --bg: #0a0a0a; --bg-elev-1: #131313; --bg-elev-2: #1a1a1a;
+    --border: #262626; --border-strong: #3a3a3a;
+    --red: #e11d2b; --red-glow: rgba(225,29,43,0.5);
+    --text: #fafafa; --text-muted: #a3a3a3; --text-dim: #737373;
+    --green: #10b981;
+    --font-ar: "Cairo", system-ui, sans-serif;
+    --font-en: "Inter", system-ui, sans-serif;
+    --container: 100%;
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: var(--font-ar); line-height: 1.6; }
+  a { color: inherit; text-decoration: none; }
+
+  header.site { position: sticky; top: 0; z-index: 50; background: rgba(10,10,10,0.92); backdrop-filter: blur(18px); border-bottom: 1px solid var(--border); }
+  .header-inner { display: grid; grid-template-columns: auto 1fr auto; gap: 1.5rem; align-items: center; padding: 0.85rem 1rem; max-width: var(--container); margin: 0 auto; }
+  .logo .mark { width: 52px; height: 52px; }
+  .logo .mark img { width: 100%; height: 100%; border-radius: 10px; object-fit: cover; display: block; }
+  nav.primary ul { display: flex; gap: 0.15rem; list-style: none; padding: 0; margin: 0; justify-content: center; font-weight: 700; font-size: 0.92rem; }
+  nav.primary a { display: inline-block; padding: 0.55rem 1rem; color: var(--text-muted); border-radius: 4px; transition: all 200ms; }
+  nav.primary a:hover { background: rgba(225,29,43,0.08); color: var(--text); }
+  nav.primary a.active { color: var(--text); background: rgba(225,29,43,0.12); }
+
+  .page-hero { background: linear-gradient(180deg, #131313 0%, #0a0a0a 100%); border-bottom: 1px solid var(--border); padding: 2rem 1rem 1.5rem; }
+  .page-hero-inner { max-width: var(--container); margin: 0 auto; }
+  .breadcrumb { color: var(--text-dim); font-size: 0.78rem; margin-bottom: 0.5rem; }
+  .breadcrumb a { color: var(--red); }
+  .page-hero h1 { margin: 0 0 0.4rem; font-size: clamp(1.75rem, 1.3rem + 1.5vw, 2.4rem); font-weight: 900; letter-spacing: -0.02em; }
+  .page-hero p { margin: 0; color: var(--text-muted); font-size: 0.95rem; }
+  .live-pulse { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.72rem; color: var(--red); font-weight: 800; margin-top: 0.85rem; }
+  .live-pulse::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--red); animation: pulse 1.6s infinite; }
+  @keyframes pulse { 0% { box-shadow: 0 0 0 0 var(--red-glow); } 70% { box-shadow: 0 0 0 9px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
+
+  .sport-tabs { display: flex; gap: 0.45rem; flex-wrap: wrap; margin-top: 1.5rem; }
+  .sport-tab {
+    padding: 0.5rem 1.1rem; background: transparent; border: 1px solid var(--border-strong);
+    color: var(--text-muted); border-radius: 999px; cursor: pointer;
+    font: 700 0.85rem var(--font-ar); transition: all 200ms;
+    display: inline-flex; align-items: center; gap: 0.4rem;
+  }
+  .sport-tab:hover { color: var(--text); border-color: var(--red); }
+  .sport-tab.active { background: var(--red); color: #fff; border-color: var(--red); }
+
+  main { max-width: var(--container); margin: 0 auto; padding: 1.5rem 1rem; }
+  .section-title {
+    display: flex; justify-content: space-between; align-items: end;
+    margin: 1.5rem 0 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border);
+    flex-wrap: wrap; gap: 0.5rem;
+  }
+  .section-title h2 {
+    margin: 0; font-size: 1.4rem; font-weight: 900;
+    display: flex; align-items: center; gap: 0.65rem; letter-spacing: -0.01em;
+  }
+  .section-title h2::before { content: ""; width: 3px; height: 22px; background: var(--red); }
+  .section-title .meta { font-size: 0.74rem; color: var(--text-dim); font-weight: 700; }
+  .section-title .meta::before { content: "🟢 "; }
+
+  .matches-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 0.85rem; }
+  .match-card {
+    background: var(--bg-elev-1); border: 1px solid var(--border);
+    border-radius: 4px; overflow: hidden; transition: border-color 200ms;
+  }
+  .match-card:hover { border-color: var(--red); }
+  .match-head {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.55rem 0.85rem; border-bottom: 1px solid var(--border);
+    font-size: 0.72rem; color: var(--text-muted); font-weight: 700;
+    background: rgba(0,0,0,0.3);
+  }
+  .match-status.live { color: var(--red); display: flex; align-items: center; gap: 0.35rem; }
+  .match-status.live::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--red); animation: pulse 1.6s infinite; }
+  .match-status.finished { color: var(--green); }
+  .match-status.scheduled { color: #fbbf24; }
+  .match-body {
+    display: grid; grid-template-columns: 1fr auto 1fr;
+    gap: 0.6rem; align-items: center; padding: 1.1rem 1rem;
+  }
+  .match-team { display: flex; flex-direction: column; align-items: center; gap: 0.45rem; }
+  .team-badge {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: #fff; overflow: hidden;
+    display: grid; place-items: center; color: #000;
+    font: 900 0.9rem var(--font-en); border: 1px solid var(--border-strong);
+  }
+  .team-badge img { width: 88%; height: 88%; object-fit: contain; }
+  .team-name { font-size: 0.78rem; font-weight: 700; text-align: center; min-height: 2.6em; line-height: 1.3; }
+  .match-score { font: 900 1.85rem var(--font-en); letter-spacing: -0.04em; display: flex; gap: 0.5rem; align-items: center; }
+  .match-score .divider { color: var(--text-dim); font-size: 1.4rem; margin: 0 0.2rem; }
+  .match-time-display { font: 800 1rem var(--font-en); color: var(--text-muted); text-align: center; }
+  .match-time-display small { display: block; font-size: 0.62rem; color: var(--text-dim); font-weight: 700; }
+  .match-foot {
+    padding: 0.55rem 0.85rem; font-size: 0.7rem; color: var(--text-dim);
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between;
+  }
+  .match-foot a { color: var(--red); font-weight: 700; }
+
+  .news-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+  .news-item { background: var(--bg-elev-1); border: 1px solid var(--border); display: flex; flex-direction: column; cursor: pointer; transition: all 220ms var(--ease); }
+  .news-item:hover { transform: translateY(-3px); border-color: var(--red); }
+  .news-thumb-wrap { aspect-ratio: 16/9; overflow: hidden; background: linear-gradient(135deg, #064e3b, #052e16); border-bottom: 1px solid var(--border); }
+  .news-thumb-img { width: 100%; height: 100%; object-fit: cover; transition: transform 400ms; }
+  .news-item:hover .news-thumb-img { transform: scale(1.05); }
+  .news-body { padding: 1rem; flex: 1; display: flex; flex-direction: column; }
+  .news-tag { display: inline-block; background: var(--red); color: #fff; font-size: 0.6rem; font-weight: 800; padding: 0.18rem 0.5rem; margin-bottom: 0.6rem; align-self: flex-start; }
+  .news-item h3 { margin: 0 0 0.5rem; font-size: 0.95rem; font-weight: 800; line-height: 1.45; flex: 1; }
+  .news-item .meta { margin-top: auto; padding-top: 0.7rem; border-top: 1px dashed var(--border); display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-dim); }
+
+  .empty { text-align: center; padding: 3rem 1rem; color: var(--text-muted); }
+  .loading { text-align: center; padding: 2rem 1rem; color: var(--text-muted); font-size: 0.85rem; }
+
+  footer.site { border-top: 1px solid var(--border); margin-top: 3rem; padding: 2rem 1rem 1.25rem; background: #050505; text-align: center; color: var(--text-dim); font-size: 0.78rem; }
+  footer.site a { color: var(--red); }
+
+  @media (max-width: 768px) { nav.primary { display: none; } .matches-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="header-inner">
+    <a href="index.html" class="logo"><span class="mark"><img src="logo.jpg" alt="NCS" /></span></a>
+    <nav class="primary"><ul>
+      <li><a href="index.html">الرئيسية</a></li>
+      <li><a href="politics.html">سياسة</a></li>
+      <li><a href="economy.html">اقتصاد</a></li>
+      <li><a href="sports.html" class="active">رياضة</a></li>
+      <li><a href="index.html#live">مباشر</a></li>
+      <li><a href="index.html#center">المركز</a></li>
+    </ul></nav>
+    <div></div>
+  </div>
+</header>
+
+<section class="page-hero">
+  <div class="page-hero-inner">
+    <div class="breadcrumb"><a href="index.html">الرئيسية</a> / الرياضة</div>
+    <h1>🏆 الرياضة — مباريات اليوم لحظياً</h1>
+    <p>كل مباريات اليوم في الدوري المصري والدوريات العالمية · تحديث تلقائي · أخبار رياضية حقيقية</p>
+    <div class="live-pulse">تحديث لحظي · LIVE</div>
+    <div class="sport-tabs">
+      <button class="sport-tab active" data-sport="soccer">⚽ كرة القدم</button>
+      <button class="sport-tab" data-sport="basketball">🏀 السلة</button>
+      <button class="sport-tab" data-sport="handball">🤾 اليد</button>
+      <button class="sport-tab" data-sport="volleyball">🏐 الطائرة</button>
+      <button class="sport-tab" data-sport="squash">🥎 الاسكواش</button>
+    </div>
+  </div>
+</section>
+
+<main>
+  <div class="section-title">
+    <h2>مباريات اليوم — <span id="sport-name">كرة القدم</span></h2>
+    <span class="meta" id="matches-updated">جاري التحميل…</span>
+  </div>
+  <div class="matches-grid" id="matches-grid">
+    <div class="loading">جاري جلب المباريات من TheSportsDB…</div>
+  </div>
+
+  <div class="section-title">
+    <h2>أهم الأخبار الرياضية</h2>
+    <span class="meta" id="news-updated">جاري التحميل…</span>
+  </div>
+  <div class="news-list" id="sports-news">
+    <div class="loading">جاري جلب الأخبار من NewsAPI…</div>
+  </div>
+</main>
+
+<footer class="site">
+  <div>© 2026 NCS — المركز الوطني للدراسات</div>
+  <div style="margin-top:0.5rem;"><a href="index.html">عودة للرئيسية</a> · <a href="news.html">كل الأخبار</a></div>
+</footer>
+
+<script>
+  const NEWSAPI_KEY = 'c345e2b01b2843feb66095becc480996';
+
+  const SPORT_CONFIG = {
+    soccer: {
+      name: 'كرة القدم',
+      newsQuery: '(football OR soccer OR "premier league") AND (match OR goal OR result)',
+      // leagues used only as fallback; today endpoint covers all
+      leagues: [
+        { id: 4829, name: 'الدوري المصري الممتاز' },
+        { id: 4328, name: 'الدوري الإنجليزي' },
+        { id: 4335, name: 'الدوري الإسباني' },
+        { id: 4480, name: 'دوري أبطال أوروبا' },
+      ],
+    },
+    basketball: {
+      name: 'كرة السلة',
+      newsQuery: 'NBA OR basketball',
+      leagues: [{ id: 4387, name: 'NBA' }],
+    },
+    handball: { name: 'كرة اليد', newsQuery: 'handball', leagues: [] },
+    volleyball: { name: 'الكرة الطائرة', newsQuery: 'volleyball', leagues: [] },
+    squash: { name: 'الاسكواش', newsQuery: 'squash PSA', leagues: [] },
+  };
+
+  // Map TheSportsDB sport strings for the daily endpoint
+  const SPORT_DAY_MAP = {
+    soccer:     'Soccer',
+    basketball: 'Basketball',
+    handball:   'Handball',
+    volleyball:  null,
+    squash:     null,
+  };
+
+  let currentSport = 'soccer';
+
+  function cacheGet(key, ttl) {
+    try { const c = JSON.parse(localStorage.getItem(key) || 'null'); if (!c || Date.now()-c.t>ttl) return null; return c.d; } catch(e) { return null; }
+  }
+  function cacheSet(key, d) { try { localStorage.setItem(key, JSON.stringify({t:Date.now(), d})); } catch(e) {} }
+
+  function timeAgo(iso) {
+    if (!iso) return 'الآن';
+    const m = Math.floor((Date.now() - new Date(iso).getTime()) / 60000);
+    if (m < 1) return 'الآن';
+    if (m < 60) return `قبل ${m.toLocaleString('ar-EG')} د`;
+    const h = Math.floor(m/60);
+    if (h < 24) return `قبل ${h.toLocaleString('ar-EG')} ساعة`;
+    return `قبل ${Math.floor(h/24).toLocaleString('ar-EG')} يوم`;
+  }
+
+  function todayDateStr() {
+    // Returns YYYY-MM-DD in local Cairo time (UTC+3 ≈ UTC+2)
+    const now = new Date();
+    const offset = 2 * 60; // Cairo is UTC+2 (standard) / UTC+3 (summer); close enough
+    const local = new Date(now.getTime() + (offset - now.getTimezoneOffset()) * 60000);
+    return local.toISOString().slice(0, 10);
+  }
+
+  function classifyEvent(ev) {
+    // Determine if finished, live, or scheduled based on score + date
+    const hasScore = ev.intHomeScore != null && ev.intHomeScore !== '' && ev.intHomeScore !== 'null';
+    if (hasScore) return 'finished';
+    // If dateEvent is today and no score yet → scheduled or live
+    const today = todayDateStr();
+    if (ev.dateEvent === today) return 'scheduled';
+    // Past date without score — treat as finished (data missing)
+    if (ev.dateEvent && ev.dateEvent < today) return 'finished';
+    return 'scheduled';
+  }
+
+  async function fetchTodayMatches(sportKey) {
+    const sportsdbSport = SPORT_DAY_MAP[sportKey];
+    if (!sportsdbSport) return null; // null = no day endpoint for this sport
+
+    const today = todayDateStr();
+    const ck = `ncs.sports.day.${sportKey}.${today}`;
+    let cached = cacheGet(ck, 60_000);
+    if (cached) return cached;
+
+    try {
+      const url = `https://www.thesportsdb.com/api/v1/json/3/eventsday.php?d=${today}&s=${encodeURIComponent(sportsdbSport)}`;
+      const r = await fetch(url, { cache: 'no-store' });
+      const d = await r.json();
+      const events = d.events || [];
+      cacheSet(ck, events);
+      return events;
+    } catch (e) {
+      return [];
+    }
+  }
+
+  async function fetchLeagueFallback(sportKey) {
+    // Fallback: fetch recent + next from each configured league
+    const sport = SPORT_CONFIG[sportKey];
+    if (!sport.leagues.length) return [];
+    const today = todayDateStr();
+    const all = [];
+    for (const lg of sport.leagues) {
+      const ck = `ncs.sports.fallback.${sportKey}.${lg.id}`;
+      let cached = cacheGet(ck, 120_000); // 2 min TTL for fallback
+      if (!cached) {
+        try {
+          const [pR, nR] = await Promise.allSettled([
+            fetch(`https://www.thesportsdb.com/api/v1/json/3/eventspastleague.php?id=${lg.id}`, {cache:'no-store'}).then(r=>r.json()),
+            fetch(`https://www.thesportsdb.com/api/v1/json/3/eventsnextleague.php?id=${lg.id}`, {cache:'no-store'}).then(r=>r.json()),
+          ]);
+          const past = pR.status === 'fulfilled' ? (pR.value.events || []) : [];
+          const next = nR.status === 'fulfilled' ? (nR.value.events || []) : [];
+          cached = { past: past.slice(0, 6), next: next.slice(0, 6) };
+          cacheSet(ck, cached);
+        } catch (e) { cached = { past: [], next: [] }; }
+      }
+      cached.past.forEach(ev => all.push({ ...ev, _league: lg }));
+      cached.next.forEach(ev => all.push({ ...ev, _league: lg }));
+    }
+    return all;
+  }
+
+  async function fetchMatches() {
+    // Step 1: try today's matches from eventsday endpoint
+    const todayEvents = await fetchTodayMatches(currentSport);
+
+    if (todayEvents && todayEvents.length > 0) {
+      return todayEvents.map(ev => ({
+        ...ev,
+        _league: { id: ev.idLeague || '?', name: ev.strLeague || 'دوري' },
+        _status: classifyEvent(ev),
+        _isToday: true,
+      }));
+    }
+
+    // Step 2: if today endpoint returned 0 results, fall back to league-based fetch
+    const fallback = await fetchLeagueFallback(currentSport);
+    return fallback.map(ev => ({
+      ...ev,
+      _status: classifyEvent(ev),
+    }));
+  }
+
+  function renderMatch(ev) {
+    const home = ev.strHomeTeam || '?';
+    const away = ev.strAwayTeam || '?';
+    const hs = (ev.intHomeScore != null && ev.intHomeScore !== '' && ev.intHomeScore !== 'null')
+      ? ev.intHomeScore : null;
+    const as_ = (ev.intAwayScore != null && ev.intAwayScore !== '' && ev.intAwayScore !== 'null')
+      ? ev.intAwayScore : null;
+    const hBadge = ev.strHomeTeamBadge || '';
+    const aBadge = ev.strAwayTeamBadge || '';
+    const status = ev._status; // 'live' | 'finished' | 'scheduled'
+    const today = todayDateStr();
+    const isToday = ev.dateEvent === today;
+
+    let statusLbl;
+    if (status === 'live') statusLbl = 'جارية الآن';
+    else if (status === 'finished') statusLbl = isToday ? 'انتهت اليوم' : 'انتهت';
+    else statusLbl = isToday ? 'اليوم' : 'قادمة';
+
+    const scoreOrTime = (status !== 'scheduled' && hs !== null)
+      ? `<div class="match-score">
+           <span>${hs}</span>
+           <span class="divider">−</span>
+           <span>${as_}</span>
+         </div>`
+      : `<div class="match-time-display">
+           ${ev.strTime ? ev.strTime.slice(0,5) : '—'}
+           <small>${ev.dateEvent || ''}</small>
+         </div>`;
+
+    const badgeHtml = (b, n) => b
+      ? `<img src="${b}/preview" alt="${n}" onerror="this.outerHTML='<span>${(n||'').slice(0,3).toUpperCase()}</span>'"/>`
+      : `<span>${(n||'').slice(0,3).toUpperCase()}</span>`;
+
+    const leagueName = ev.strLeague || (ev._league && ev._league.name) || 'دوري';
+
+    return `<div class="match-card">
+      <div class="match-head">
+        <span>📍 ${leagueName}</span>
+        <span class="match-status ${status}">${statusLbl}</span>
+      </div>
+      <div class="match-body">
+        <div class="match-team">
+          <div class="team-badge">${badgeHtml(hBadge, home)}</div>
+          <div class="team-name">${home}</div>
+        </div>
+        ${scoreOrTime}
+        <div class="match-team">
+          <div class="team-badge">${badgeHtml(aBadge, away)}</div>
+          <div class="team-name">${away}</div>
+        </div>
+      </div>
+      <div class="match-foot">
+        <span>${ev.strVenue ? '🏟 ' + ev.strVenue : leagueName}</span>
+        <a href="https://www.thesportsdb.com/event/${ev.idEvent}" target="_blank" rel="noopener">تفاصيل ↗</a>
+      </div>
+    </div>`;
+  }
+
+  async function refreshMatches() {
+    const sportCfg = SPORT_CONFIG[currentSport];
+    document.getElementById('sport-name').textContent = sportCfg.name;
+    const grid = document.getElementById('matches-grid');
+    grid.innerHTML = '<div class="loading">جاري جلب مباريات اليوم…</div>';
+
+    // Sports with no day-endpoint AND no leagues configured
+    const hasDayEndpoint = !!SPORT_DAY_MAP[currentSport];
+    const hasLeagues = sportCfg.leagues.length > 0;
+    if (!hasDayEndpoint && !hasLeagues) {
+      grid.innerHTML = `<div class="empty">
+        <p style="font-size:1rem; margin-bottom:0.5rem;">⚠ بيانات مباريات ${sportCfg.name} غير متاحة في الـ API المجاني الحالي.</p>
+        <p style="font-size:0.85rem;">في الأثناء، شاهد آخر الأخبار في الأسفل ↓</p>
+      </div>`;
+      document.getElementById('matches-updated').textContent = '—';
+      return;
+    }
+
+    const matches = await fetchMatches();
+
+    if (!matches.length) {
+      const today = todayDateStr();
+      grid.innerHTML = `<div class="empty">
+        <p style="font-size:1rem; margin-bottom:0.5rem;">⚽ لا توجد مباريات ${sportCfg.name} مجدولة اليوم (${today})</p>
+        <p style="font-size:0.85rem; color:#737373;">تابع الأخبار في الأسفل أو عُد لاحقاً لمتابعة جدول المباريات القادمة.</p>
+      </div>`;
+      document.getElementById('matches-updated').textContent = 'لا مباريات اليوم · ' + new Date().toLocaleTimeString('ar-EG');
+      return;
+    }
+
+    // Sort: live → scheduled (today) → finished (today) → other
+    const today = todayDateStr();
+    matches.sort((a, b) => {
+      const order = { live: 0, scheduled: 1, finished: 2 };
+      const ao = (order[a._status] ?? 9) + (a.dateEvent === today ? 0 : 10);
+      const bo = (order[b._status] ?? 9) + (b.dateEvent === today ? 0 : 10);
+      return ao - bo;
+    });
+
+    grid.innerHTML = matches.slice(0, 30).map(renderMatch).join('');
+    const todayCount = matches.filter(m => m.dateEvent === today).length;
+    const label = todayCount > 0
+      ? `${todayCount} مباراة اليوم · ${new Date().toLocaleTimeString('ar-EG')}`
+      : `آخر تحديث: ${new Date().toLocaleTimeString('ar-EG')}`;
+    document.getElementById('matches-updated').textContent = label;
+  }
+
+  document.querySelectorAll('.sport-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.sport-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentSport = btn.dataset.sport;
+      refreshMatches();
+      refreshSportsNews();
+    });
+  });
+
+  function imgProxy(url, w, h) {
+    if (!url) return '';
+    return `https://images.weserv.nl/?url=${encodeURIComponent(url.replace(/^https?:\/\//, ''))}&w=${w||600}&h=${h||340}&fit=cover`;
+  }
+
+  async function refreshSportsNews() {
+    const sport = SPORT_CONFIG[currentSport];
+    const list = document.getElementById('sports-news');
+    list.innerHTML = '<div class="loading">جاري جلب الأخبار…</div>';
+
+    const ck = `ncs.sports.news.${currentSport}`;
+    let articles = cacheGet(ck, 2 * 60_000);
+    if (!articles) {
+      try {
+        const u = `https://newsapi.org/v2/everything?q=${encodeURIComponent(sport.newsQuery)}&pageSize=12&sortBy=publishedAt&language=en&apiKey=${NEWSAPI_KEY}`;
+        const r = await fetch(u, {cache:'no-store'});
+        const d = await r.json();
+        articles = d.articles || [];
+        cacheSet(ck, articles);
+      } catch (e) { articles = []; }
+    }
+
+    if (!articles.length) {
+      list.innerHTML = '<div class="empty">لا توجد أخبار رياضية متاحة.</div>';
+      return;
+    }
+
+    list.innerHTML = articles.slice(0,12).map(a => {
+      const img = a.urlToImage ? imgProxy(a.urlToImage, 600, 340) : '';
+      const thumb = img
+        ? `<div class="news-thumb-wrap"><img src="${img}" loading="lazy" class="news-thumb-img" onerror="this.parentElement.style.display='none'"/></div>`
+        : `<div class="news-thumb-wrap" style="display:grid;place-items:center;color:rgba(255,255,255,0.4);"><span style="font-size:3rem">⚽</span></div>`;
+      const title = (a.title||'').replace(/\s*-\s*[^-]*$/, '').trim();
+      const src = (a.source && a.source.name) || 'NewsAPI';
+      return `<a href="${a.url}" target="_blank" rel="noopener" class="news-item">
+        ${thumb}
+        <div class="news-body">
+          <span class="news-tag">${sport.name}</span>
+          <h3>${title}</h3>
+          <div class="meta"><span>${timeAgo(a.publishedAt)}</span><span>${src}</span></div>
+        </div>
+      </a>`;
+    }).join('');
+    document.getElementById('news-updated').textContent = 'آخر تحديث: ' + new Date().toLocaleTimeString('ar-EG');
+  }
+
+  refreshMatches();
+  refreshSportsNews();
+  setInterval(refreshMatches, 60_000);
+  setInterval(refreshSportsNews, 2 * 60_000);
+</script>
+
+</body>
+</html>
