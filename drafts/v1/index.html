@@ -2011,6 +2011,53 @@
     flex-wrap: wrap;
   }
 
+
+  /* === v3.19: Fresh-article badge + flash === */
+  .news-card-fresh {
+    animation: fresh-pulse 2s ease-out 3;
+    position: relative;
+  }
+  @keyframes fresh-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 transparent; }
+    50% { box-shadow: 0 0 0 3px var(--red), 0 0 24px rgba(225,29,43,0.5); }
+  }
+  .news-fresh-badge {
+    position: absolute;
+    top: 0.5rem; inset-inline-end: 0.5rem;
+    z-index: 5;
+    background: var(--red);
+    color: #fff;
+    font-size: 0.62rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    padding: 0.22rem 0.55rem;
+    border-radius: 999px;
+    box-shadow: 0 2px 8px rgba(225,29,43,0.5);
+    animation: badge-pop 600ms ease-out;
+  }
+  @keyframes badge-pop {
+    0% { transform: scale(0); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  /* Last-refresh indicator (next to "آخر الأخبار" heading) */
+  .news-refresh-ind {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    font-weight: 600;
+    margin-inline-start: 0.85rem;
+  }
+  .news-refresh-ind::before {
+    content: "●";
+    color: #10b981;
+    margin-inline-end: 0.3rem;
+    animation: blink 2s infinite;
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
 </style>
 </head>
 <body id="top">
@@ -2654,7 +2701,7 @@
 
   <!-- ================= NEWS GRID ================= -->
   <div class="section-head">
-    <h2 data-i18n="section.latest">آخر الأخبار</h2>
+    <h2 data-i18n="section.latest">آخر الأخبار <span id="news-refresh-ind" class="news-refresh-ind">جاري التحميل…</span></h2>
     <a href="news.html?cat=all" class="more">المزيد ←</a>
   </div>
 
@@ -3800,7 +3847,7 @@
     KEY: 'c345e2b01b2843feb66095becc480996',
     BASE: 'https://newsapi.org/v2',
     CACHE_PREFIX: 'ncs.news.v1.',
-    TTL: 30 * 60 * 1000, // 30 minutes
+    TTL: 2 * 60 * 1000, // 2 minutes (v3.19: faster news refresh)
 
     async _fetch(endpoint, params) {
       const u = new URL(this.BASE + '/' + endpoint);
@@ -3859,7 +3906,7 @@
     ticker.innerHTML = items + items; // duplicate for seamless loop
   }
   refreshBreakingTicker();
-  setInterval(refreshBreakingTicker, 30 * 60_000);
+  setInterval(refreshBreakingTicker, 2 * 60_000);  // v3.19
 
   // ----- Wire News Grid (4 themed cards on index) -----
   function catFromArticle(a) {
@@ -3916,7 +3963,10 @@
       const thumb = rawUrl
         ? `<div class="news-thumb-wrap"><img src="${proxyUrl || rawUrl}" alt="" class="news-thumb-img-tag" loading="lazy" referrerpolicy="no-referrer" data-stage="1" data-direct="${rawUrl}" data-fb="${fallbackHtml.replace(/"/g, '&quot;')}" onerror="if(this.dataset.stage==='1'){this.dataset.stage='2';this.src=this.dataset.direct;}else{this.parentElement.outerHTML=this.dataset.fb;}"/></div>`
         : fallbackHtml;
-      return `<button class="news-card news-card-btn" data-article='${JSON.stringify(a).replace(/'/g, "&apos;")}' style="display:flex;flex-direction:column;background:transparent;border:0;padding:0;text-align:start;color:inherit;cursor:pointer;width:100%;">
+      const freshClass = isFresh ? ' news-card-fresh' : '';
+      const freshBadge = isFresh ? `<span class="news-fresh-badge">جديد · NEW</span>` : '';
+      return `<button class="news-card news-card-btn${freshClass}" data-article-url="${(a.url||'').replace(/"/g,'&quot;')}" data-article='${JSON.stringify(a).replace(/'/g, "&apos;")}' style="display:flex;flex-direction:column;background:transparent;border:0;padding:0;text-align:start;color:inherit;cursor:pointer;width:100%;position:relative;">
+        ${freshBadge}
         ${thumb}
         <span class="tag">${categoryLabel(cat)}</span>
         <h4>${title}</h4>
@@ -3924,9 +3974,15 @@
       </button>`;
     }).join('');
     grid.innerHTML = html;
+    // Track these URLs as seen for next refresh comparison
+    articles.slice(0, 4).forEach(a => { if (a.url) _seenArticleUrls.add(a.url); });
+    persistSeen();
+    // Update last-refresh indicator
+    const ind = document.getElementById('news-refresh-ind');
+    if (ind) ind.textContent = 'آخر تحديث: ' + new Date().toLocaleTimeString('ar-EG');
   }
   refreshIndexNewsGrid();
-  setInterval(refreshIndexNewsGrid, 5 * 60_000);
+  setInterval(refreshIndexNewsGrid, 2 * 60_000);  // v3.19: every 2 min
 
 
 
@@ -4780,7 +4836,7 @@
     }
   }
   populateHero();
-  setInterval(populateHero, 30 * 60_000);
+  setInterval(populateHero, 2 * 60_000);  // v3.19
 
 </script>
 </body>

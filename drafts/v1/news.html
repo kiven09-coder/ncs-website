@@ -292,7 +292,7 @@
   // Live news fetched from NewsAPI (cached 30 min)
   const NEWSAPI_KEY = 'c345e2b01b2843feb66095becc480996';
   const CACHE_PREFIX = 'ncs.news.v1.';
-  const TTL = 30 * 60 * 1000;
+  const TTL = 2 * 60 * 1000; // v3.19: 2 min
 
   async function fetchNewsAPI(endpoint, params) {
     const u = new URL('https://newsapi.org/v2/' + endpoint);
@@ -430,6 +430,8 @@
     document.getElementById('count').textContent = filtered.length.toLocaleString('ar-EG');
   }
   fetchAndRender();
+  // v3.19: auto-refresh every 2 minutes
+  setInterval(fetchAndRender, 2 * 60 * 1000);
 </script>
 
 </body>
