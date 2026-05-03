@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>السياسة · NCS</title>
+<meta name="description" content="مركز السياسة الدولية — أمريكا، الشرق الأوسط، أوروبا، آسيا. تحديث لحظي." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --bg: #0a0a0a; --bg-elev-1: #131313; --bg-elev-2: #1a1a1a;
+    --border: #262626; --border-strong: #3a3a3a;
+    --red: #e11d2b; --red-glow: rgba(225,29,43,0.5);
+    --text: #fafafa; --text-muted: #a3a3a3; --text-dim: #737373;
+    --green: #10b981;
+    --font-ar: "Cairo", system-ui, sans-serif;
+    --font-en: "Inter", system-ui, sans-serif;
+    --container: 100%;
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: var(--font-ar); line-height: 1.6; }
+  a { color: inherit; text-decoration: none; }
+
+  header.site { position: sticky; top: 0; z-index: 50; background: rgba(10,10,10,0.92); backdrop-filter: blur(18px); border-bottom: 1px solid var(--border); }
+  .header-inner { display: grid; grid-template-columns: auto 1fr auto; gap: 1.5rem; align-items: center; padding: 0.85rem 1rem; max-width: var(--container); margin: 0 auto; }
+  .logo .mark { width: 52px; height: 52px; }
+  .logo .mark img { width: 100%; height: 100%; border-radius: 10px; object-fit: cover; display: block; }
+  nav.primary ul { display: flex; gap: 0.15rem; list-style: none; padding: 0; margin: 0; justify-content: center; font-weight: 700; font-size: 0.92rem; }
+  nav.primary a { display: inline-block; padding: 0.55rem 1rem; color: var(--text-muted); border-radius: 4px; transition: all 200ms; }
+  nav.primary a:hover { background: rgba(225,29,43,0.08); color: var(--text); }
+  nav.primary a.active { color: var(--text); background: rgba(225,29,43,0.12); }
+
+  .page-hero { background: linear-gradient(180deg, #131313 0%, #0a0a0a 100%); border-bottom: 1px solid var(--border); padding: 2rem 1rem 1.5rem; }
+  .page-hero-inner { max-width: var(--container); margin: 0 auto; }
+  .breadcrumb { color: var(--text-dim); font-size: 0.78rem; margin-bottom: 0.5rem; }
+  .breadcrumb a { color: var(--red); }
+  .page-hero h1 { margin: 0 0 0.4rem; font-size: clamp(1.75rem, 1.3rem + 1.5vw, 2.4rem); font-weight: 900; letter-spacing: -0.02em; }
+  .page-hero p { margin: 0; color: var(--text-muted); font-size: 0.95rem; }
+  .live-pulse { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.72rem; color: var(--red); font-weight: 800; margin-top: 0.85rem; }
+  .live-pulse::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--red); animation: pulse 1.6s infinite; }
+  @keyframes pulse { 0% { box-shadow: 0 0 0 0 var(--red-glow); } 70% { box-shadow: 0 0 0 9px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
+
+  .region-tabs { display: flex; gap: 0.45rem; flex-wrap: wrap; margin-top: 1.5rem; }
+  .region-tab {
+    padding: 0.5rem 1.1rem; background: transparent; border: 1px solid var(--border-strong);
+    color: var(--text-muted); border-radius: 999px; cursor: pointer;
+    font: 700 0.85rem var(--font-ar); transition: all 200ms;
+  }
+  .region-tab:hover { color: var(--text); border-color: var(--red); }
+  .region-tab.active { background: var(--red); color: #fff; border-color: var(--red); }
+
+  main { max-width: var(--container); margin: 0 auto; padding: 1.5rem 1rem; }
+  .section-title {
+    display: flex; justify-content: space-between; align-items: end;
+    margin: 1.5rem 0 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border);
+    flex-wrap: wrap; gap: 0.5rem;
+  }
+  .section-title h2 {
+    margin: 0; font-size: 1.4rem; font-weight: 900;
+    display: flex; align-items: center; gap: 0.65rem; letter-spacing: -0.01em;
+  }
+  .section-title h2::before { content: ""; width: 3px; height: 22px; background: var(--red); }
+  .section-title .meta { font-size: 0.74rem; color: var(--text-dim); font-weight: 700; }
+  .section-title .meta::before { content: "🟢 "; }
+
+  /* Conflict tracker */
+  .conflict-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+  .country-card {
+    background: var(--bg-elev-1); border: 1px solid var(--border);
+    padding: 1.25rem 1.1rem; cursor: pointer;
+    transition: all 220ms var(--ease);
+    position: relative; overflow: hidden;
+    min-height: 200px; display: flex; flex-direction: column;
+  }
+  .country-card::before {
+    content: ""; position: absolute; inset: 0 0 0 0;
+    inset-inline-end: auto; width: 4px; background: var(--country-color, var(--red));
+  }
+  .country-card:hover { border-color: var(--country-color, var(--red)); transform: translateY(-3px); }
+  .country-flag {
+    font: 800 0.7rem var(--font-en); letter-spacing: 0.15em;
+    color: var(--country-color); margin-bottom: 0.4rem; text-transform: uppercase;
+  }
+  .country-card h3 {
+    margin: 0 0 0.6rem; font-size: 1rem; font-weight: 800;
+    line-height: 1.4; letter-spacing: -0.01em;
+    flex: 1;
+  }
+  .country-card p { margin: 0; font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; flex: 1; }
+  .country-card .meta {
+    margin-top: 0.85rem; padding-top: 0.7rem;
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between;
+    font-size: 0.7rem; color: var(--text-dim);
+  }
+  .country-card .meta .verified { color: var(--green); }
+
+  /* News grid */
+  .news-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+  .news-item { background: var(--bg-elev-1); border: 1px solid var(--border); display: flex; flex-direction: column; cursor: pointer; transition: all 220ms var(--ease); }
+  .news-item:hover { transform: translateY(-3px); border-color: var(--red); }
+  .news-thumb-wrap { aspect-ratio: 16/9; overflow: hidden; background: linear-gradient(135deg, #1e3a8a, #0f172a); border-bottom: 1px solid var(--border); }
+  .news-thumb-img { width: 100%; height: 100%; object-fit: cover; transition: transform 400ms; }
+  .news-item:hover .news-thumb-img { transform: scale(1.05); }
+  .news-body { padding: 1rem; flex: 1; display: flex; flex-direction: column; }
+  .news-tag { display: inline-block; background: var(--red); color: #fff; font-size: 0.6rem; font-weight: 800; padding: 0.18rem 0.5rem; margin-bottom: 0.6rem; align-self: flex-start; }
+  .news-item h3 { margin: 0 0 0.5rem; font-size: 0.95rem; font-weight: 800; line-height: 1.45; flex: 1; }
+  .news-item .meta { margin-top: auto; padding-top: 0.7rem; border-top: 1px dashed var(--border); display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-dim); }
+
+  .empty { text-align: center; padding: 3rem 1rem; color: var(--text-muted); }
+  .loading { text-align: center; padding: 2rem 1rem; color: var(--text-muted); font-size: 0.85rem; }
+
+  footer.site { border-top: 1px solid var(--border); margin-top: 3rem; padding: 2rem 1rem 1.25rem; background: #050505; text-align: center; color: var(--text-dim); font-size: 0.78rem; }
+  footer.site a { color: var(--red); }
+
+  @media (max-width: 768px) { nav.primary { display: none; } }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="header-inner">
+    <a href="index.html" class="logo"><span class="mark"><img src="logo.jpg" alt="NCS" /></span></a>
+    <nav class="primary"><ul>
+      <li><a href="index.html">الرئيسية</a></li>
+      <li><a href="politics.html" class="active">سياسة</a></li>
+      <li><a href="economy.html">اقتصاد</a></li>
+      <li><a href="sports.html">رياضة</a></li>
+      <li><a href="index.html#live">مباشر</a></li>
+      <li><a href="index.html#center">المركز</a></li>
+    </ul></nav>
+    <div></div>
+  </div>
+</header>
+
+<section class="page-hero">
+  <div class="page-hero-inner">
+    <div class="breadcrumb"><a href="index.html">الرئيسية</a> / السياسة</div>
+    <h1>🌍 السياسة الدولية — ساحة الصراع</h1>
+    <p>أهم الأخبار السياسية والصراعات الجيوسياسية لحظياً · مصادر متعددة · تحقّق متعدد</p>
+    <div class="live-pulse">تحديث لحظي · LIVE</div>
+    <div class="region-tabs">
+      <button class="region-tab active" data-region="all">🌐 الكل</button>
+      <button class="region-tab" data-region="me">🕌 الشرق الأوسط</button>
+      <button class="region-tab" data-region="usa">🇺🇸 أمريكا</button>
+      <button class="region-tab" data-region="eu">🇪🇺 أوروبا</button>
+      <button class="region-tab" data-region="asia">🌏 آسيا</button>
+    </div>
+  </div>
+</section>
+
+<main>
+  <!-- Conflict zone tracker (US/Iran/Israel) -->
+  <div class="section-title">
+    <h2>ساحات التوتر — رصد لحظي</h2>
+    <span class="meta" id="conflict-updated">جاري التحميل…</span>
+  </div>
+  <div class="conflict-grid" id="conflict-grid">
+    <div class="country-card" style="--country-color:#3b82f6;">
+      <div class="country-flag">USA · الولايات المتحدة</div>
+      <h3 id="usa-title">جاري التحميل…</h3>
+      <p id="usa-desc">—</p>
+      <div class="meta"><span id="usa-time">—</span><span class="verified" id="usa-source">—</span></div>
+    </div>
+    <div class="country-card" style="--country-color:#10b981;">
+      <div class="country-flag">IRAN · إيران</div>
+      <h3 id="iran-title">جاري التحميل…</h3>
+      <p id="iran-desc">—</p>
+      <div class="meta"><span id="iran-time">—</span><span class="verified" id="iran-source">—</span></div>
+    </div>
+    <div class="country-card" style="--country-color:#e11d2b;">
+      <div class="country-flag">ISRAEL · إسرائيل</div>
+      <h3 id="israel-title">جاري التحميل…</h3>
+      <p id="israel-desc">—</p>
+      <div class="meta"><span id="israel-time">—</span><span class="verified" id="israel-source">—</span></div>
+    </div>
+    <div class="country-card" style="--country-color:#fbbf24;">
+      <div class="country-flag">RUSSIA · روسيا</div>
+      <h3 id="russia-title">جاري التحميل…</h3>
+      <p id="russia-desc">—</p>
+      <div class="meta"><span id="russia-time">—</span><span class="verified" id="russia-source">—</span></div>
+    </div>
+    <div class="country-card" style="--country-color:#a855f7;">
+      <div class="country-flag">UKRAINE · أوكرانيا</div>
+      <h3 id="ukraine-title">جاري التحميل…</h3>
+      <p id="ukraine-desc">—</p>
+      <div class="meta"><span id="ukraine-time">—</span><span class="verified" id="ukraine-source">—</span></div>
+    </div>
+    <div class="country-card" style="--country-color:#f97316;">
+      <div class="country-flag">CHINA · الصين</div>
+      <h3 id="china-title">جاري التحميل…</h3>
+      <p id="china-desc">—</p>
+      <div class="meta"><span id="china-time">—</span><span class="verified" id="china-source">—</span></div>
+    </div>
+  </div>
+
+  <div class="section-title">
+    <h2>أهم الأخبار السياسية</h2>
+    <span class="meta" id="news-updated">جاري التحميل…</span>
+  </div>
+  <div class="news-list" id="politics-news">
+    <div class="loading">جاري جلب الأخبار من NewsAPI…</div>
+  </div>
+</main>
+
+<footer class="site">
+  <div>© 2026 NCS — المركز الوطني للدراسات</div>
+  <div style="margin-top:0.5rem;"><a href="index.html">عودة للرئيسية</a> · <a href="news.html">كل الأخبار</a></div>
+</footer>
+
+<script>
+  const NEWSAPI_KEY = 'c345e2b01b2843feb66095becc480996';
+
+  const REGION_QUERY = {
+    all:  'politics OR government OR conflict OR sanctions',
+    me:   '(middle east OR Iran OR Israel OR Saudi OR Egypt OR Lebanon OR Syria) AND (politics OR conflict)',
+    usa:  '(United States OR Biden OR Trump OR Congress OR Pentagon) AND politics',
+    eu:   '(European Union OR EU OR NATO OR France OR Germany OR UK) AND politics',
+    asia: '(China OR Taiwan OR North Korea OR Japan OR India) AND politics',
+  };
+
+  const COUNTRIES = [
+    { key: 'usa',     query: '"United States" politics' },
+    { key: 'iran',    query: 'Iran politics nuclear' },
+    { key: 'israel',  query: 'Israel politics conflict' },
+    { key: 'russia',  query: 'Russia Ukraine politics' },
+    { key: 'ukraine', query: 'Ukraine politics' },
+    { key: 'china',   query: 'China politics Taiwan' },
+  ];
+
+  let currentRegion = 'all';
+
+  function cacheGet(k, ttl) {
+    try { const c = JSON.parse(localStorage.getItem(k) || 'null'); if (!c || Date.now()-c.t>ttl) return null; return c.d; } catch(e){return null;}
+  }
+  function cacheSet(k, d) { try { localStorage.setItem(k, JSON.stringify({t:Date.now(), d})); } catch(e) {} }
+
+  function timeAgo(iso) {
+    if (!iso) return 'الآن';
+    const m = Math.floor((Date.now() - new Date(iso).getTime()) / 60000);
+    if (m < 1) return 'الآن';
+    if (m < 60) return `قبل ${m.toLocaleString('ar-EG')} د`;
+    const h = Math.floor(m/60);
+    if (h < 24) return `قبل ${h.toLocaleString('ar-EG')} ساعة`;
+    return `قبل ${Math.floor(h/24).toLocaleString('ar-EG')} يوم`;
+  }
+
+  function imgProxy(url, w, h) {
+    if (!url) return '';
+    return `https://images.weserv.nl/?url=${encodeURIComponent(url.replace(/^https?:\/\//, ''))}&w=${w||600}&h=${h||340}&fit=cover`;
+  }
+
+  async function fetchNews(query, pageSize) {
+    const ck = `ncs.news.poli.${query}.${pageSize||10}`;
+    let articles = cacheGet(ck, 2 * 60_000);
+    if (!articles) {
+      try {
+        const u = `https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&pageSize=${pageSize||10}&sortBy=publishedAt&language=en&apiKey=${NEWSAPI_KEY}`;
+        const r = await fetch(u, {cache:'no-store'});
+        const d = await r.json();
+        articles = d.articles || [];
+        cacheSet(ck, articles);
+      } catch (e) { articles = []; }
+    }
+    return articles;
+  }
+
+  // Populate the 6 country cards (US, Iran, Israel, Russia, Ukraine, China)
+  async function refreshCountryCards() {
+    for (const c of COUNTRIES) {
+      const arts = await fetchNews(c.query, 1);
+      if (!arts.length) continue;
+      const a = arts[0];
+      const titleEl = document.getElementById(`${c.key}-title`);
+      const descEl = document.getElementById(`${c.key}-desc`);
+      const timeEl = document.getElementById(`${c.key}-time`);
+      const srcEl = document.getElementById(`${c.key}-source`);
+      if (titleEl) {
+        titleEl.textContent = (a.title || '').replace(/\s*-\s*[^-]*$/, '').trim();
+        titleEl.parentElement.onclick = () => window.open(a.url, '_blank', 'noopener');
+        titleEl.parentElement.style.cursor = 'pointer';
+      }
+      if (descEl) descEl.textContent = (a.description || '').slice(0, 150);
+      if (timeEl) timeEl.textContent = timeAgo(a.publishedAt);
+      if (srcEl) srcEl.textContent = (a.source && a.source.name) || 'NewsAPI';
+    }
+    document.getElementById('conflict-updated').textContent = 'آخر تحديث: ' + new Date().toLocaleTimeString('ar-EG');
+  }
+
+  // Politics news grid (12 articles)
+  async function refreshPoliticsNews() {
+    const list = document.getElementById('politics-news');
+    list.innerHTML = '<div class="loading">جاري جلب الأخبار…</div>';
+    const articles = await fetchNews(REGION_QUERY[currentRegion] || REGION_QUERY.all, 12);
+    if (!articles.length) {
+      list.innerHTML = '<div class="empty">لا توجد أخبار سياسية متاحة.</div>';
+      return;
+    }
+    list.innerHTML = articles.map(a => {
+      const img = a.urlToImage ? imgProxy(a.urlToImage, 600, 340) : '';
+      const thumb = img
+        ? `<div class="news-thumb-wrap"><img src="${img}" loading="lazy" class="news-thumb-img" onerror="this.parentElement.style.display='none'"/></div>`
+        : `<div class="news-thumb-wrap" style="display:grid;place-items:center;color:rgba(255,255,255,0.4);"><span style="font-size:3rem">🌍</span></div>`;
+      const title = (a.title || '').replace(/\s*-\s*[^-]*$/, '').trim();
+      const src = (a.source && a.source.name) || 'NewsAPI';
+      return `<a href="${a.url}" target="_blank" rel="noopener" class="news-item">
+        ${thumb}
+        <div class="news-body">
+          <span class="news-tag">سياسة</span>
+          <h3>${title}</h3>
+          <div class="meta"><span>${timeAgo(a.publishedAt)}</span><span>${src}</span></div>
+        </div>
+      </a>`;
+    }).join('');
+    document.getElementById('news-updated').textContent = 'آخر تحديث: ' + new Date().toLocaleTimeString('ar-EG');
+  }
+
+  document.querySelectorAll('.region-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.region-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentRegion = btn.dataset.region;
+      refreshPoliticsNews();
+    });
+  });
+
+  refreshCountryCards();
+  refreshPoliticsNews();
+  setInterval(refreshCountryCards, 2 * 60_000);
+  setInterval(refreshPoliticsNews, 2 * 60_000);
+</script>
+
+</body>
+</html>

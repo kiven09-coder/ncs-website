@@ -1,492 +1,386 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>NCS — الرياضة | مركز المباريات</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>الرياضة · NCS</title>
+<meta name="description" content="مركز الرياضة — مباريات اليوم لحظياً، نتائج، أخبار رياضية." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet" />
+
 <style>
   :root {
-    --bg: #050505; --surface: #0f0f0f; --surface-hover: #1a1a1a;
-    --border: #222; --border-strong: #333;
-    --text: #ffffff; --text-dim: #9ca3af;
-    --red: #e11d2b; --red-glow: rgba(225, 29, 43, 0.4);
-    --blue: #3b82f6; --green: #10b981;
-    --font-ar-display: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    --font-ar-body: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --bg: #0a0a0a; --bg-elev-1: #131313; --bg-elev-2: #1a1a1a;
+    --border: #262626; --border-strong: #3a3a3a;
+    --red: #e11d2b; --red-glow: rgba(225,29,43,0.5);
+    --text: #fafafa; --text-muted: #a3a3a3; --text-dim: #737373;
+    --green: #10b981;
+    --font-ar: "Cairo", system-ui, sans-serif;
+    --font-en: "Inter", system-ui, sans-serif;
+    --container: 100%;
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
   }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    background: var(--bg); color: var(--text);
-    font-family: var(--font-ar-body);
-    overflow-x: hidden;
-  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: var(--font-ar); line-height: 1.6; }
+  a { color: inherit; text-decoration: none; }
 
-  /* TOPBAR & NAV (Simplified for brevity) */
-  header.topbar { background: var(--bg); border-bottom: 1px solid var(--border); padding: 0.5rem 1rem; display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-dim); }
-  nav.main-nav { background: var(--surface); padding: 1rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
-  nav.main-nav .logo { font-size: 1.5rem; font-weight: 900; color: white; display: flex; align-items: center; gap: 0.5rem; text-decoration: none; }
-  nav.main-nav .logo span { color: var(--red); }
-  nav.main-nav ul { list-style: none; display: flex; gap: 1.5rem; }
-  nav.main-nav ul a { color: var(--text); text-decoration: none; font-weight: 600; opacity: 0.7; transition: opacity 0.2s; }
-  nav.main-nav ul a:hover, nav.main-nav ul a.active { opacity: 1; color: var(--red); }
+  header.site { position: sticky; top: 0; z-index: 50; background: rgba(10,10,10,0.92); backdrop-filter: blur(18px); border-bottom: 1px solid var(--border); }
+  .header-inner { display: grid; grid-template-columns: auto 1fr auto; gap: 1.5rem; align-items: center; padding: 0.85rem 1rem; max-width: var(--container); margin: 0 auto; }
+  .logo .mark { width: 52px; height: 52px; }
+  .logo .mark img { width: 100%; height: 100%; border-radius: 10px; object-fit: cover; display: block; }
+  nav.primary ul { display: flex; gap: 0.15rem; list-style: none; padding: 0; margin: 0; justify-content: center; font-weight: 700; font-size: 0.92rem; }
+  nav.primary a { display: inline-block; padding: 0.55rem 1rem; color: var(--text-muted); border-radius: 4px; transition: all 200ms; }
+  nav.primary a:hover { background: rgba(225,29,43,0.08); color: var(--text); }
+  nav.primary a.active { color: var(--text); background: rgba(225,29,43,0.12); }
 
-  /* MATCH CENTER LAYOUT */
-  .match-center {
-    display: grid;
-    grid-template-columns: 1fr 350px;
-    gap: 1.5rem;
-    padding: 1.5rem;
-    height: calc(100vh - 120px);
-    max-width: 1600px;
-    margin: 0 auto;
-  }
+  .page-hero { background: linear-gradient(180deg, #131313 0%, #0a0a0a 100%); border-bottom: 1px solid var(--border); padding: 2rem 1rem 1.5rem; }
+  .page-hero-inner { max-width: var(--container); margin: 0 auto; }
+  .breadcrumb { color: var(--text-dim); font-size: 0.78rem; margin-bottom: 0.5rem; }
+  .breadcrumb a { color: var(--red); }
+  .page-hero h1 { margin: 0 0 0.4rem; font-size: clamp(1.75rem, 1.3rem + 1.5vw, 2.4rem); font-weight: 900; letter-spacing: -0.02em; }
+  .page-hero p { margin: 0; color: var(--text-muted); font-size: 0.95rem; }
+  .live-pulse { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.72rem; color: var(--red); font-weight: 800; margin-top: 0.85rem; }
+  .live-pulse::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--red); animation: pulse 1.6s infinite; }
+  @keyframes pulse { 0% { box-shadow: 0 0 0 0 var(--red-glow); } 70% { box-shadow: 0 0 0 9px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
 
-  /* PITCH */
-  .pitch-container {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
+  .sport-tabs { display: flex; gap: 0.45rem; flex-wrap: wrap; margin-top: 1.5rem; }
+  .sport-tab {
+    padding: 0.5rem 1.1rem; background: transparent; border: 1px solid var(--border-strong);
+    color: var(--text-muted); border-radius: 999px; cursor: pointer;
+    font: 700 0.85rem var(--font-ar); transition: all 200ms;
+    display: inline-flex; align-items: center; gap: 0.4rem;
   }
-  .pitch-header {
-    padding: 1rem;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: linear-gradient(180deg, rgba(225,29,43,0.1), transparent);
-  }
-  .pitch-header h2 { font-size: 1.2rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem; }
-  .pitch-header h2::before { content:''; display:inline-block; width:8px; height:8px; background:var(--red); border-radius:50%; box-shadow:0 0 10px var(--red); animation: pulse 1.5s infinite; }
-  
-  .score-board { display: flex; align-items: center; gap: 1rem; font-size: 2rem; font-weight: 900; font-variant-numeric: tabular-nums; }
-  .team-score { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.5rem; border-radius: 4px; transition: background 0.2s; }
-  .team-score:hover { background: rgba(255,255,255,0.05); }
-  .team-score img { width: 32px; height: 32px; object-fit: contain; }
+  .sport-tab:hover { color: var(--text); border-color: var(--red); }
+  .sport-tab.active { background: var(--red); color: #fff; border-color: var(--red); }
 
-  .pitch-field-wrapper {
-    flex: 1;
-    position: relative;
-    background: #0f2316;
-    background-image: 
-      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
+  main { max-width: var(--container); margin: 0 auto; padding: 1.5rem 1rem; }
+  .section-title {
+    display: flex; justify-content: space-between; align-items: end;
+    margin: 1.5rem 0 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border);
+    flex-wrap: wrap; gap: 0.5rem;
   }
+  .section-title h2 {
+    margin: 0; font-size: 1.4rem; font-weight: 900;
+    display: flex; align-items: center; gap: 0.65rem; letter-spacing: -0.01em;
+  }
+  .section-title h2::before { content: ""; width: 3px; height: 22px; background: var(--red); }
+  .section-title .meta { font-size: 0.74rem; color: var(--text-dim); font-weight: 700; }
+  .section-title .meta::before { content: "🟢 "; }
 
-  .pitch {
-    width: 100%;
-    max-width: 800px;
-    aspect-ratio: 1.5; /* Football pitch proportion */
-    border: 2px solid rgba(255,255,255,0.3);
-    position: relative;
+  .matches-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 0.85rem; }
+  .match-card {
+    background: var(--bg-elev-1); border: 1px solid var(--border);
+    border-radius: 4px; overflow: hidden; transition: border-color 200ms;
   }
-  /* Pitch lines */
-  .pitch::before { content:''; position:absolute; top:0; left:50%; width:2px; height:100%; background:rgba(255,255,255,0.3); transform:translateX(-50%); }
-  .pitch::after { content:''; position:absolute; top:50%; left:50%; width:15%; aspect-ratio:1; border:2px solid rgba(255,255,255,0.3); border-radius:50%; transform:translate(-50%, -50%); }
-  .penalty-area-l { position:absolute; top:20%; left:0; width:18%; height:60%; border:2px solid rgba(255,255,255,0.3); border-left:0; }
-  .penalty-area-r { position:absolute; top:20%; right:0; width:18%; height:60%; border:2px solid rgba(255,255,255,0.3); border-right:0; }
-  .goal-area-l { position:absolute; top:35%; left:0; width:6%; height:30%; border:2px solid rgba(255,255,255,0.3); border-left:0; }
-  .goal-area-r { position:absolute; top:35%; right:0; width:6%; height:30%; border:2px solid rgba(255,255,255,0.3); border-right:0; }
+  .match-card:hover { border-color: var(--red); }
+  .match-head {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.55rem 0.85rem; border-bottom: 1px solid var(--border);
+    font-size: 0.72rem; color: var(--text-muted); font-weight: 700;
+    background: rgba(0,0,0,0.3);
+  }
+  .match-status.live { color: var(--red); display: flex; align-items: center; gap: 0.35rem; }
+  .match-status.live::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--red); animation: pulse 1.6s infinite; }
+  .match-status.finished { color: var(--green); }
+  .match-status.scheduled { color: #fbbf24; }
+  .match-body {
+    display: grid; grid-template-columns: 1fr auto 1fr;
+    gap: 0.6rem; align-items: center; padding: 1.1rem 1rem;
+  }
+  .match-team { display: flex; flex-direction: column; align-items: center; gap: 0.45rem; }
+  .team-badge {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: #fff; overflow: hidden;
+    display: grid; place-items: center; color: #000;
+    font: 900 0.9rem var(--font-en); border: 1px solid var(--border-strong);
+  }
+  .team-badge img { width: 88%; height: 88%; object-fit: contain; }
+  .team-name { font-size: 0.78rem; font-weight: 700; text-align: center; min-height: 2.6em; line-height: 1.3; }
+  .match-score { font: 900 1.85rem var(--font-en); letter-spacing: -0.04em; display: flex; gap: 0.5rem; align-items: center; }
+  .match-score .divider { color: var(--text-dim); font-size: 1.4rem; margin: 0 0.2rem; }
+  .match-time-display { font: 800 1rem var(--font-en); color: var(--text-muted); text-align: center; }
+  .match-time-display small { display: block; font-size: 0.62rem; color: var(--text-dim); font-weight: 700; }
+  .match-foot {
+    padding: 0.55rem 0.85rem; font-size: 0.7rem; color: var(--text-dim);
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between;
+  }
+  .match-foot a { color: var(--red); font-weight: 700; }
 
-  /* Players */
-  .player {
-    position: absolute;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.7rem;
-    font-weight: 800;
-    color: white;
-    cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-    transition: transform 0.2s, box-shadow 0.2s, z-index 0s;
-    z-index: 10;
-  }
-  .player.ahly { background: var(--red); border: 2px solid #fff; }
-  .player.zamalek { background: #fff; color: #111; border: 2px solid #eab308; }
-  
-  .player:hover { transform: translate(-50%, -50%) scale(1.3); z-index: 20; box-shadow: 0 0 15px currentColor; }
-  .player.active { transform: translate(-50%, -50%) scale(1.4); z-index: 30; box-shadow: 0 0 0 4px rgba(255,255,255,0.4); }
+  .news-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+  .news-item { background: var(--bg-elev-1); border: 1px solid var(--border); display: flex; flex-direction: column; cursor: pointer; transition: all 220ms var(--ease); }
+  .news-item:hover { transform: translateY(-3px); border-color: var(--red); }
+  .news-thumb-wrap { aspect-ratio: 16/9; overflow: hidden; background: linear-gradient(135deg, #064e3b, #052e16); border-bottom: 1px solid var(--border); }
+  .news-thumb-img { width: 100%; height: 100%; object-fit: cover; transition: transform 400ms; }
+  .news-item:hover .news-thumb-img { transform: scale(1.05); }
+  .news-body { padding: 1rem; flex: 1; display: flex; flex-direction: column; }
+  .news-tag { display: inline-block; background: var(--red); color: #fff; font-size: 0.6rem; font-weight: 800; padding: 0.18rem 0.5rem; margin-bottom: 0.6rem; align-self: flex-start; }
+  .news-item h3 { margin: 0 0 0.5rem; font-size: 0.95rem; font-weight: 800; line-height: 1.45; flex: 1; }
+  .news-item .meta { margin-top: auto; padding-top: 0.7rem; border-top: 1px dashed var(--border); display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-dim); }
 
-  .player-name-tooltip {
-    position: absolute;
-    top: -25px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0,0,0,0.8);
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 0.6rem;
-    white-space: nowrap;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s;
-  }
-  .player:hover .player-name-tooltip, .player.active .player-name-tooltip { opacity: 1; }
+  .empty { text-align: center; padding: 3rem 1rem; color: var(--text-muted); }
+  .loading { text-align: center; padding: 2rem 1rem; color: var(--text-muted); font-size: 0.85rem; }
 
-  /* Movement Lines Canvas */
-  #movement-canvas {
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    pointer-events: none;
-    z-index: 5;
-  }
+  footer.site { border-top: 1px solid var(--border); margin-top: 3rem; padding: 2rem 1rem 1.25rem; background: #050505; text-align: center; color: var(--text-dim); font-size: 0.78rem; }
+  footer.site a { color: var(--red); }
 
-  /* SIDE PANEL */
-  .analysis-panel {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-  .panel-header {
-    padding: 1rem;
-    border-bottom: 1px solid var(--border);
-    background: rgba(255,255,255,0.03);
-  }
-  .panel-header h3 { font-size: 1.1rem; font-weight: 800; }
-  .panel-header .subtitle { font-size: 0.8rem; color: var(--text-dim); }
-  
-  .panel-body {
-    padding: 1rem;
-    flex: 1;
-    overflow-y: auto;
-  }
-  
-  .stat-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.5rem;
-    margin-bottom: 1.5rem;
-  }
-  .stat-box {
-    background: rgba(255,255,255,0.05);
-    padding: 0.75rem;
-    border-radius: 4px;
-    text-align: center;
-  }
-  .stat-box .val { font-size: 1.4rem; font-weight: 900; color: var(--red); }
-  .stat-box .lbl { font-size: 0.7rem; color: var(--text-dim); }
-
-  .heatmap-mini {
-    width: 100%;
-    height: 100px;
-    background: #0f2316;
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    margin-bottom: 1rem;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .analysis-text {
-    font-size: 0.85rem;
-    line-height: 1.6;
-    color: #cbd5e1;
-  }
-
-  /* MATCH BADGE */
-  .match-badge {
-    margin-top: 1.5rem;
-    padding: 1rem;
-    background: linear-gradient(135deg, #1f2937, #111827);
-    border: 1px solid #374151;
-    border-radius: 8px;
-    text-align: center;
-  }
-  .match-badge h4 { color: #f59e0b; font-size: 1rem; margin-bottom: 0.5rem; font-weight: 900; }
-  .match-badge .mvp { font-size: 0.85rem; }
-  .match-badge .mvp strong { color: white; font-size: 1.1rem; }
-
-  @keyframes pulse { 0% { opacity:1; } 50% { opacity:0.4; } 100% { opacity:1; } }
-
-  /* Empty state */
-  .empty-state { text-align: center; color: var(--text-dim); margin-top: 3rem; }
-  .empty-state svg { width: 48px; height: 48px; opacity: 0.5; margin-bottom: 1rem; }
-
+  @media (max-width: 768px) { nav.primary { display: none; } .matches-grid { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
 
-<header class="topbar">
-  <div><span id="topbar-date">الأحد، ٣ مايو ٢٠٢٦</span></div>
-  <div>NCS Sports · Live Tracking System</div>
+<header class="site">
+  <div class="header-inner">
+    <a href="index.html" class="logo"><span class="mark"><img src="logo.jpg" alt="NCS" /></span></a>
+    <nav class="primary"><ul>
+      <li><a href="index.html">الرئيسية</a></li>
+      <li><a href="politics.html">سياسة</a></li>
+      <li><a href="economy.html">اقتصاد</a></li>
+      <li><a href="sports.html" class="active">رياضة</a></li>
+      <li><a href="index.html#live">مباشر</a></li>
+      <li><a href="index.html#center">المركز</a></li>
+    </ul></nav>
+    <div></div>
+  </div>
 </header>
-<nav class="main-nav">
-  <a href="index.html" class="logo">NCS <span>.</span></a>
-  <ul>
-    <li><a href="index.html">الرئيسية</a></li>
-    <li><a href="#">سياسة</a></li>
-    <li><a href="#">اقتصاد</a></li>
-    <li><a href="sports.html" class="active">رياضة</a></li>
-  </ul>
-</nav>
 
-<div class="match-center">
-  
-  <!-- PITCH SECTION -->
-  <div class="pitch-container">
-    <div class="pitch-header">
-      <h2>ديربي القاهرة — بث حي وتحليل تكتيكي</h2>
-      <div class="score-board">
-        <div class="team-score" onclick="showTeam('ahly')">
-          <img src="https://www.thesportsdb.com/images/media/team/badge/vwpvry1467465389.png/preview" alt="Ahly">
-          <span style="color:var(--red);">٢</span>
-        </div>
-        <span style="color:var(--text-dim);font-size:1.2rem;">—</span>
-        <div class="team-score" onclick="showTeam('zamalek')">
-          <span>١</span>
-          <img src="https://www.thesportsdb.com/images/media/team/badge/4v70e51591873155.png/preview" alt="Zamalek">
-        </div>
-      </div>
-    </div>
-    
-    <div class="pitch-field-wrapper">
-      <div class="pitch" id="pitch">
-        <div class="penalty-area-l"></div>
-        <div class="goal-area-l"></div>
-        <div class="penalty-area-r"></div>
-        <div class="goal-area-r"></div>
-        
-        <svg id="movement-canvas"></svg>
-
-        <!-- Players will be injected here via JS -->
-      </div>
+<section class="page-hero">
+  <div class="page-hero-inner">
+    <div class="breadcrumb"><a href="index.html">الرئيسية</a> / الرياضة</div>
+    <h1>🏆 الرياضة — مباريات اليوم لحظياً</h1>
+    <p>كل مباريات اليوم في الدوري المصري والدوريات العالمية · تحديث تلقائي · أخبار رياضية حقيقية</p>
+    <div class="live-pulse">تحديث لحظي · LIVE</div>
+    <div class="sport-tabs">
+      <button class="sport-tab active" data-sport="soccer">⚽ كرة القدم</button>
+      <button class="sport-tab" data-sport="basketball">🏀 السلة</button>
+      <button class="sport-tab" data-sport="handball">🤾 اليد</button>
+      <button class="sport-tab" data-sport="volleyball">🏐 الطائرة</button>
+      <button class="sport-tab" data-sport="squash">🥎 الاسكواش</button>
     </div>
   </div>
+</section>
 
-  <!-- ANALYSIS PANEL -->
-  <div class="analysis-panel" id="analysis-panel">
-    <div class="panel-header">
-      <h3 id="panel-title">تحليل المباراة</h3>
-      <div class="subtitle" id="panel-subtitle">اضغط على فريق أو لاعب لعرض التفاصيل</div>
-    </div>
-    <div class="panel-body" id="panel-content">
-      
-      <div class="empty-state">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-        <p>قم باختيار لاعب من الملعب أو اضغط على شعار الفريق لمعرفة تحركاتهم التكتيكية في المباراة.</p>
-      </div>
-
-      <!-- General Match Badge -->
-      <div class="match-badge">
-        <h4>NCS TACTICAL BADGE</h4>
-        <div class="mvp">رجل المباراة: <br><strong>إمام عاشور (الأهلي)</strong></div>
-        <p style="font-size:0.75rem; color:#9ca3af; margin-top:0.5rem; border-top:1px solid #374151; padding-top:0.5rem;">تحليل آلي معتمد على بيانات التتبع</p>
-      </div>
-
-    </div>
+<main>
+  <div class="section-title">
+    <h2>مباريات اليوم — <span id="sport-name">كرة القدم</span></h2>
+    <span class="meta" id="matches-updated">جاري التحميل…</span>
+  </div>
+  <div class="matches-grid" id="matches-grid">
+    <div class="loading">جاري جلب المباريات من TheSportsDB…</div>
   </div>
 
-</div>
+  <div class="section-title">
+    <h2>أهم الأخبار الرياضية</h2>
+    <span class="meta" id="news-updated">جاري التحميل…</span>
+  </div>
+  <div class="news-list" id="sports-news">
+    <div class="loading">جاري جلب الأخبار من NewsAPI…</div>
+  </div>
+</main>
+
+<footer class="site">
+  <div>© 2026 NCS — المركز الوطني للدراسات</div>
+  <div style="margin-top:0.5rem;"><a href="index.html">عودة للرئيسية</a> · <a href="news.html">كل الأخبار</a></div>
+</footer>
 
 <script>
-// ============================================
-// MOCK DATA: AHLY vs ZAMALEK
-// ============================================
+  const NEWSAPI_KEY = 'c345e2b01b2843feb66095becc480996';
 
-// Ahly (Left side attacking right)
-const ahlyPlayers = [
-  { id: 'a1', num: 1, name: 'الشناوي', pos: { x: 5, y: 50 }, stats: { passes: 22, shots: 0, distance: '4.2 km' }, desc: 'تمركز ممتاز، أنقذ فرصتين محققتين وشارك في بناء اللعب من الخلف.' },
-  { id: 'a2', num: 21, name: 'معلول', pos: { x: 30, y: 15 }, stats: { passes: 45, shots: 1, distance: '10.5 km' }, desc: 'جبهة يسرى نارية، أرسل ٦ عرضيات خطيرة وصنع الهدف الأول.' },
-  { id: 'a3', num: 24, name: 'عبد المنعم', pos: { x: 25, y: 35 }, stats: { passes: 56, shots: 0, distance: '9.1 km' }, desc: 'صخرة الدفاع، ربح ٨ تدخلات هوائية وقطع مسار الكرة ٥ مرات.' },
-  { id: 'a4', num: 5, name: 'رامي ربيعة', pos: { x: 25, y: 65 }, stats: { passes: 50, shots: 0, distance: '9.0 km' }, desc: 'تغطية عكسية ممتازة وتعاون جيد مع الشناوي في بناء الهجمات.' },
-  { id: 'a5', num: 30, name: 'هاني', pos: { x: 30, y: 85 }, stats: { passes: 38, shots: 0, distance: '10.1 km' }, desc: 'التزام دفاعي قوي، أوقف خطورة الجناح الأيسر للخصم بالكامل.' },
-  { id: 'a6', num: 13, name: 'مروان عطية', pos: { x: 45, y: 50 }, stats: { passes: 72, shots: 1, distance: '11.8 km' }, desc: 'دينامو خط الوسط، دقة تمرير ٩٢٪ واستعاد الكرة ١٢ مرة.' },
-  { id: 'a7', num: 22, name: 'إمام عاشور', pos: { x: 60, y: 30 }, stats: { passes: 41, shots: 3, distance: '11.2 km' }, desc: 'رجل المباراة. سجل هدف الحسم بتسديدة صاروخية واخترق العمق ٤ مرات.' },
-  { id: 'a8', num: 8, name: 'أكرم توفيق', pos: { x: 55, y: 70 }, stats: { passes: 35, shots: 0, distance: '11.5 km' }, desc: 'ضغط شرس في منتصف الملعب، ارتكب ٣ أخطاء تكتيكية لمنع المرتدات.' },
-  { id: 'a9', num: 14, name: 'الشحات', pos: { x: 75, y: 20 }, stats: { passes: 28, shots: 2, distance: '9.8 km' }, desc: 'مهارة عالية في المراوغة، تسبب في ركلة جزاء وصنع ٣ فرص.' },
-  { id: 'a10', num: 10, name: 'بيرسي تاو', pos: { x: 75, y: 80 }, stats: { passes: 25, shots: 2, distance: '10.0 km' }, desc: 'تحركات مزعجة خلف المدافعين، سجل الهدف الأول من اختراق سريع.' },
-  { id: 'a11', num: 9, name: 'وسام أبو علي', pos: { x: 85, y: 50 }, stats: { passes: 15, shots: 4, distance: '9.5 km' }, desc: 'محطة هجومية قوية، سدد كرتين على المرمى وشغل قلبي الدفاع.' }
-];
+  const SPORT_CONFIG = {
+    soccer: {
+      name: 'كرة القدم',
+      newsQuery: '(football OR soccer OR "premier league") AND (match OR goal OR result)',
+      leagues: [
+        { id: 4829, name: 'الدوري المصري الممتاز' },
+        { id: 4328, name: 'الدوري الإنجليزي' },
+        { id: 4335, name: 'الدوري الإسباني' },
+        { id: 4480, name: 'دوري أبطال أوروبا' },
+      ],
+    },
+    basketball: {
+      name: 'كرة السلة',
+      newsQuery: 'NBA OR basketball',
+      leagues: [{ id: 4387, name: 'NBA' }],
+    },
+    handball: { name: 'كرة اليد', newsQuery: 'handball', leagues: [] },
+    volleyball: { name: 'الكرة الطائرة', newsQuery: 'volleyball', leagues: [] },
+    squash: { name: 'الاسكواش', newsQuery: 'squash PSA', leagues: [] },
+  };
 
-// Zamalek (Right side attacking left)
-const zamalekPlayers = [
-  { id: 'z1', num: 1, name: 'عواد', pos: { x: 95, y: 50 }, stats: { passes: 18, shots: 0, distance: '4.0 km' }, desc: 'تصديات حاسمة في الشوط الأول لكنه لم يتمكن من منع الهدف الثاني.' },
-  { id: 'z2', num: 5, name: 'عبد المجيد', pos: { x: 75, y: 35 }, stats: { passes: 40, shots: 0, distance: '9.2 km' }, desc: 'تمركز جيد في الكرات العرضية لكن عانى من سرعات مهاجمي الأهلي.' },
-  { id: 'z3', num: 2, name: 'المثلوثي', pos: { x: 75, y: 65 }, stats: { passes: 45, shots: 0, distance: '9.4 km' }, desc: 'أداء دفاعي صلب، أغلق جبهته في الشوط الثاني بالكامل.' },
-  { id: 'z4', num: 15, name: 'فطوح', pos: { x: 70, y: 15 }, stats: { passes: 52, shots: 1, distance: '10.8 km' }, desc: 'انطلاقات هجومية ممتازة وصنع فرصة خطيرة ارتطمت بالعارضة.' },
-  { id: 'z5', num: 4, name: 'جابر', pos: { x: 70, y: 85 }, stats: { passes: 38, shots: 0, distance: '10.2 km' }, desc: 'دور متوازن بين الدفاع والهجوم، أرسل ٤ عرضيات.' },
-  { id: 'z6', num: 8, name: 'دونجا', pos: { x: 55, y: 50 }, stats: { passes: 65, shots: 1, distance: '11.4 km' }, desc: 'قائد خط الوسط، كسر العديد من الهجمات بدقة تمرير ٨٨٪.' },
-  { id: 'z7', num: 12, name: 'روقا', pos: { x: 60, y: 70 }, stats: { passes: 48, shots: 0, distance: '10.9 km' }, desc: 'تغطية دفاعية جيدة لكنه فقد الكرة مرتين في مناطق خطرة.' },
-  { id: 'z8', num: 10, name: 'شيكابالا', pos: { x: 40, y: 80 }, stats: { passes: 25, shots: 2, distance: '8.5 km' }, desc: 'لمسات سحرية، صنع الهدف الوحيد بتمريرة بينية خادعة.' },
-  { id: 'z9', num: 14, name: 'زيزو', pos: { x: 40, y: 20 }, stats: { passes: 32, shots: 3, distance: '11.0 km' }, desc: 'أكثر لاعبي فريقه خطورة، سجل هدف الفريق من تسديدة متقنة.' },
-  { id: 'z10', num: 11, name: 'شلبي', pos: { x: 35, y: 50 }, stats: { passes: 20, shots: 1, distance: '9.8 km' }, desc: 'تحركات جيدة بين الخطوط لكنه افتقد للمسة الأخيرة.' },
-  { id: 'z11', num: 30, name: 'الجزيري', pos: { x: 15, y: 50 }, stats: { passes: 12, shots: 2, distance: '9.1 km' }, desc: 'مهاجم صريح، تعرض لرقابة لصيقة ولم يجد المساحات الكافية.' }
-];
+  let currentSport = 'soccer';
 
-// Combine and render players
-const pitch = document.getElementById('pitch');
-const svgCanvas = document.getElementById('movement-canvas');
-
-function renderPlayers() {
-  ahlyPlayers.forEach(p => {
-    const el = document.createElement('div');
-    el.className = 'player ahly';
-    el.style.left = `${p.pos.x}%`;
-    el.style.top = `${p.pos.y}%`;
-    el.textContent = p.num;
-    el.innerHTML += `<div class="player-name-tooltip">${p.name}</div>`;
-    el.onclick = () => selectPlayer(p, 'ahly', el);
-    pitch.appendChild(el);
-  });
-  
-  zamalekPlayers.forEach(p => {
-    const el = document.createElement('div');
-    el.className = 'player zamalek';
-    el.style.left = `${p.pos.x}%`;
-    el.style.top = `${p.pos.y}%`;
-    el.textContent = p.num;
-    el.innerHTML += `<div class="player-name-tooltip">${p.name}</div>`;
-    el.onclick = () => selectPlayer(p, 'zamalek', el);
-    pitch.appendChild(el);
-  });
-}
-
-function drawHeatmapLines(player, team) {
-  svgCanvas.innerHTML = ''; // Clear old lines
-  
-  // Generate random movement path based on player's central position
-  const px = player.pos.x;
-  const py = player.pos.y;
-  
-  let pathD = `M ${px}% ${py}%`;
-  
-  // Generate 4-6 random control points around their position
-  const pts = Math.floor(Math.random() * 3) + 4;
-  for(let i=0; i<pts; i++) {
-    const rx = px + (Math.random() * 30 - 15);
-    const ry = py + (Math.random() * 40 - 20);
-    pathD += ` Q ${px + (Math.random()*10-5)}% ${py + (Math.random()*10-5)}%, ${rx}% ${ry}%`;
+  function cacheGet(key, ttl) {
+    try { const c = JSON.parse(localStorage.getItem(key) || 'null'); if (!c || Date.now()-c.t>ttl) return null; return c.d; } catch(e) { return null; }
   }
-  
-  const color = team === 'ahly' ? 'rgba(225,29,43,0.6)' : 'rgba(255,255,255,0.6)';
-  
-  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-  path.setAttribute('d', pathD);
-  path.setAttribute('fill', 'none');
-  path.setAttribute('stroke', color);
-  path.setAttribute('stroke-width', '3');
-  path.setAttribute('stroke-linecap', 'round');
-  path.setAttribute('stroke-dasharray', '5,5');
-  
-  svgCanvas.appendChild(path);
-}
+  function cacheSet(key, d) { try { localStorage.setItem(key, JSON.stringify({t:Date.now(), d})); } catch(e) {} }
 
-function selectPlayer(player, team, el) {
-  // Reset active classes
-  document.querySelectorAll('.player').forEach(p => p.classList.remove('active'));
-  if(el) el.classList.add('active');
-  
-  drawHeatmapLines(player, team);
-  
-  const teamName = team === 'ahly' ? 'الأهلي' : 'الزمالك';
-  const color = team === 'ahly' ? 'var(--red)' : '#fff';
-  
-  const content = document.getElementById('panel-content');
-  document.getElementById('panel-title').textContent = `${player.name} (${player.num})`;
-  document.getElementById('panel-subtitle').textContent = teamName;
-  
-  content.innerHTML = `
-    <div class="stat-grid">
-      <div class="stat-box">
-        <div class="val" style="color:${color}">${player.stats.distance}</div>
-        <div class="lbl">المسافة المقطوعة</div>
-      </div>
-      <div class="stat-box">
-        <div class="val" style="color:${color}">${player.stats.passes}</div>
-        <div class="lbl">التمريرات</div>
-      </div>
-      <div class="stat-box">
-        <div class="val" style="color:${color}">${player.stats.shots}</div>
-        <div class="lbl">التسديدات</div>
-      </div>
-      <div class="stat-box">
-        <div class="val" style="color:${color}">${Math.floor(Math.random()*20+75)}%</div>
-        <div class="lbl">دقة التمرير</div>
-      </div>
-    </div>
-    
-    <div style="margin-bottom: 0.5rem; font-size:0.8rem; color:var(--text-dim);">تحركات اللاعب:</div>
-    <div class="heatmap-mini">
-      <!-- Mini abstract visualization of the pitch area -->
-      <div style="position:absolute; top:0; left:0; width:100%; height:100%; background: radial-gradient(circle at ${player.pos.x}% ${player.pos.y}%, ${color} 0%, transparent 60%); opacity:0.3;"></div>
-      <div style="position:absolute; top:50%; left:50%; width:1px; height:100%; background:rgba(255,255,255,0.3); transform:translate(-50%,-50%);"></div>
-    </div>
-    
-    <div class="analysis-text">
-      <strong>تحليل الأداء:</strong><br>
-      ${player.desc}
-    </div>
-  `;
-}
+  function timeAgo(iso) {
+    if (!iso) return 'الآن';
+    const m = Math.floor((Date.now() - new Date(iso).getTime()) / 60000);
+    if (m < 1) return 'الآن';
+    if (m < 60) return `قبل ${m.toLocaleString('ar-EG')} د`;
+    const h = Math.floor(m/60);
+    if (h < 24) return `قبل ${h.toLocaleString('ar-EG')} ساعة`;
+    return `قبل ${Math.floor(h/24).toLocaleString('ar-EG')} يوم`;
+  }
 
-function showTeam(team) {
-  svgCanvas.innerHTML = '';
-  document.querySelectorAll('.player').forEach(p => p.classList.remove('active'));
-  
-  const teamName = team === 'ahly' ? 'الأهلي' : 'الزمالك';
-  const color = team === 'ahly' ? 'var(--red)' : '#fff';
-  const arr = team === 'ahly' ? ahlyPlayers : zamalekPlayers;
-  
-  const totalPasses = arr.reduce((sum, p) => sum + p.stats.passes, 0);
-  const totalShots = arr.reduce((sum, p) => sum + p.stats.shots, 0);
-  
-  const content = document.getElementById('panel-content');
-  document.getElementById('panel-title').textContent = `إحصائيات فريق ${teamName}`;
-  document.getElementById('panel-subtitle').textContent = 'تحليل جماعي';
-  
-  content.innerHTML = `
-    <div class="stat-grid">
-      <div class="stat-box">
-        <div class="val" style="color:${color}">${totalPasses}</div>
-        <div class="lbl">إجمالي التمريرات</div>
-      </div>
-      <div class="stat-box">
-        <div class="val" style="color:${color}">${totalShots}</div>
-        <div class="lbl">التسديدات</div>
-      </div>
-      <div class="stat-box">
-        <div class="val" style="color:${color}">${team==='ahly'? '٥٤٪' : '٤٦٪'}</div>
-        <div class="lbl">الاستحواذ</div>
-      </div>
-      <div class="stat-box">
-        <div class="val" style="color:${color}">${team==='ahly'? '٨' : '٥'}</div>
-        <div class="lbl">الركنيات</div>
-      </div>
-    </div>
-    
-    <div class="analysis-text" style="margin-top:1rem;">
-      <strong>الرسم التكتيكي:</strong>
-      <p style="margin-top:0.5rem;">لعب الفريق بتنظيم ٤-٣-٣ مع الاعتماد على الكرات الطولية والأطراف. التمركز الدفاعي كان متقدماً مما أجبر الخصم على الوقوع في التسلل عدة مرات.</p>
-    </div>
-    
-    <!-- Match Badge Generator -->
-    <div class="match-badge">
-      <h4>NCS TACTICAL BADGE</h4>
-      <div class="mvp">تقييم الفريق: <strong>${team==='ahly'? '٨.٥ / ١٠' : '٧.٠ / ١٠'}</strong></div>
-      <p style="font-size:0.75rem; color:#9ca3af; margin-top:0.5rem; border-top:1px solid #374151; padding-top:0.5rem;">تم استخراج التقييم من بيانات التتبع الحركي</p>
-    </div>
-  `;
-}
+  async function fetchMatches() {
+    const sport = SPORT_CONFIG[currentSport];
+    if (!sport.leagues.length) return [];
+    const all = [];
+    for (const lg of sport.leagues) {
+      const ck = `ncs.sports.${currentSport}.${lg.id}`;
+      let cached = cacheGet(ck, 60_000);
+      if (!cached) {
+        try {
+          const [pR, nR] = await Promise.allSettled([
+            fetch(`https://www.thesportsdb.com/api/v1/json/3/eventspastleague.php?id=${lg.id}`, {cache:'no-store'}).then(r=>r.json()),
+            fetch(`https://www.thesportsdb.com/api/v1/json/3/eventsnextleague.php?id=${lg.id}`, {cache:'no-store'}).then(r=>r.json()),
+          ]);
+          const past = (pR.status==='fulfilled' ? (pR.value.events||[]) : []).slice(0, 5);
+          const next = (nR.status==='fulfilled' ? (nR.value.events||[]) : []).slice(0, 5);
+          cached = { past, next };
+          cacheSet(ck, cached);
+        } catch (e) { cached = { past: [], next: [] }; }
+      }
+      cached.past.forEach(ev => all.push({...ev, _league: lg, _status: 'finished'}));
+      cached.next.forEach(ev => all.push({...ev, _league: lg, _status: 'scheduled'}));
+    }
+    return all;
+  }
 
-// Init
-renderPlayers();
+  function renderMatch(ev) {
+    const home = ev.strHomeTeam || '?';
+    const away = ev.strAwayTeam || '?';
+    const hs = (ev.intHomeScore != null && ev.intHomeScore !== '') ? ev.intHomeScore : null;
+    const as_ = (ev.intAwayScore != null && ev.intAwayScore !== '') ? ev.intAwayScore : null;
+    const hBadge = ev.strHomeTeamBadge || '';
+    const aBadge = ev.strAwayTeamBadge || '';
+    const status = ev._status;
+    const statusLbl = status === 'finished' ? 'انتهت' : 'قادمة';
 
+    const scoreOrTime = (status === 'finished' && hs !== null)
+      ? `<div class="match-score"><span>${hs}</span><span class="divider">−</span><span>${as_}</span></div>`
+      : `<div class="match-time-display">${ev.strTime || '—'}<small>${ev.dateEvent || ''}</small></div>`;
+
+    const badgeHtml = (b, n) => b
+      ? `<img src="${b}/preview" alt="${n}" onerror="this.outerHTML='<span>${(n||'').slice(0,3).toUpperCase()}</span>'"/>`
+      : `<span>${(n||'').slice(0,3).toUpperCase()}</span>`;
+
+    return `<div class="match-card">
+      <div class="match-head">
+        <span>📍 ${ev._league.name}</span>
+        <span class="match-status ${status}">${statusLbl}</span>
+      </div>
+      <div class="match-body">
+        <div class="match-team">
+          <div class="team-badge">${badgeHtml(hBadge, home)}</div>
+          <div class="team-name">${home}</div>
+        </div>
+        ${scoreOrTime}
+        <div class="match-team">
+          <div class="team-badge">${badgeHtml(aBadge, away)}</div>
+          <div class="team-name">${away}</div>
+        </div>
+      </div>
+      <div class="match-foot">
+        <span>${ev.strLeague || ev._league.name}</span>
+        <a href="https://www.thesportsdb.com/event/${ev.idEvent}" target="_blank" rel="noopener">تفاصيل ↗</a>
+      </div>
+    </div>`;
+  }
+
+  async function refreshMatches() {
+    document.getElementById('sport-name').textContent = SPORT_CONFIG[currentSport].name;
+    const grid = document.getElementById('matches-grid');
+    grid.innerHTML = '<div class="loading">جاري جلب المباريات…</div>';
+
+    if (!SPORT_CONFIG[currentSport].leagues.length) {
+      grid.innerHTML = `<div class="empty">
+        <p style="font-size:1rem; margin-bottom:0.5rem;">⚠ بيانات مباريات ${SPORT_CONFIG[currentSport].name} غير متاحة في الـ API المجاني الحالي.</p>
+        <p style="font-size:0.85rem;">للحصول على بيانات لحظية، نحتاج تسجيل في API-Sports المجاني.</p>
+        <p style="font-size:0.85rem; margin-top:1rem;">في الأثناء، شاهد آخر الأخبار في الأسفل ↓</p>
+      </div>`;
+      document.getElementById('matches-updated').textContent = '—';
+      return;
+    }
+
+    const matches = await fetchMatches();
+    if (!matches.length) {
+      grid.innerHTML = '<div class="empty">لا توجد مباريات مرصودة حالياً.</div>';
+      return;
+    }
+    matches.sort((a,b) => {
+      const o = { live:0, scheduled:1, finished:2 };
+      return (o[a._status]||9) - (o[b._status]||9);
+    });
+    grid.innerHTML = matches.slice(0, 24).map(renderMatch).join('');
+    document.getElementById('matches-updated').textContent = 'آخر تحديث: ' + new Date().toLocaleTimeString('ar-EG');
+  }
+
+  document.querySelectorAll('.sport-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.sport-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentSport = btn.dataset.sport;
+      refreshMatches();
+      refreshSportsNews();
+    });
+  });
+
+  function imgProxy(url, w, h) {
+    if (!url) return '';
+    return `https://images.weserv.nl/?url=${encodeURIComponent(url.replace(/^https?:\/\//, ''))}&w=${w||600}&h=${h||340}&fit=cover`;
+  }
+
+  async function refreshSportsNews() {
+    const sport = SPORT_CONFIG[currentSport];
+    const list = document.getElementById('sports-news');
+    list.innerHTML = '<div class="loading">جاري جلب الأخبار…</div>';
+
+    const ck = `ncs.sports.news.${currentSport}`;
+    let articles = cacheGet(ck, 2 * 60_000);
+    if (!articles) {
+      try {
+        const u = `https://newsapi.org/v2/everything?q=${encodeURIComponent(sport.newsQuery)}&pageSize=12&sortBy=publishedAt&language=en&apiKey=${NEWSAPI_KEY}`;
+        const r = await fetch(u, {cache:'no-store'});
+        const d = await r.json();
+        articles = d.articles || [];
+        cacheSet(ck, articles);
+      } catch (e) { articles = []; }
+    }
+
+    if (!articles.length) {
+      list.innerHTML = '<div class="empty">لا توجد أخبار رياضية متاحة.</div>';
+      return;
+    }
+
+    list.innerHTML = articles.slice(0,12).map(a => {
+      const img = a.urlToImage ? imgProxy(a.urlToImage, 600, 340) : '';
+      const thumb = img
+        ? `<div class="news-thumb-wrap"><img src="${img}" loading="lazy" class="news-thumb-img" onerror="this.parentElement.style.display='none'"/></div>`
+        : `<div class="news-thumb-wrap" style="display:grid;place-items:center;color:rgba(255,255,255,0.4);"><span style="font-size:3rem">⚽</span></div>`;
+      const title = (a.title||'').replace(/\s*-\s*[^-]*$/, '').trim();
+      const src = (a.source && a.source.name) || 'NewsAPI';
+      return `<a href="${a.url}" target="_blank" rel="noopener" class="news-item">
+        ${thumb}
+        <div class="news-body">
+          <span class="news-tag">${sport.name}</span>
+          <h3>${title}</h3>
+          <div class="meta"><span>${timeAgo(a.publishedAt)}</span><span>${src}</span></div>
+        </div>
+      </a>`;
+    }).join('');
+    document.getElementById('news-updated').textContent = 'آخر تحديث: ' + new Date().toLocaleTimeString('ar-EG');
+  }
+
+  refreshMatches();
+  refreshSportsNews();
+  setInterval(refreshMatches, 60_000);
+  setInterval(refreshSportsNews, 2 * 60_000);
 </script>
+
 </body>
 </html>
